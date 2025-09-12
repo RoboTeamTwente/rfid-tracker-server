@@ -1,3 +1,4 @@
+import binascii
 import csv
 from base64 import b64decode, b64encode
 
@@ -124,10 +125,14 @@ class Base64Field(serializers.Field):
     def to_internal_value(self, data):
         if not isinstance(data, str):
             self.fail('type_error', input_type=type(data).__name__)
-        return b64decode(data)
+        try:
+            return b64decode(data)
+        except binascii.Error as e:
+            self.fail('parsing_error', error=e)
 
     default_error_messages = {
-        'type_error': 'Incorrect type. Expected a string, but got {input_type}'
+        'type_error': 'Incorrect type. Expected a string, but got {input_type}',
+        'parsing_error': '{error}',
     }
 
 
