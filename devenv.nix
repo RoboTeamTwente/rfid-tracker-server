@@ -76,6 +76,7 @@ in
 
   packages = [
     pkgs.curl
+    pkgs.djhtml
     pkgs.git
     pkgs.httpie
     pkgs.openssh
@@ -243,6 +244,7 @@ in
     markdownlint.enable = true;
     nixfmt-rfc-style.enable = true;
     prettier.enable = true;
+    prettier.excludes = [ ''templates/.*\.html$'' ];
     ripsecrets.enable = true;
     ruff.enable = true;
     ruff-format.enable = true;
@@ -251,6 +253,12 @@ in
     taplo.enable = true;
     trim-trailing-whitespace.enable = true;
     uv-check.enable = true;
+  };
+
+  git-hooks.hooks.djhtml = {
+    enable = true;
+    entry = "djhtml";
+    files = ''templates/.*\.html$'';
   };
 
 }
