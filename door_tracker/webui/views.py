@@ -1,4 +1,3 @@
-import binascii
 import csv
 from base64 import b64decode, b64encode
 
@@ -332,7 +331,12 @@ def save_statistics(request):
     stats.total_minutes = total_minutes
 
     stats.save(
-        update_fields=['minutes_week', 'minutes_month', 'average_week', 'total_minutes']
+        update_fields=[
+            'minutes_week',
+            'minutes_month',
+            'average_week',
+            'total_minutes',
+        ]
     )
 
     return JsonResponse(
@@ -359,7 +363,8 @@ def get_statistics(request):
     myMembership = Membership.objects.filter(person=request.user).first()
     if not myMembership or not myMembership.job:
         return JsonResponse(
-            {'status': 'error', 'message': 'No membership/job found'}, status=404
+            {'status': 'error', 'message': 'No membership/job found'},
+            status=404,
         )
 
     weeklyQuota = myMembership.job.quota * 60
@@ -385,27 +390,9 @@ def get_statistics(request):
     return JsonResponse(data, status=200)
 
 
-class HexField(serializers.Field):
-    def to_representation(self, value):
-        return value.hex()
-
-    def to_internal_value(self, data):
-        if not isinstance(data, str):
-            self.fail('type_error', input_type=type(data).__name__)
-        try:
-            return bytes.fromhex(data)
-        except Exception as e:
-            self.fail('parsing_error', error=e)
-
-    default_error_messages = {
-        'type_error': 'Incorrect type. Expected a string, but got {input_type}',
-        'parsing_error': '{error}',
-    }
-
-
 class RegisterScanSerializer(serializers.Serializer):
     device_id = serializers.CharField()
-    card_id = HexField()
+    card_id = serializers.CharField()
 
 
 @csrf_exempt
