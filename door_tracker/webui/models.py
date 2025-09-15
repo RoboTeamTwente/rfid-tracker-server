@@ -78,7 +78,7 @@ class TagState(Enum):
 
 
 class Tag(models.Model):
-    tag = models.BinaryField(blank=True, null=True)
+    tag = models.CharField(blank=True, null=True)
     name = models.CharField(blank=True)
     owner = models.ForeignKey(
         User,
