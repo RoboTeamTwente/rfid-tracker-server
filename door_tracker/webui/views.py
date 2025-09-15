@@ -354,6 +354,7 @@ def save_statistics(request):
 
 
 def get_statistics(request):
+    save_statistics(request)
     myStats = Statistics.objects.filter(person=request.user).first()
     if not myStats:
         return JsonResponse(
@@ -385,6 +386,7 @@ def get_statistics(request):
             'total_minutes': myStats.total_minutes,
             'quotaWeekly': flagWeeklyQuota,
             'quotaMonthly': flagMonthlyQuota,
+            'user': request.user.username,
         },
     }
     return JsonResponse(data, status=200)
