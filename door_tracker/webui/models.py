@@ -93,10 +93,8 @@ class Tag(models.Model):
             return None
         return self.owner.get_full_name()
 
-    def binary_id(self):
-        if not self.tag:
-            return None
-        return self.tag.hex().upper()
+    def tag_id(self):
+        return self.tag
 
     def status(self):
         match self.get_state():
