@@ -49,14 +49,14 @@ in
     set -eux
     name=$1
     shift
-    $(devenv build outputs.containers."$name".copyToDockerDaemon)/bin/copy-to-docker-daemon "$@"
+    $(devenv build --refresh-eval-cache outputs.containers."$name".copyToDockerDaemon)/bin/copy-to-docker-daemon "$@"
   '';
 
   scripts.upload-container.exec = ''
     set -eux
     name=$1
     shift
-    $(devenv build outputs.containers."$name".copyToRegistry)/bin/copy-to-registry "$@"
+    $(devenv build --refresh-eval-cache outputs.containers."$name".copyToRegistry)/bin/copy-to-registry "$@"
   '';
 
   ## Languages
