@@ -8,7 +8,7 @@ from django.core.cache import cache
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import path, reverse
 
-from .models import Job, Log, Membership, Scanner, SubTeam, Tag
+from .models import Job, Log, Membership, Scanner, Statistics, SubTeam, Tag
 
 admin.site.site_header = 'RoboTeam'
 TOKEN_LIFETIME = 24 * 360  # How long until the link expires
@@ -76,6 +76,20 @@ class NamedAdmin(admin.ModelAdmin):
 @admin.register(Job)
 class JobAdmin(admin.ModelAdmin):
     list_display = ('name', 'quota')
+
+
+@admin.register(Statistics)
+class StatisticsAdmin(admin.ModelAdmin):
+    list_display = (
+        'person',
+        'date',
+        'minutes_day',
+        'minutes_week',
+        'minutes_month',
+        'average_week',
+        'total_minutes',
+    )
+    ordering = ('-date',)
 
 
 @admin.register(Scanner)
