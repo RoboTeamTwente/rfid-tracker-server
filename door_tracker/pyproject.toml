@@ -22,6 +22,7 @@ dev = ["python-lsp-server[all]>=1.13.1"]
 include = ["*"]
 
 [tool.setuptools.package-data]
+"templates.admin" = ["*"]
 "webui.templates.webui" = ["*"]
 
 [tool.ruff.lint]
