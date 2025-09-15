@@ -34,7 +34,7 @@ DEBUG = os.getenv('DJANGO_DEBUG', '') != 'False'
 if DEBUG:
     ALLOWED_HOSTS = ['*']
 else:
-    ALLOWED_HOSTS = ['rtt-rtt.roboteamtwente.nl']
+    ALLOWED_HOSTS = ['rfid-tracker.roboteamtwente.nl']
 
 
 # Application definition
@@ -153,5 +153,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 if not DEBUG:
     CSRF_COOKIE_SECURE = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
+    USE_X_FORWARDED_HOST = True

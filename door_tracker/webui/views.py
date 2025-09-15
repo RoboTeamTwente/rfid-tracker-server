@@ -331,7 +331,12 @@ def save_statistics(request):
     stats.total_minutes = total_minutes
 
     stats.save(
-        update_fields=['minutes_week', 'minutes_month', 'average_week', 'total_minutes']
+        update_fields=[
+            'minutes_week',
+            'minutes_month',
+            'average_week',
+            'total_minutes',
+        ]
     )
 
     return JsonResponse(
@@ -349,6 +354,7 @@ def save_statistics(request):
 
 
 def get_statistics(request):
+    save_statistics(request)
     myStats = Statistics.objects.filter(person=request.user).first()
     if not myStats:
         return JsonResponse(
@@ -358,7 +364,8 @@ def get_statistics(request):
     myMembership = Membership.objects.filter(person=request.user).first()
     if not myMembership or not myMembership.job:
         return JsonResponse(
-            {'status': 'error', 'message': 'No membership/job found'}, status=404
+            {'status': 'error', 'message': 'No membership/job found'},
+            status=404,
         )
 
     weeklyQuota = myMembership.job.quota * 60
@@ -379,6 +386,7 @@ def get_statistics(request):
             'total_minutes': myStats.total_minutes,
             'quotaWeekly': flagWeeklyQuota,
             'quotaMonthly': flagMonthlyQuota,
+            'user': request.user.username,
         },
     }
     return JsonResponse(data, status=200)
@@ -386,7 +394,7 @@ def get_statistics(request):
 
 class RegisterScanSerializer(serializers.Serializer):
     device_id = serializers.CharField()
-    card_id = Base64Field()
+    card_id = serializers.CharField()
 
 
 @csrf_exempt

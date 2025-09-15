@@ -7,5 +7,6 @@ services:
       - db:/db
     environment:
       - DATABASE_URL=sqlite:///db/db.sqlite3
+      - DJANGO_DEBUG=False
 volumes:
   db:

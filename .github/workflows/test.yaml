@@ -22,8 +22,8 @@ jobs:
           enable-cache: true
 
       - name: Install python dependencies
+        working-directory: door_tracker
         run: |
-          cd door_tracker
           uv sync --locked
           echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
 
