@@ -124,7 +124,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Amsterdam'  # Or your local timezone
+USE_TZ = True
+
 
 USE_I18N = True
 
