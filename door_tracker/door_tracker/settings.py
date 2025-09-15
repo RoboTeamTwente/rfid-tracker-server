@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'webui.apps.WebuiConfig',
     'dbbackup',
     'rest_framework',
+    'door_tracker',
 ]
 
 MIDDLEWARE = [
