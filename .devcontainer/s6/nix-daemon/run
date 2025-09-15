@@ -1,3 +1,0 @@
-#!/command/execlineb
-fdmove -c 2 1
-nix-daemon
