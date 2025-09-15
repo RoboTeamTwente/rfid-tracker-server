@@ -1,3 +1,4 @@
+import binascii
 import csv
 from base64 import b64decode, b64encode
 
@@ -384,9 +385,27 @@ def get_statistics(request):
     return JsonResponse(data, status=200)
 
 
+class HexField(serializers.Field):
+    def to_representation(self, value):
+        return value.hex()
+
+    def to_internal_value(self, data):
+        if not isinstance(data, str):
+            self.fail('type_error', input_type=type(data).__name__)
+        try:
+            return bytes.fromhex(data)
+        except Exception as e:
+            self.fail('parsing_error', error=e)
+
+    default_error_messages = {
+        'type_error': 'Incorrect type. Expected a string, but got {input_type}',
+        'parsing_error': '{error}',
+    }
+
+
 class RegisterScanSerializer(serializers.Serializer):
     device_id = serializers.CharField()
-    card_id = Base64Field()
+    card_id = HexField()
 
 
 @csrf_exempt
