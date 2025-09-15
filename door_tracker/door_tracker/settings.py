@@ -34,7 +34,7 @@ DEBUG = os.getenv('DJANGO_DEBUG', '') != 'False'
 if DEBUG:
     ALLOWED_HOSTS = ['*']
 else:
-    ALLOWED_HOSTS = ['rtt-rtt.roboteamtwente.nl']
+    ALLOWED_HOSTS = ['rfid-tracker.roboteamtwente.nl']
 
 
 # Application definition
