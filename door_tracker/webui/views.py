@@ -332,6 +332,7 @@ def save_statistics(request):
 
     stats.save(
         update_fields=[
+            'minutes_day',
             'minutes_week',
             'minutes_month',
             'average_week',
@@ -355,7 +356,7 @@ def save_statistics(request):
 
 def get_statistics(request):
     save_statistics(request)
-    myStats = Statistics.objects.filter(person=request.user).first()
+    myStats = Statistics.objects.filter(person=request.user).last()
     if not myStats:
         return JsonResponse(
             {'status': 'error', 'message': 'No statistics found'}, status=404
