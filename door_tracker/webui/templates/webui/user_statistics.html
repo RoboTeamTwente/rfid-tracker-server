@@ -18,43 +18,49 @@
         color: #333;
       }
 
-      /* Header (same as index.html) */
+      /* Header bar */
       .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
         background: #4b0082;
-        color: white;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         padding: 10px 20px;
       }
 
-      .header .logo {
-        font-weight: bold;
-        font-size: 18px;
-      }
-
-      .header .user {
+      .user {
         font-size: 14px;
       }
 
-      .header .user a {
+      .user a {
         color: white;
         text-decoration: none;
         margin-left: 8px;
       }
 
-      /* Status label in center */
-      #statusLabel {
-        font-size: 20px;
+      .logo {
         font-weight: bold;
-        text-transform: uppercase;
-        flex-grow: 1;
-        text-align: center;
+        font-size: 18px;
+      }
+      .logo span {
+        font-weight: normal;
+      }
+
+      .header-title {
+        font-size: 1.2rem;
+        letter-spacing: 1px;
+      }
+
+      .user-area a {
+        color: #fff;
+        text-decoration: underline;
+        margin-left: 6px;
+        font-size: 0.9rem;
       }
 
       /* Content */
       .content {
-        max-width: 800px;
+        max-width: 1200px;
         margin: 30px auto;
         padding: 0 20px;
         text-align: center;
@@ -67,14 +73,23 @@
         color: #4b2675;
       }
 
+      /* Dashboard layout */
+      .dashboard {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 30px;
+        margin-bottom: 30px;
+      }
+
       /* Metrics card */
       .metrics-card {
         background: #fff;
         border-radius: 6px;
         padding: 20px;
         width: 260px;
-        margin: 0 auto 30px;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        flex-shrink: 0;
       }
 
       .metric {
@@ -94,6 +109,32 @@
         color: #4b2675;
       }
 
+      .gauge-container {
+        background: #fff;
+        border-radius: 6px;
+        padding: 20px;
+        width: 400px;
+        height: 450px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+
+      #gauge-chart {
+        width: 100%;
+        height: 350px; /* Adjusted to fit the container */
+      }
+
+      /* Quota info below gauge */
+      .quota-info {
+        margin-top: 10px;
+        font-size: 16px;
+        color: #4b2675;
+        font-weight: bold;
+      }
+
       /* Back button */
       .back-btn button {
         background: #4b2675;
@@ -108,7 +149,39 @@
       .back-btn button:hover {
         background: #3a1f5e;
       }
+
+      /* Loading indicator */
+      .loading {
+        display: none;
+        text-align: center;
+        padding: 20px;
+        color: #4b2675;
+      }
+
+      /* Error message */
+      .error-message {
+        display: none;
+        color: #d32f2f;
+        background: #ffebee;
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+      }
+
+      /* Responsive design */
+      @media (max-width: 900px) {
+        .dashboard {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .gauge-container {
+          width: 100%;
+          max-width: 400px;
+        }
+      }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
   </head>
   <body>
     {% csrf_token %}
@@ -117,43 +190,49 @@
       <div class="logo">🤖 RoboTeam Twente</div>
       <div id="statusLabel">CHECKED-IN</div>
       <div class="user">
-        <span id="usernameDisplay">Welcome, User</span>
+        <span id="usernameDisplay">Welcome, {{ user.username|default:"User" }}</span>
         <a href="#" id="logoutLink">Log out</a>
       </div>
     </div>
 
     <!-- Main content -->
     <main class="content">
-      <h1 class="role-title">Full-Timer</h1>
-
-      <section class="metrics-card">
-        <div class="metric">
-          <span>Today:</span> <span class="value" id="hoursToday">0</span>
+      <div id="loadingIndicator" class="loading">Loading...</div>
+      <div id="errorMessage" class="error-message"></div>
+      <h1 class="role-title">{{ user_role|default:"Full-Timer" }}</h1>
+      <div class="dashboard">
+        <section class="metrics-card">
+          <div class="metric">
+            <span>Today:</span> <span class="value" id="hoursToday">0</span>
+          </div>
+          <div class="metric">
+            <span>This Week:</span>
+            <span class="value" id="hoursThisWeek">0</span>
+          </div>
+          <div class="metric">
+            <span>This Month:</span>
+            <span class="value" id="hoursThisMonth">0</span>
+          </div>
+          <div class="metric">
+            <span>Total:</span> <span class="value" id="hoursTotal">0</span>
+          </div>
+          <div class="metric">
+            <span>Average:</span> <span class="value" id="hoursAverage">0</span>
+          </div>
+          <div class="metric">
+            <span>Weekly Quota:</span>
+            <span class="value" id="quotaWeekly">&lt;MET/UNMET&gt;</span>
+          </div>
+          <div class="metric">
+            <span>Monthly Quota:</span>
+            <span class="value" id="quotaMonthly">&lt;MET/UNMET&gt;</span>
+          </div>
+        </section>
+        <div class="gauge-container">
+          <div id="gauge-chart"></div>
+          <div id="quotaDisplay" class="quota-info"></div>
         </div>
-        <div class="metric">
-          <span>This Week:</span>
-          <span class="value" id="hoursThisWeek">0</span>
-        </div>
-        <div class="metric">
-          <span>This Month:</span>
-          <span class="value" id="hoursThisMonth">0</span>
-        </div>
-        <div class="metric">
-          <span>Total:</span> <span class="value" id="hoursTotal">0</span>
-        </div>
-        <div class="metric">
-          <span>Average:</span> <span class="value" id="hoursAverage">0</span>
-        </div>
-        <div class="metric">
-          <span>Weekly Quota:</span>
-          <span class="value" id="quotaWeekly">&lt;MET/UNMET&gt;</span>
-        </div>
-        <div class="metric">
-          <span>Monthly Quota:</span>
-          <span class="value" id="quotaMonthly">&lt;MET/UNMET&gt;</span>
-        </div>
-      </section>
-
+      </div>
       <div class="back-btn" id="backBtn">
         <button>Back</button>
       </div>
@@ -167,10 +246,8 @@
 
       // Username
       function getUsername() {
-        return localStorage.getItem("username") || "User";
+        return localStorage.getItem("username") || "{{ user.username|default:'User' }}";
       }
-      document.getElementById("usernameDisplay").textContent =
-        `Welcome, ${getUsername()}`;
 
       // CSRF
       function getCSRFToken() {
@@ -277,10 +354,152 @@
         }
       }
 
-      // Init
-      document.addEventListener("DOMContentLoaded", () => {
-        fetchStats();
+      // Initialize the gauge chart
+      var chartDom = document.getElementById('gauge-chart');
+      var myChart = echarts.init(chartDom);
+      var option;
+
+      // Default option for the gauge
+      option = {
+        series: [
+          {
+            type: 'gauge',
+            radius: '90%',
+            progress: {
+              show: true,
+              width: 18
+            },
+            axisLine: {
+              lineStyle: {
+                width: 18
+              }
+            },
+            axisTick: {
+              show: false
+            },
+            splitLine: {
+              length: 15,
+              lineStyle: {
+                width: 2,
+                color: '#999'
+              }
+            },
+            axisLabel: {
+              distance: 25,
+              color: '#999',
+              fontSize: 20
+            },
+            anchor: {
+              show: true,
+              showAbove: true,
+              size: 25,
+              itemStyle: {
+                borderWidth: 10
+              }
+            },
+            title: {
+              show: false
+            },
+            detail: {
+              valueAnimation: true,
+              fontSize: 40,
+              fontWeight: 'bold',
+              formatter: '{value}%',
+              color: 'inherit',
+              offsetCenter: [0, '70%']
+            },
+            data: [
+              {
+                value: 0
+              }
+            ]
+          }
+        ]
+      };
+
+      myChart.setOption(option);
+
+      function updateGauge(percentage, hoursWorked, quota) {
+        console.log('Updating gauge with:', { percentage, hoursWorked, quota });
+
+        const displayPercentage = Math.min(parseFloat(percentage.toFixed(1)), 100);
+
+        let color;
+        if (percentage < 50) {
+          color = '#d32f2f';
+        } else if (percentage < 80) {
+          color = '#ed6c02';
+        } else {
+          color = '#2e7d32';
+        }
+
+        option.series[0].data[0].value = displayPercentage;
+        option.series[0].axisLine.lineStyle.color = [[displayPercentage / 100, color], [1, '#ececec']];
+        option.series[0].detail.color = color;
+
+        document.getElementById('quotaDisplay').textContent =
+          `Weekly Quota: ${hoursWorked.toFixed(1)}/${quota}h`;
+
+        myChart.setOption(option, true);
+      }
+
+      async function fetchFuelGaugeData() {
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const errorMessage = document.getElementById('errorMessage');
+
+        loadingIndicator.style.display = 'block';
+        errorMessage.style.display = 'none';
+
+        try {
+          const response = await fetch('/fuel_guage', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': getCSRFToken(),
+            },
+          });
+          const data = await response.json();
+
+          if (data.status === 'Success') {
+            const percentage = data.data.amt_work_done;
+            const hoursWorked = data.data.hours_worked;
+            const quota = data.data.quota;
+
+            updateGauge(percentage, hoursWorked, quota);
+
+            document.getElementById('hoursThisWeek').textContent = convertNumToTime(hoursWorked);
+            const weeklyQuotaStatus = document.getElementById('quotaWeekly');
+            weeklyQuotaStatus.textContent = percentage >= 100 ? 'MET' : 'UNMET';
+            weeklyQuotaStatus.style.color = percentage >= 100 ? '#2e7d32' : '#d32f2f';
+
+            loadingIndicator.style.display = 'none';
+          } else {
+            throw new Error(data.message || 'Unknown error occurred');
+          }
+        } catch (error) {
+          errorMessage.textContent = `Error: ${error.message}`;
+          errorMessage.style.display = 'block';
+          loadingIndicator.style.display = 'none';
+          console.error('Error fetching fuel gauge data:', error);
+        }
+      }
+
+      window.addEventListener('resize', function() {
+        myChart.resize();
+      });
+
+      // Fetch data when the page loads
+      document.addEventListener('DOMContentLoaded', async () => {
+        // Update username display
+        document.getElementById('usernameDisplay').textContent = `Welcome, ${getUsername()}`;
+
+        // Fetch data
+        await fetchStats();
+        await fetchFuelGaugeData();
         getCurrentLogStatus();
+
+        // Poll for updates every 60 seconds
+        setInterval(fetchFuelGaugeData, 60000);
       });
     </script>
   </body>

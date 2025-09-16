@@ -526,3 +526,39 @@ def export(request):
         )
     )
     return response
+
+
+def fuel_guage(request):
+    if not request.user.is_authenticated:
+        return JsonResponse(
+            {'status': 'error', 'message': 'Log in to view data.'},
+            status=400,
+        )
+    try:
+        membership = Membership.objects.filter(person=request.user).first()
+        if not membership or not membership.job:
+            return JsonResponse(
+                {'status': 'error', 'message': 'No job assignment found for user.'},
+                status=400,
+            )
+        member_quota = membership.job.quota
+        stats = Statistics.objects.filter(person=request.user).order_by('-date').first()
+        hours_week = stats.minutes_week / 60
+
+        percentage = (hours_week / member_quota) * 100
+
+        return JsonResponse(
+            {
+                'status': 'Success',
+                'data': {
+                    'quota': member_quota,
+                    'hours_worked': hours_week,
+                    'amt_work_done': percentage,
+                },
+            }
+        )
+    except Exception as e:
+        return JsonResponse(
+            {'status': 'error', 'message': f'Error retrieving data: {str(e)}'},
+            status=500,
+        )

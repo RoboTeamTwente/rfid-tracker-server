@@ -16,4 +16,5 @@ urlpatterns = [
     path('user_statistics', views.user_statistics, name='user_statistics'),
     path('user_profile', views.user_profile, name='user_profile'),
     path('export', views.export, name='export'),
+    path('fuel_guage', views.fuel_guage, name='fuel_guage'),
 ]
