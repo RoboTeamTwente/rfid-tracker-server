@@ -3,14 +3,15 @@ import csv
 from base64 import b64decode, b64encode
 
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import logout
+from django.contrib.auth.views import LoginView
 from django.core.cache import cache
 from django.db.models import Avg, Sum
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
 from django.utils import timezone
-from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import serializers
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import (
@@ -42,41 +43,9 @@ def index(request):
     return render(request, 'webui/index.html', {'username': request.user.username})
 
 
-@ensure_csrf_cookie
-def new_login(request):
-    if request.user.is_authenticated:
-        return redirect('index')
-
-    if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return JsonResponse(
-                    {
-                        'status': 'success',
-                        'message': f'Welcome Comrade {username}',
-                    },
-                    status=200,
-                )
-            else:
-                return JsonResponse(
-                    {
-                        'status': 'error',
-                        'message': 'Invalid username or password',
-                    },
-                    status=401,
-                )
-        else:
-            return JsonResponse(
-                {'status': 'error', 'message': 'Invalid username or password'},
-                status=400,
-            )
-
-    return render(request, 'webui/login.html')
+class LogIn(LoginView):
+    template_name = 'webui/login.html'
+    next_page = reverse_lazy('index')
 
 
 def new_logout(request):
