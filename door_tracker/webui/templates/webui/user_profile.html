@@ -282,27 +282,33 @@
         }
       });
 
-      // Fetch current status
       async function getCurrentLogStatus() {
         try {
-          const response = await fetch("/current_user_data", {
+          const response = await fetch("/user_status", {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
               "X-CSRFToken": getCSRFToken(),
             },
           });
-          if (!response.ok) throw new Error("Failed to fetch current log status");
+
+          if (!response.ok) {
+            throw new Error("Failed to fetch current log status");
+          }
+
           const data = await response.json();
-          if (data.status === "success" && data.logs && data.logs.length > 0) {
-            const latestLog = data.logs[0];
-            document.getElementById("statusLabel").textContent =
-              latestLog.type.toUpperCase();
+
+          if (data.status === "success") {
+            // Assuming logs are returned newest-first
+            const user_status = data.user_status;
+            // Update the label
+            const statusLabel = document.getElementById("statusLabel");
+            statusLabel.textContent = user_status;
           } else {
             document.getElementById("statusLabel").textContent = "UNKNOWN";
           }
-        } catch (err) {
-          console.error("Error fetching current status:", err);
+        } catch (error) {
+          console.error("Error fetching current status:", error);
           document.getElementById("statusLabel").textContent = "ERROR";
         }
       }

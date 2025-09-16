@@ -260,7 +260,7 @@
 
       async function getCurrentLogStatus() {
         try {
-          const response = await fetch("/current_user_data", {
+          const response = await fetch("/user_status", {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -274,14 +274,12 @@
 
           const data = await response.json();
 
-          if (data.status === "success" && data.logs && data.logs.length > 0) {
+          if (data.status === "success") {
             // Assuming logs are returned newest-first
-            const latestLog = data.logs[0];
-            const currentStatus = latestLog.type; // "Check-in" or "Check-out"
-
+            const user_status = data.user_status;
             // Update the label
             const statusLabel = document.getElementById("statusLabel");
-            statusLabel.textContent = currentStatus.toUpperCase();
+            statusLabel.textContent = user_status;
           } else {
             document.getElementById("statusLabel").textContent = "UNKNOWN";
           }

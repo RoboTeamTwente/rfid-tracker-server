@@ -24,4 +24,5 @@ urlpatterns = [
         views.check_registration,
         name='check_registration',
     ),
+    path('user_status', views.user_status, name='user_status'),
 ]

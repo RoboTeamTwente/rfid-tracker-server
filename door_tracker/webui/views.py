@@ -592,12 +592,17 @@ def user_tags(request):
     return JsonResponse({'status': 'success', 'tags': data}, status=200)
 
 
-# @api_view(["GET"])
-# def get_user_status(request):
-#     if not request.user.is_authenticated:
-#         return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=401)
+@api_view(['GET'])
+def user_status(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=401)
 
-#     user_status =
+    if is_checked_in(request.user):
+        user_status = 'CHECKED-IN'
+    else:
+        user_status = 'CHECKED-OUT'
+
+    return JsonResponse({'status': 'success', 'user_status': user_status})
 
 
 def fuel_guage(request):
