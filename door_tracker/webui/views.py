@@ -40,7 +40,27 @@ def index(request):
     # Greetings from the Ancient One
     if not request.user.is_authenticated:
         return redirect('login')
-    return render(request, 'webui/index.html', {'username': request.user.username})
+
+    logs = (
+        Log.objects.filter(tag__owner=request.user)
+        .select_related('tag')
+        .order_by('-time')
+    )
+
+    if is_checked_in(request.user):
+        user_status = 'CHECKED-IN'
+    else:
+        user_status = 'CHECKED-OUT'
+
+    return render(
+        request,
+        'webui/index.html',
+        {
+            'user_name': request.user.get_full_name(),
+            'logs': logs,
+            'user_status': user_status,
+        },
+    )
 
 
 class LogIn(LoginView):
@@ -48,7 +68,7 @@ class LogIn(LoginView):
     next_page = reverse_lazy('index')
 
 
-def new_logout(request):
+def logout_view(request):
     logout(request)
     messages.success(request, 'Logged out')
     return redirect('login')

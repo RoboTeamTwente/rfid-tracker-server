@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Checked-In Dashboard</title>
     <style>
+      /* * { box-sizing: border-box; } */
+
       body {
         margin: 0;
         font-family: Arial, sans-serif;
@@ -45,25 +47,29 @@
         background: #fff;
         padding: 10px;
         border-bottom: 1px solid #ddd;
+        font-size: 14px;
       }
 
       .toolbar input,
-      .toolbar button {
+      .toolbar a {
         padding: 6px 10px;
         border: 1px solid #ccc;
         border-radius: 5px;
       }
 
-      .toolbar button {
+      .toolbar a {
+        box-sizing: border-box;
         background: #4b0082;
         color: white;
         cursor: pointer;
         border: none;
       }
 
-      .toolbar button:hover {
+      .toolbar a:hover {
         background: #360060;
       }
+
+      .toolbar a { text-decoration: none; }
 
       /* Database Viewer */
       .data-viewer {
@@ -101,8 +107,7 @@
       }
 
       /* Hidden details */
-      .details {
-        display: none;
+      details p {
         padding: 10px;
         margin-top: 5px;
         background: #f3f3f3;
@@ -111,9 +116,6 @@
         color: #333;
       }
 
-      .data-viewer li.active .details {
-        display: block;
-      }
       /* Status label in center */
       #statusLabel {
         font-size: 20px;
@@ -126,172 +128,45 @@
   </head>
 
   <body>
-    {% csrf_token %}
     <!-- Header -->
     <div class="header">
       <div class="logo">🤖 RoboTeam Twente</div>
 
       <!-- Center status label -->
-      <div id="statusLabel"></div>
+      <div id="statusLabel">{{user_status}}</div>
 
       <div class="user">
-        <span id="usernameDisplay">Welcome, User</span>
-        <a href="#" id="logoutLink">Log out</a>
+        <span >Welcome, {{user_name}}</span>
+        <a href="{% url 'logout' %}">Log out</a>
       </div>
     </div>
 
     <!-- Toolbar -->
     <div class="toolbar">
-      <button id="remoteCheckout">Remote Checkout</button>
-      <!-- New Buttons -->
-      <button id="statisticsBtn">Statistics</button>
-      <button id="profileBtn">Profile</button>
+      <a href="">Remote Checkout</a> <!-- TODO: this doesn't link anywhere yet -->
+      <a href="{% url 'user_statistics' %}">Statistics</a>
+      <a href="{% url 'user_profile' %}">Profile</a>
     </div>
 
     <!-- Database Viewer -->
     <div class="data-viewer">
       <h3>Database Entries</h3>
-      <ul id="logList"></ul>
-    </div>
-    <script>
-      function getUsername() {
-        return localStorage.getItem("username") || "User";
-      }
-
-      document.getElementById("usernameDisplay").textContent =
-        `Welcome, ${getUsername()}`;
-
-      document
-        .getElementById("logoutLink")
-        .addEventListener("click", async (event) => {
-          event.preventDefault();
-          try {
-            const response = await fetch("/logout", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCSRFToken(),
-              },
-            });
-            if (response.ok) {
-              localStorage.removeItem("username");
-              window.location.href = "/login";
-            } else {
-              console.error("Logout failed");
-            }
-          } catch (error) {
-            console.error("Error during logout:", error);
-          }
-        });
-
-      function getCSRFToken() {
-        return document.querySelector("[name=csrfmiddlewaretoken]").value;
-      }
-
-      // Attach event listener for the new button
-
-      // Fetch and display logs
-      async function fetchLogs() {
-        try {
-          const response = await fetch("/current_user_data", {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "X-CSRFToken": getCSRFToken(),
-            },
-          });
-
-          const data = await response.json();
-          const logList = document.getElementById("logList");
-
-          if (response.ok && data.status === "success") {
-            logList.innerHTML = ""; // Clear existing content
-            if (data.logs.length === 0) {
-              logList.innerHTML = "<li>No logs available</li>";
-              return;
-            }
-
-            data.logs.forEach((log) => {
-              const li = document.createElement("li");
-              const date = new Date(log.time);
-              const dateString = date.toLocaleDateString("nl-NL", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric",
-              }); // Formats as DD-MM-YYYY
-              const timeString = date.toLocaleTimeString("nl-NL", {
-                hour: "2-digit",
-                minute: "2-digit",
-              }); // Formats as HH:MM
-              const action = log.type;
-              li.innerHTML = `
-              ${log.tag} - ${action} at ${dateString} ${timeString}
-              <div class="details">
+      <ul>
+        {% for log in logs %}
+          <li>
+            <details>
+              <summary>
+                {{log.tag}} - {{log.get_type_display}} at {{log.time | date:'Y-m-d H:i'}}
+              </summary>
+              <p>
                 TagID: ${log.tag}<br>
                 User ID: ${log.user_id}<br>
                 Status: ${log.type}
-              </div>
-            `;
-              logList.appendChild(li);
-              li.addEventListener("click", () => {
-                li.classList.toggle("active");
-              });
-            });
-          } else {
-            showMessage(data.message || "Failed to load logs.", "error");
-          }
-        } catch (error) {
-          console.error("Error fetching logs:", error);
-          showMessage("Could not fetch data. Please try again.", "error");
-        }
-      }
-
-      // Fetch logs on page load
-      document.addEventListener("DOMContentLoaded", fetchLogs);
-
-      document.getElementById("statisticsBtn").addEventListener("click", () => {
-        // simply redirect to the Django URL for user_statistics
-        window.location.href = "/user_statistics";
-      });
-      document.getElementById("profileBtn").addEventListener("click", () => {
-        // simply redirect to the Django URL for user_statistics
-        window.location.href = "/user_profile";
-      });
-
-      async function getCurrentLogStatus() {
-        try {
-          const response = await fetch("/user_status", {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "X-CSRFToken": getCSRFToken(),
-            },
-          });
-
-          if (!response.ok) {
-            throw new Error("Failed to fetch current log status");
-          }
-
-          const data = await response.json();
-
-          if (data.status === "success") {
-            // Assuming logs are returned newest-first
-            const user_status = data.user_status;
-            // Update the label
-            const statusLabel = document.getElementById("statusLabel");
-            statusLabel.textContent = user_status;
-          } else {
-            document.getElementById("statusLabel").textContent = "UNKNOWN";
-          }
-        } catch (error) {
-          console.error("Error fetching current status:", error);
-          document.getElementById("statusLabel").textContent = "ERROR";
-        }
-      }
-
-      document.addEventListener("DOMContentLoaded", () => {
-        getCurrentLogStatus();
-      });
-    </script>
+              </p>
+            </details>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
   </body>
 </html>
