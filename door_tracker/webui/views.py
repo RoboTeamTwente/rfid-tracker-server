@@ -528,6 +528,78 @@ def export(request):
     return response
 
 
+@api_view(['POST'])
+def create_pending_reg(request):
+    tag_name = request.data.get('name', 'pending')  # fallback if not provided
+
+    tag = Tag(name=tag_name, owner=request.user)
+    tag.save()
+
+    state = tag.get_state()
+    state_str = state.value if state else None
+
+    return JsonResponse(
+        {
+            'status': 'success',
+            'tag_data': {
+                'DB ID': tag.id,
+                'tag ID': tag.tag,
+                'tag Name': tag.name,
+                'tag Owner': tag.owner_name(),
+                'tag State': state_str,
+            },
+        }
+    )
+
+
+@api_view(['GET'])
+def check_registration(request, db_id):
+    tag = Tag.objects.filter(id=db_id, owner=request.user).first()
+    if tag is None:
+        return JsonResponse({'status': 'error', 'message': 'Not found'}, status=404)
+
+    state = tag.get_state()
+    state_str = state.value if state else None
+    return JsonResponse(
+        {
+            'status': 'success',
+            'claimed': state == TagState.CLAIMED,
+            'state': state_str,
+        }
+    )
+
+
+@api_view(['GET'])
+def user_tags(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=401)
+
+    tags = Tag.objects.filter(owner=request.user).all()
+
+    data = []
+    for tag in tags:
+        state = tag.get_state()
+        state_str = state.value if state else None
+        data.append(
+            {
+                'tag ID': str(tag.tag) if tag.tag is not None else None,
+                'tag Name': str(tag.name) if tag.name is not None else None,
+                'tag Owner': tag.owner_name(),
+                'tag State': state_str,
+            }
+        )
+
+    return JsonResponse({'status': 'success', 'tags': data}, status=200)
+
+
+# @api_view(["GET"])
+# def get_user_status(request):
+#     if not request.user.is_authenticated:
+#         return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=401)
+
+#     user_status =
+
+
 def fuel_guage(request):
     if not request.user.is_authenticated:
         return JsonResponse(

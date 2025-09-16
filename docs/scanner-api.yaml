@@ -45,10 +45,7 @@ components:
       properties:
         name:
           type: string
-          example: "Joe"
-        last-name:
-          type: string
-          example: "Doe"
+          example: "John Doe"
         state:
           type: string
           description: Checked in or Out
