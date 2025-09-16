@@ -21,7 +21,6 @@ from rest_framework.decorators import (
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 # Import Custom Files
-from . import utils  # -> Helper functions
 from .forms import RegistrationForm
 
 # Create your views here.
@@ -86,38 +85,6 @@ def new_logout(request):
     return redirect('login')
 
 
-@utils.require_authentication
-def check_status(request):
-    last_log = (
-        Log.objects.filter(tag__owner=request.user)
-        .select_related('tag')
-        .order_by('-time')
-        .first()
-    )
-
-    if not last_log:
-        # No logs yet for this user
-        return JsonResponse(
-            {
-                'status': 'success',
-                'state': None,
-                'state_display': None,
-                'date': None,
-            },
-            status=200,
-        )
-
-    return JsonResponse(
-        {
-            'status': 'success',
-            'state': last_log.type,
-            'state_display': last_log.get_type_display(),
-            'date': last_log.time.isoformat(),
-        },
-        status=200,
-    )
-
-
 class Base64Field(serializers.Field):
     def to_representation(self, value):
         return b64encode(value)
@@ -150,49 +117,6 @@ def serializer_error(serializer):
         for error in errors:
             msg += f'    {error}\n'
     return msg
-
-
-@api_view(['POST'])
-@utils.require_authentication
-def change_status(request):
-    # at this point, request.user is guaranteed authenticated
-    serializer = ChangeStatusSerializer(data=request.data)
-    if not serializer.is_valid():
-        return JsonResponse(
-            {'status': 'error', 'message': serializer_error(serializer)},
-            status=400,
-        )
-
-    tag_scanned = (
-        Tag.objects.select_related('owner')
-        .filter(id=serializer.validated_data.tag_id, owner=request.user)
-        .first()
-    )
-    if not tag_scanned:
-        return JsonResponse(
-            {'status': 'error', 'message': 'Tag not found or not yours.'},
-            status=404,
-        )
-
-    last_log = Log.objects.filter(tag=tag_scanned).order_by('-time').first()
-    new_type = (
-        Log.LogEntryType.CHECKIN
-        if not last_log or last_log.type == Log.LogEntryType.CHECKOUT
-        else Log.LogEntryType.CHECKOUT
-    )
-
-    log = Log.objects.create(type=new_type, tag=tag_scanned)
-
-    return JsonResponse(
-        {
-            'status': 'success',
-            'state': log.type,
-            'state_display': log.get_type_display(),
-            'date': log.time.isoformat(),
-            'tag': str(tag_scanned),
-        },
-        status=201,
-    )
 
 
 def current_user_data(request):
@@ -620,7 +544,10 @@ def fuel_guage(request):
         membership = Membership.objects.filter(person=request.user).first()
         if not membership or not membership.job:
             return JsonResponse(
-                {'status': 'error', 'message': 'No job assignment found for user.'},
+                {
+                    'status': 'error',
+                    'message': 'No job assignment found for user.',
+                },
                 status=400,
             )
         member_quota = membership.job.quota
