@@ -174,6 +174,10 @@ class Scanner(models.Model):
 
 
 def is_checked_in(user):
-    last_log = Log.objects.filter(tag__owner=user).order_by('-time').first()
-    print(last_log.id)
-    return last_log and last_log.type == Log.LogEntryType.CHECKIN
+    last_log = (
+        Log.objects.filter(tag__owner=user)
+        .exclude(type=Log.LogEntryType.REGISTRATION)
+        .order_by('-time')
+        .first()
+    )
+    return last_log is not None and last_log.type == Log.LogEntryType.CHECKIN

@@ -20,6 +20,8 @@ class Command(BaseCommand):
         SERVICE_ACCOUNT_FILE = os.path.join(
             os.getcwd(), 'credentials/service-account.json'
         )
+
+        # ---------Edit here the correct drive location----------------
         SHARED_DRIVE_ID = '0ADUE7KR7YsqxUk9PVA'
         FOLDER_NAME = 'django_backup'
 
