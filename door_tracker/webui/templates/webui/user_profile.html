@@ -9,48 +9,46 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
 
-    <!-- Optional: include an icon library for the edit/delete icons -->
     <style>
-      /* Reset and basics */
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
       body {
         font-family: Arial, sans-serif;
         background: #f3f3f3;
         color: #333;
+        margin: 0;
       }
 
-      /* Header */
+      /* Header (same as index.html) */
       .header {
-        background: #4b2675;
-        color: #fff;
         display: flex;
-        align-items: center;
         justify-content: space-between;
+        align-items: center;
+        background: #4b0082;
+        color: white;
         padding: 10px 20px;
       }
 
-      .logo {
+      .header .logo {
         font-weight: bold;
-      }
-      .logo span {
-        font-weight: normal;
+        font-size: 18px;
       }
 
-      .header-title {
-        font-size: 1.2rem;
-        letter-spacing: 1px;
+      .header .user {
+        font-size: 14px;
       }
 
-      .user-area a {
-        color: #fff;
-        text-decoration: underline;
-        margin-left: 6px;
-        font-size: 0.9rem;
+      .header .user a {
+        color: white;
+        text-decoration: none;
+        margin-left: 8px;
+      }
+
+      /* Status label in center */
+      #statusLabel {
+        font-size: 20px;
+        font-weight: bold;
+        text-transform: uppercase;
+        flex-grow: 1;
+        text-align: center;
       }
 
       /* Layout */
@@ -63,7 +61,6 @@
         gap: 30px;
       }
 
-      /* Cards */
       .card {
         background: #fff;
         border-radius: 8px;
@@ -71,13 +68,11 @@
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
       }
 
-      /* Left card: user info */
       .user-info {
         flex: 1 1 260px;
         line-height: 1.8;
       }
 
-      /* Right card: tag table */
       .tag-table {
         flex: 2 1 400px;
       }
@@ -108,7 +103,6 @@
         font-size: 1.1rem;
       }
 
-      /* Add button */
       .add-btn {
         background: #4b2675;
         color: #fff;
@@ -123,9 +117,10 @@
       .add-btn:hover {
         background: #3a1f5e;
       }
+
       .back-wrapper {
         max-width: 1000px;
-        margin: 20px auto 0; /* center horizontally, add space below header */
+        margin: 20px auto 0;
         padding: 0 20px;
       }
 
@@ -150,15 +145,18 @@
     </style>
   </head>
   <body>
-    <!-- Top header -->
-    <header class="header">
-      <div class="logo">RoboTeam <span>Twente</span></div>
-      <div class="header-title">CHECKED-IN</div>
-      <div class="user-area">User (or user name) <a href="#">Log out</a></div>
-    </header>
+    <!-- Header copied from index.html -->
+    <div class="header">
+      <div class="logo">🤖 RoboTeam Twente</div>
+      <div id="statusLabel"></div>
+      <div class="user">
+        <span id="usernameDisplay">Welcome, User</span>
+        <a href="#" id="logoutLink">Log out</a>
+      </div>
+    </div>
 
     <div class="back-wrapper">
-      <a href="/" class="back-btn" , id="backBtn">
+      <a href="/" class="back-btn" id="backBtn">
         <i class="fa fa-arrow-left"></i> Back
       </a>
     </div>
@@ -197,5 +195,81 @@
         <button class="add-btn">+ Add a Tag</button>
       </section>
     </main>
+
+    <script>
+      // Back button redirect
+      document.getElementById("backBtn").addEventListener("click", (e) => {
+        e.preventDefault();
+        window.location.href = "/";
+      });
+
+      // Username from localStorage
+      function getUsername() {
+        return localStorage.getItem("username") || "User";
+      }
+      document.getElementById("usernameDisplay").textContent =
+        `Welcome, ${getUsername()}`;
+
+      // CSRF token helper
+      function getCSRFToken() {
+        const el = document.querySelector("[name=csrfmiddlewaretoken]");
+        return el ? el.value : "";
+      }
+
+      // Logout
+      document
+        .getElementById("logoutLink")
+        .addEventListener("click", async (e) => {
+          e.preventDefault();
+          try {
+            const response = await fetch("/logout", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCSRFToken(),
+              },
+            });
+            if (response.ok) {
+              localStorage.removeItem("username");
+              window.location.href = "/login";
+            } else {
+              console.error("Logout failed");
+            }
+          } catch (err) {
+            console.error("Error during logout:", err);
+          }
+        });
+
+      // Fetch current status
+      async function getCurrentLogStatus() {
+        try {
+          const response = await fetch("/current_user_data", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": getCSRFToken(),
+            },
+          });
+          if (!response.ok)
+            throw new Error("Failed to fetch current log status");
+          const data = await response.json();
+          if (data.status === "success" && data.logs && data.logs.length > 0) {
+            const latestLog = data.logs[0];
+            document.getElementById("statusLabel").textContent =
+              latestLog.type.toUpperCase();
+          } else {
+            document.getElementById("statusLabel").textContent = "UNKNOWN";
+          }
+        } catch (err) {
+          console.error("Error fetching current status:", err);
+          document.getElementById("statusLabel").textContent = "ERROR";
+        }
+      }
+
+      // Init
+      document.addEventListener("DOMContentLoaded", () => {
+        getCurrentLogStatus();
+      });
+    </script>
   </body>
 </html>

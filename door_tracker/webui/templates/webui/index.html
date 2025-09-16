@@ -114,6 +114,14 @@
       .data-viewer li.active .details {
         display: block;
       }
+      /* Status label in center */
+      #statusLabel {
+        font-size: 20px;
+        font-weight: bold;
+        text-transform: uppercase;
+        flex-grow: 1;
+        text-align: center;
+      }
     </style>
   </head>
 
@@ -122,6 +130,10 @@
     <!-- Header -->
     <div class="header">
       <div class="logo">🤖 RoboTeam Twente</div>
+
+      <!-- Center status label -->
+      <div id="statusLabel"></div>
+
       <div class="user">
         <span id="usernameDisplay">Welcome, User</span>
         <a href="#" id="logoutLink">Log out</a>
@@ -244,6 +256,43 @@
       document.getElementById("profileBtn").addEventListener("click", () => {
         // simply redirect to the Django URL for user_statistics
         window.location.href = "/user_profile";
+      });
+
+      async function getCurrentLogStatus() {
+        try {
+          const response = await fetch("/current_user_data", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": getCSRFToken(),
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to fetch current log status");
+          }
+
+          const data = await response.json();
+
+          if (data.status === "success" && data.logs && data.logs.length > 0) {
+            // Assuming logs are returned newest-first
+            const latestLog = data.logs[0];
+            const currentStatus = latestLog.type; // "Check-in" or "Check-out"
+
+            // Update the label
+            const statusLabel = document.getElementById("statusLabel");
+            statusLabel.textContent = currentStatus.toUpperCase();
+          } else {
+            document.getElementById("statusLabel").textContent = "UNKNOWN";
+          }
+        } catch (error) {
+          console.error("Error fetching current status:", error);
+          document.getElementById("statusLabel").textContent = "ERROR";
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        getCurrentLogStatus();
       });
     </script>
   </body>
