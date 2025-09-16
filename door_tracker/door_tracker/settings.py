@@ -37,6 +37,23 @@ else:
     ALLOWED_HOSTS = ['rfid-tracker.roboteamtwente.nl']
 
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'door_tracker.backup_scheduler': {  # Use your module name
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+    },
+}
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -50,7 +67,8 @@ INSTALLED_APPS = [
     'webui.apps.WebuiConfig',
     'dbbackup',
     'rest_framework',
-    'door_tracker',
+    'django_apscheduler',
+    'door_tracker.apps.DoorTrackerConfig',
 ]
 
 MIDDLEWARE = [
@@ -144,6 +162,7 @@ STORAGES = {
         'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
     }
 }
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
