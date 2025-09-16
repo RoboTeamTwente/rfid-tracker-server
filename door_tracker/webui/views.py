@@ -36,6 +36,12 @@ from .models import (
 )
 
 
+def user_status(request):
+    if is_checked_in(request.user):
+        return 'CHECKED-IN'
+    return 'CHECKED-OUT'
+
+
 def index(request):
     # Greetings from the Ancient One
     if not request.user.is_authenticated:
@@ -47,18 +53,13 @@ def index(request):
         .order_by('-time')
     )
 
-    if is_checked_in(request.user):
-        user_status = 'CHECKED-IN'
-    else:
-        user_status = 'CHECKED-OUT'
-
     return render(
         request,
         'webui/index.html',
         {
             'user_name': request.user.get_full_name(),
             'logs': logs,
-            'user_status': user_status,
+            'user_status': user_status(request),
         },
     )
 
@@ -411,7 +412,58 @@ def sign_up(request):
 
 
 def user_statistics(request):
-    return render(request, 'webui/user_statistics.html')
+    save_statistics(request)
+
+    stats = Statistics.objects.filter(person=request.user).order_by('-date').last()
+
+    membership = (
+        Membership.objects.filter_effective()
+        .select_related('subteam')
+        .get(person=request.user)
+    )
+
+    quota_minutes_week = membership.job.quota * 60
+
+    # XXX: let's just assume that a month is exactly 4 weeks, noone's gonna notice, right? right?
+    # TODO: actually calculate amount of workdays in the month
+    quota_minutes_month = quota_minutes_week * 4
+
+    quota_week_met = stats.minutes_week >= quota_minutes_week
+    quota_month_met = stats.minutes_month >= quota_minutes_month
+
+    def format_time(minutes):
+        hours = minutes // 60
+        minutes = minutes % 60
+        s = f'{hours}h'
+        if minutes:
+            s += f' {minutes}m'
+        return s
+
+    return render(
+        request,
+        'webui/user_statistics.html',
+        {
+            # user info
+            'user_name': request.user.get_full_name(),
+            'user_role': membership.subteam.name,
+            'user_status': user_status(request),
+            # totals
+            'total_hours_day': format_time(stats.minutes_day),
+            'total_hours_week': format_time(stats.minutes_week),
+            'total_hours_month': format_time(stats.minutes_month),
+            'total_hours_all': format_time(stats.total_minutes),
+            'average_hours_week': format_time(stats.average_week),
+            'quota_hours_week': format_time(quota_minutes_week),
+            # quotas
+            'quota_week_met': 'MET' if quota_week_met else 'UNMET',
+            'quota_month_met': 'MET' if quota_month_met else 'UNMET',
+            # js values
+            'script_data': {
+                'total_hours_week': stats.minutes_week,
+                'quota_hours_week': quota_minutes_week,
+            },
+        },
+    )
 
 
 def user_profile(request):
@@ -508,19 +560,6 @@ def user_tags(request):
         )
 
     return JsonResponse({'status': 'success', 'tags': data}, status=200)
-
-
-@api_view(['GET'])
-def user_status(request):
-    if not request.user.is_authenticated:
-        return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=401)
-
-    if is_checked_in(request.user):
-        user_status = 'CHECKED-IN'
-    else:
-        user_status = 'CHECKED-OUT'
-
-    return JsonResponse({'status': 'success', 'user_status': user_status})
 
 
 def fuel_guage(request):

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Checked-In Metrics</title>
+    <title>Statistics</title>
     <style>
       /* Basic reset */
       * {
@@ -136,7 +136,8 @@
       }
 
       /* Back button */
-      .back-btn button {
+      .back-btn {
+        text-decoration: none;
         background: #4b2675;
         color: #fff;
         border: none;
@@ -146,7 +147,7 @@
         cursor: pointer;
       }
 
-      .back-btn button:hover {
+      .back-btn:hover {
         background: #3a1f5e;
       }
 
@@ -184,330 +185,152 @@
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
   </head>
   <body>
-    {% csrf_token %}
     <!-- Header -->
     <div class="header">
       <div class="logo">🤖 RoboTeam Twente</div>
-      <div id="statusLabel">CHECKED-IN</div>
+      <div>{{ user_status }}</div>
       <div class="user">
-        <span id="usernameDisplay">Welcome, {{ user.username|default:"User" }}</span>
-        <a href="#" id="logoutLink">Log out</a>
+        <span>Welcome, {{ user_name }}</span>
+        <a href="{% url 'logout' %}">Log out</a>
       </div>
     </div>
 
     <!-- Main content -->
     <main class="content">
-      <div id="loadingIndicator" class="loading">Loading...</div>
-      <div id="errorMessage" class="error-message"></div>
-      <h1 class="role-title">{{ user_role|default:"Full-Timer" }}</h1>
+      <h1 class="role-title">{{ user_role }}</h1>
       <div class="dashboard">
         <section class="metrics-card">
           <div class="metric">
-            <span>Today:</span> <span class="value" id="hoursToday">0</span>
+            <span>Today:</span> <span class="value">{{ total_hours_day }}</span>
           </div>
           <div class="metric">
             <span>This Week:</span>
-            <span class="value" id="hoursThisWeek">0</span>
+            <span class="value">{{ total_hours_week }}</span>
           </div>
           <div class="metric">
             <span>This Month:</span>
-            <span class="value" id="hoursThisMonth">0</span>
+            <span class="value">{{ total_hours_month }}</span>
           </div>
           <div class="metric">
-            <span>Total:</span> <span class="value" id="hoursTotal">0</span>
+            <span>Total:</span> <span class="value">{{ total_hours_all }}</span>
           </div>
           <div class="metric">
-            <span>Average:</span> <span class="value" id="hoursAverage">0</span>
+            <span>Average:</span> <span class="value">{{ average_hours_week }}</span>
           </div>
           <div class="metric">
             <span>Weekly Quota:</span>
-            <span class="value" id="quotaWeekly">&lt;MET/UNMET&gt;</span>
+            <span class="value">{{ quota_week_met }}</span>
           </div>
           <div class="metric">
             <span>Monthly Quota:</span>
-            <span class="value" id="quotaMonthly">&lt;MET/UNMET&gt;</span>
+            <span class="value">{{ quota_month_met }}</span>
           </div>
         </section>
         <div class="gauge-container">
           <div id="gauge-chart"></div>
-          <div id="quotaDisplay" class="quota-info"></div>
+          <div class="quota-info">
+            Weekly Quota: {{ total_hours_week }} / {{ quota_hours_week }}
+          </div>
         </div>
       </div>
-      <div class="back-btn" id="backBtn">
-        <button>Back</button>
-      </div>
+      <a class="back-btn" href="{% url 'index' %}">Back</a>
     </main>
 
+    {{ script_data | json_script }}
     <script>
-      // Back button
-      document.getElementById("backBtn").addEventListener("click", () => {
-        window.location.href = "/";
-      });
-
-      // Username
-      function getUsername() {
-        return localStorage.getItem("username") || "{{ user.username|default:'User' }}";
-      }
-
       // CSRF
       function getCSRFToken() {
-        const el = document.querySelector("[name=csrfmiddlewaretoken]");
-        return el ? el.value : "";
+        const el = document.querySelector('[name=csrfmiddlewaretoken]')
+        return el ? el.value : ''
       }
 
-      // Logout
-      document
-        .getElementById("logoutLink")
-        .addEventListener("click", async (e) => {
-          e.preventDefault();
-          try {
-            const response = await fetch("/logout", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCSRFToken(),
-              },
-            });
-            if (response.ok) {
-              localStorage.removeItem("username");
-              window.location.href = "/login";
-            }
-          } catch (err) {
-            console.error("Logout failed:", err);
-          }
-        });
+      // fuel gauge
+      const chartDom = document.getElementById('gauge-chart')
+      const chart = echarts.init(chartDom)
 
-      // Convert float hours -> "xh ym"
-      function convertNumToTime(number) {
-        var sign = number >= 0 ? 1 : -1;
-        number = number * sign;
-        var hour = Math.floor(number);
-        var decpart = number - hour;
-        var min = 1 / 60;
-        decpart = min * Math.round(decpart / min);
-        var minute = Math.floor(decpart * 60) + "";
-        if (minute.length < 2) minute = "0" + minute;
-        sign = sign == 1 ? "" : "-";
-        return sign + hour + "h " + minute + "m";
+      window.addEventListener('resize', function () {
+        chart.resize()
+      })
+
+      // extract values from json_script above
+      const data = JSON.parse(
+        document.currentScript.previousElementSibling.textContent,
+      )
+      const hoursWorked = data.total_hours_week
+      const quota = data.quota_hours_week
+      const percentage = (hoursWorked / quota) * 100
+
+      const displayPercentage = Math.min(parseFloat(percentage.toFixed(1)), 100)
+
+      let color
+      if (percentage < 50) {
+        color = '#d32f2f'
+      } else if (percentage < 80) {
+        color = '#ed6c02'
+      } else {
+        color = '#2e7d32'
       }
 
-      // Stats
-      async function fetchStats() {
-        try {
-          const response = await fetch("/get_statistics", {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "X-CSRFToken": getCSRFToken(),
-            },
-          });
-          if (!response.ok) throw new Error("Server error " + response.status);
-
-          const data = await response.json();
-          document.getElementById("hoursToday").textContent = convertNumToTime(
-            data.stats.minutes_day / 60,
-          );
-          document.getElementById("hoursThisWeek").textContent =
-            convertNumToTime(data.stats.minutes_week / 60);
-          document.getElementById("hoursThisMonth").textContent =
-            convertNumToTime(data.stats.minutes_month / 60);
-          document.getElementById("hoursTotal").textContent = convertNumToTime(
-            data.stats.total_minutes / 60,
-          );
-          document.getElementById("hoursAverage").textContent =
-            convertNumToTime(data.stats.average_week / 60);
-
-          document.getElementById("quotaWeekly").textContent = data.stats
-            .quotaWeekly
-            ? "MET"
-            : "UNMET";
-          document.getElementById("quotaMonthly").textContent = data.stats
-            .quotaMonthly
-            ? "MET"
-            : "UNMET";
-        } catch (err) {
-          console.error("Error fetching statistics:", err);
-        }
-      }
-
-      async function getCurrentLogStatus() {
-        try {
-          const response = await fetch("/user_status", {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "X-CSRFToken": getCSRFToken(),
-            },
-          });
-
-          if (!response.ok) {
-            throw new Error("Failed to fetch current log status");
-          }
-
-          const data = await response.json();
-
-          if (data.status === "success") {
-            // Assuming logs are returned newest-first
-            const user_status = data.user_status;
-            // Update the label
-            const statusLabel = document.getElementById("statusLabel");
-            statusLabel.textContent = user_status;
-          } else {
-            document.getElementById("statusLabel").textContent = "UNKNOWN";
-          }
-        } catch (error) {
-          console.error("Error fetching current status:", error);
-          document.getElementById("statusLabel").textContent = "ERROR";
-        }
-      }
-
-      // Initialize the gauge chart
-      var chartDom = document.getElementById('gauge-chart');
-      var myChart = echarts.init(chartDom);
-      var option;
-
-      // Default option for the gauge
-      option = {
+      chart.setOption({
         series: [
           {
             type: 'gauge',
             radius: '90%',
             progress: {
               show: true,
-              width: 18
+              width: 18,
             },
             axisLine: {
               lineStyle: {
-                width: 18
-              }
+                width: 18,
+                color: [
+                  [displayPercentage / 100, color],
+                  [1, '#ececec'],
+                ],
+              },
             },
             axisTick: {
-              show: false
+              show: false,
             },
             splitLine: {
               length: 15,
               lineStyle: {
                 width: 2,
-                color: '#999'
-              }
+                color: '#999',
+              },
             },
             axisLabel: {
               distance: 25,
               color: '#999',
-              fontSize: 20
+              fontSize: 20,
             },
             anchor: {
               show: true,
               showAbove: true,
               size: 25,
               itemStyle: {
-                borderWidth: 10
-              }
+                borderWidth: 10,
+              },
             },
             title: {
-              show: false
+              show: false,
             },
             detail: {
               valueAnimation: true,
               fontSize: 40,
               fontWeight: 'bold',
               formatter: '{value}%',
-              color: 'inherit',
-              offsetCenter: [0, '70%']
+              color: color,
+              offsetCenter: [0, '70%'],
             },
             data: [
               {
-                value: 0
-              }
-            ]
-          }
-        ]
-      };
-
-      myChart.setOption(option);
-
-      function updateGauge(percentage, hoursWorked, quota) {
-        console.log('Updating gauge with:', { percentage, hoursWorked, quota });
-
-        const displayPercentage = Math.min(parseFloat(percentage.toFixed(1)), 100);
-
-        let color;
-        if (percentage < 50) {
-          color = '#d32f2f';
-        } else if (percentage < 80) {
-          color = '#ed6c02';
-        } else {
-          color = '#2e7d32';
-        }
-
-        option.series[0].data[0].value = displayPercentage;
-        option.series[0].axisLine.lineStyle.color = [[displayPercentage / 100, color], [1, '#ececec']];
-        option.series[0].detail.color = color;
-
-        document.getElementById('quotaDisplay').textContent =
-          `Weekly Quota: ${hoursWorked.toFixed(1)}/${quota}h`;
-
-        myChart.setOption(option, true);
-      }
-
-      async function fetchFuelGaugeData() {
-        const loadingIndicator = document.getElementById('loadingIndicator');
-        const errorMessage = document.getElementById('errorMessage');
-
-        loadingIndicator.style.display = 'block';
-        errorMessage.style.display = 'none';
-
-        try {
-          const response = await fetch('/fuel_guage', {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRFToken': getCSRFToken(),
-            },
-          });
-          const data = await response.json();
-
-          if (data.status === 'Success') {
-            const percentage = data.data.amt_work_done;
-            const hoursWorked = data.data.hours_worked;
-            const quota = data.data.quota;
-
-            updateGauge(percentage, hoursWorked, quota);
-
-            document.getElementById('hoursThisWeek').textContent = convertNumToTime(hoursWorked);
-            const weeklyQuotaStatus = document.getElementById('quotaWeekly');
-            weeklyQuotaStatus.textContent = percentage >= 100 ? 'MET' : 'UNMET';
-            weeklyQuotaStatus.style.color = percentage >= 100 ? '#2e7d32' : '#d32f2f';
-
-            loadingIndicator.style.display = 'none';
-          } else {
-            throw new Error(data.message || 'Unknown error occurred');
-          }
-        } catch (error) {
-          errorMessage.textContent = `Error: ${error.message}`;
-          errorMessage.style.display = 'block';
-          loadingIndicator.style.display = 'none';
-          console.error('Error fetching fuel gauge data:', error);
-        }
-      }
-
-      window.addEventListener('resize', function() {
-        myChart.resize();
-      });
-
-      // Fetch data when the page loads
-      document.addEventListener('DOMContentLoaded', async () => {
-        // Update username display
-        document.getElementById('usernameDisplay').textContent = `Welcome, ${getUsername()}`;
-
-        // Fetch data
-        await fetchStats();
-        await fetchFuelGaugeData();
-        getCurrentLogStatus();
-
-        // Poll for updates every 60 seconds
-        setInterval(fetchFuelGaugeData, 60000);
-      });
+                value: displayPercentage,
+              },
+            ],
+          },
+        ],
+      })
     </script>
   </body>
 </html>
