@@ -8,7 +8,6 @@ urlpatterns = [
     path('login', views.LogIn.as_view(), name='login'),
     path('logout', views.logout_view, name='logout'),
     path('current_user_data', views.current_user_data, name='utable_data'),
-    path('get_statistics', views.get_statistics, name='get_statistics'),
     path('sign_up', views.sign_up, name='sign_up'),
     path('user_statistics', views.user_statistics, name='user_statistics'),
     path('user_profile', views.user_profile, name='user_profile'),
@@ -25,5 +24,4 @@ urlpatterns = [
         views.check_registration,
         name='check_registration',
     ),
-    path('user_status', views.user_status, name='user_status'),
 ]

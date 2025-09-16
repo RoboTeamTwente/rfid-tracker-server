@@ -8,7 +8,7 @@ from django.contrib.auth.views import LoginView
 from django.core.cache import cache
 from django.db.models import Avg, Sum
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
@@ -44,6 +44,7 @@ def user_status(request):
 
 def index(request):
     # Greetings from the Ancient One
+    # TODO: use auth middleware instead
     if not request.user.is_authenticated:
         return redirect('login')
 
@@ -279,45 +280,6 @@ def save_statistics(request):
     )
 
 
-def get_statistics(request):
-    save_statistics(request)
-    myStats = Statistics.objects.filter(person=request.user).last()
-    if not myStats:
-        return JsonResponse(
-            {'status': 'error', 'message': 'No statistics found'}, status=404
-        )
-
-    myMembership = Membership.objects.filter(person=request.user).first()
-    if not myMembership or not myMembership.job:
-        return JsonResponse(
-            {'status': 'error', 'message': 'No membership/job found'},
-            status=404,
-        )
-
-    weeklyQuota = myMembership.job.quota * 60
-    monthlyQuota = weeklyQuota * 4
-    print(weeklyQuota)
-
-    flagWeeklyQuota = myStats.minutes_week >= weeklyQuota
-    flagMonthlyQuota = myStats.minutes_month >= monthlyQuota
-
-    data = {
-        'status': 'success',
-        'stats': {
-            'date': myStats.date.isoformat(),
-            'minutes_day': myStats.minutes_day,
-            'minutes_week': myStats.minutes_week,
-            'minutes_month': myStats.minutes_month,
-            'average_week': myStats.average_week,
-            'total_minutes': myStats.total_minutes,
-            'quotaWeekly': flagWeeklyQuota,
-            'quotaMonthly': flagMonthlyQuota,
-            'user': request.user.username,
-        },
-    }
-    return JsonResponse(data, status=200)
-
-
 class RegisterScanSerializer(serializers.Serializer):
     device_id = serializers.CharField()
     card_id = serializers.CharField()
@@ -457,7 +419,7 @@ def user_statistics(request):
             # quotas
             'quota_week_met': 'MET' if quota_week_met else 'UNMET',
             'quota_month_met': 'MET' if quota_month_met else 'UNMET',
-            # js values
+            # js values (for echarts)
             'script_data': {
                 'total_hours_week': stats.minutes_week,
                 'quota_hours_week': quota_minutes_week,
@@ -466,8 +428,58 @@ def user_statistics(request):
     )
 
 
+class AddTagSerializer(serializers.Serializer):
+    tag_name = serializers.CharField()
+
+
+class ScanTagSerializer(serializers.Serializer):
+    tag = serializers.IntegerField()
+
+
 def user_profile(request):
-    return render(request, 'webui/user_profile.html')
+    if request.POST.get('action') == 'add_tag':
+        serializer = AddTagSerializer(data=request.POST)
+        serializer.is_valid(raise_exception=True)
+
+        tag_name = serializer.validated_data['tag_name']
+
+        tag = Tag(name=tag_name, owner=request.user)
+        tag.save()
+
+        return redirect(
+            reverse_lazy('user_profile', query={'modal': 'tag_scan', 'tag': tag.id})
+        )
+
+    if request.GET.get('modal') == 'tag_scan':
+        serializer = ScanTagSerializer(data=request.GET)
+        serializer.is_valid(raise_exception=True)
+
+        tag_id = serializer.validated_data['tag']
+
+        tag = get_object_or_404(Tag, pk=tag_id)
+
+        if tag.get_state() == TagState.CLAIMED:
+            return redirect('user_profile')
+
+    tags = Tag.objects.filter(owner=request.user).all()
+    membership = (
+        Membership.objects.filter_effective()
+        .select_related('job', 'subteam')
+        .get(person=request.user)
+    )
+
+    return render(
+        request,
+        'webui/user_profile.html',
+        {
+            'membership': membership,
+            'modal_name': request.GET.get('modal'),
+            'request': request,
+            'tags': tags,
+            'user': request.user,
+            'user_status': user_status(request),
+        },
+    )
 
 
 class ExportSerializer(serializers.Serializer):
