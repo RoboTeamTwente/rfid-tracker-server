@@ -128,6 +128,12 @@ class Tag(models.Model):
             n += f' ({self.owner_name()})'
         return n
 
+    class TagManager(models.Manager):
+        def get_pending(self):
+            return self.filter(tag__isnull=True, owner__isnull=False).first()
+
+    objects = TagManager()
+
 
 class SubTeam(models.Model):
     name = models.CharField()
