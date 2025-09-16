@@ -16,7 +16,7 @@ in
 
   scripts.django.exec = ''
     cd $DEVENV_ROOT/door_tracker
-    ./manage.py "$@"
+    ${venv}/bin/python manage.py "$@"
   '';
 
   scripts.dev.exec = ''
@@ -259,6 +259,17 @@ in
     enable = true;
     entry = "djhtml";
     files = ''templates/.*\.html$'';
+  };
+
+  git-hooks.hooks.makemigrations = {
+    enable = true;
+    entry = "makemigrations";
+    args = [
+      "--no-input"
+      "--check"
+    ];
+    always_run = true;
+    pass_filenames = false;
   };
 
 }
