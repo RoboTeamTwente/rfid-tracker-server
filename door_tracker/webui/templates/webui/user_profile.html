@@ -145,6 +145,7 @@
     </style>
   </head>
   <body>
+    {% csrf_token %}
     <!-- Header copied from index.html -->
     <div class="header">
       <div class="logo">🤖 RoboTeam Twente</div>
@@ -177,26 +178,75 @@
             <tr>
               <th>Tag ID</th>
               <th>Tag Name</th>
+              <th>State</th>
               <th>Action</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>1234...</td>
-              <td>MyTag</td>
-              <td class="actions">
-                <button class="icon-btn"><i class="fa fa-pen"></i></button>
-                <button class="icon-btn"><i class="fa fa-trash"></i></button>
-              </td>
-            </tr>
+          <tbody id="tagTableBody">
+  <!-- rows will be injected here -->
           </tbody>
+
         </table>
 
         <button class="add-btn">+ Add a Tag</button>
       </section>
+
+      <!-- Name Tag Modal -->
+      <div id="tagModal" style="
+                                display:none;
+                                position:fixed;
+                                top:0; left:0;
+                                width:100%; height:100%;
+                                background:rgba(0,0,0,0.5);
+                                justify-content:center;
+                                align-items:center;
+                               ">
+        <div style="background:#fff; padding:20px; border-radius:8px; width:300px; box-shadow:0 2px 10px rgba(0,0,0,0.3)">
+          <h3 style="margin-bottom:10px">Name your tag:</h3>
+          <input
+            type="text"
+            id="tagNameInput"
+            style="width:100%; padding:8px; margin-bottom:15px; border:1px solid #ccc; border-radius:4px;"
+            placeholder="Enter tag name"
+          />
+          <button
+            id="submitTagBtn"
+            style="background:#4b2675; color:#fff; border:none; padding:10px 15px; border-radius:4px; cursor:pointer;">
+            Add Tag
+          </button>
+          <button
+            id="closeTagBtn"
+            style="margin-left:10px; background:#ccc; color:#333; border:none; padding:10px 15px; border-radius:4px; cursor:pointer;">
+            Cancel
+          </button>
+        </div>
+      </div>
+
+    <!-- Scan Modal -->
+      <div id="scanModal" style="
+                                 display:none;
+                                 position:fixed;
+                                 top:0; left:0;
+                                 width:100%; height:100%;
+                                 background:rgba(0,0,0,0.5);
+                                 justify-content:center;
+                                 align-items:center;
+                                ">
+        <div style="background:#fff; padding:20px; border-radius:8px; width:300px; text-align:center; box-shadow:0 2px 10px rgba(0,0,0,0.3)">
+          <h3>Please scan your tag at the device.</h3>
+          <p style="color:#555; font-size:0.9rem;">Waiting for scan...</p>
+        </div>
+      </div>
+
     </main>
 
     <script>
+      // Helper to get CSRF token
+      function getCSRFToken() {
+        const el = document.querySelector("[name=csrfmiddlewaretoken]");
+        return el ? el.value : "";
+      }
+
       // Back button redirect
       document.getElementById("backBtn").addEventListener("click", (e) => {
         e.preventDefault();
@@ -210,35 +260,27 @@
       document.getElementById("usernameDisplay").textContent =
         `Welcome, ${getUsername()}`;
 
-      // CSRF token helper
-      function getCSRFToken() {
-        const el = document.querySelector("[name=csrfmiddlewaretoken]");
-        return el ? el.value : "";
-      }
-
       // Logout
-      document
-        .getElementById("logoutLink")
-        .addEventListener("click", async (e) => {
-          e.preventDefault();
-          try {
-            const response = await fetch("/logout", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCSRFToken(),
-              },
-            });
-            if (response.ok) {
-              localStorage.removeItem("username");
-              window.location.href = "/login";
-            } else {
-              console.error("Logout failed");
-            }
-          } catch (err) {
-            console.error("Error during logout:", err);
+      document.getElementById("logoutLink").addEventListener("click", async (e) => {
+        e.preventDefault();
+        try {
+          const response = await fetch("/logout", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": getCSRFToken(),
+            },
+          });
+          if (response.ok) {
+            localStorage.removeItem("username");
+            window.location.href = "/login";
+          } else {
+            console.error("Logout failed");
           }
-        });
+        } catch (err) {
+          console.error("Error during logout:", err);
+        }
+      });
 
       // Fetch current status
       async function getCurrentLogStatus() {
@@ -250,8 +292,7 @@
               "X-CSRFToken": getCSRFToken(),
             },
           });
-          if (!response.ok)
-            throw new Error("Failed to fetch current log status");
+          if (!response.ok) throw new Error("Failed to fetch current log status");
           const data = await response.json();
           if (data.status === "success" && data.logs && data.logs.length > 0) {
             const latestLog = data.logs[0];
@@ -266,10 +307,131 @@
         }
       }
 
+      // Load tags for the current user
+      async function loadTags() {
+        try {
+          const response = await fetch("/user_tags", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": getCSRFToken(),
+            },
+          });
+
+          if (!response.ok) throw new Error("Failed to fetch tags");
+
+          const data = await response.json();
+          if (data.status === "success") {
+            const tbody = document.querySelector(".tag-table tbody");
+            tbody.innerHTML = ""; // clear old rows
+
+            data.tags.forEach(tagData => {
+              const tr = document.createElement("tr");
+              tr.innerHTML = `
+                <td>${tagData["tag ID"] || "-"}</td>
+                <td>${tagData["tag Name"]}</td>
+                <td>${tagData["tag State"]}</td>
+                <td class="actions">
+                  <button class="icon-btn"><i class="fa fa-pen"></i></button>
+                  <button class="icon-btn"><i class="fa fa-trash"></i></button>
+                </td>
+              `;
+              tbody.appendChild(tr);
+            });
+          }
+        } catch (err) {
+          console.error("Error loading tags:", err);
+        }
+      }
+
+      // Poll backend to check if tag got registered
+      async function waitForScan(db_id) {
+        const interval = setInterval(async () => {
+          try {
+            const response = await fetch(`/check_registration/${db_id}/`, {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCSRFToken(),
+              },
+            });
+            if (!response.ok) throw new Error("Failed to check registration");
+
+            const data = await response.json();
+            if (data.claimed === true) {
+              clearInterval(interval);
+
+              // Hide scan modal
+              document.getElementById("scanModal").style.display = "none";
+
+              // Refresh table
+              await loadTags();
+
+              // Show success popup
+              alert("✅ Card registered successfully!");
+            }
+          } catch (err) {
+            console.error("Error checking registration:", err);
+          }
+        }, 1000); // poll every second
+      }
+
+      // Open modal when clicking "+ Add a Tag"
+      document.querySelector(".add-btn").addEventListener("click", () => {
+        document.getElementById("tagModal").style.display = "flex";
+      });
+
+      // Close modal
+      document.getElementById("closeTagBtn").addEventListener("click", () => {
+        document.getElementById("tagModal").style.display = "none";
+      });
+
+      // Handle "Add Tag" submit
+      document.getElementById("submitTagBtn").addEventListener("click", async () => {
+        const tagName = document.getElementById("tagNameInput").value.trim();
+        if (!tagName) {
+          alert("Please enter a name for your tag");
+          return;
+        }
+
+        try {
+          const response = await fetch("/create_pending_reg", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": getCSRFToken(),
+            },
+            body: JSON.stringify({ name: tagName })
+          });
+
+          if (!response.ok) throw new Error("Failed to create tag");
+
+          const data = await response.json();
+
+          if (data.status === "success") {
+            // Close "name your tag" modal
+            document.getElementById("tagModal").style.display = "none";
+            document.getElementById("tagNameInput").value = "";
+
+            // Show scan modal
+            document.getElementById("scanModal").style.display = "flex";
+
+            // Start polling for registration
+            waitForScan(data.tag_data["DB ID"]);
+          } else {
+            alert("Could not create tag: " + (data.message || "Unknown error"));
+          }
+        } catch (error) {
+          console.error("Error creating tag:", error);
+        }
+      });
+
       // Init
       document.addEventListener("DOMContentLoaded", () => {
         getCurrentLogStatus();
+        loadTags();   // also load tags on page load
       });
     </script>
+
   </body>
 </html>
