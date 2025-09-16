@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD033 -->
+
 # RFID Tracker
 
 ## Get started
@@ -5,25 +7,25 @@
 1. [Install VSCode](https://code.visualstudio.com/).
 
 2. When you open the repo, you should see the notification `Do you
-   want to install the recommended extensions from Microsoft for this
-   repository?`. Click `Install`.
+want to install the recommended extensions from Microsoft for this
+repository?`. Click `Install`.
 
 3. A new notification should open: `Folder contains a Dev Container
-   configuration file. Reopen folder to develop in a container (learn
-   more).`. Press `Reopen in Container`.
+configuration file. Reopen folder to develop in a container (learn
+more).`. Press `Reopen in Container`.
 
 4. You should see `Running the onCreateCommand from
-   devcontainer.json...` in the terminal. This will take a minute or
+devcontainer.json...` in the terminal. This will take a minute or
    two. Lean back and relax.
 
 5. After a while, you'll see `dev: command not found` in the terminal.
    Wait for a minute, and if it doesn't disappear, run `direnv: Reset
-   and reload environment`.
+and reload environment`.
 
 6. VSCode should restart. Congrats, you have won!
 
 7. (optional) If you don't have a local database yet, run the `scripts:
-   init` task. It'll create a new database and a user for you.
+init` task. It'll create a new database and a user for you.
 
 ## Development server
 
