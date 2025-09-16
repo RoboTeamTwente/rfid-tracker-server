@@ -11,7 +11,13 @@ from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from rest_framework import serializers
-from rest_framework.decorators import api_view
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.decorators import (
+    api_view,
+    authentication_classes,
+    permission_classes,
+)
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 # Import Custom Files
 from . import utils  # -> Helper functions
@@ -499,6 +505,8 @@ class ExportSerializer(serializers.Serializer):
 
 
 @api_view(['GET'])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAdminUser, IsAuthenticated])
 def export(request):
     serializer = ExportSerializer(data=request.query_params)
     serializer.is_valid(raise_exception=True)
