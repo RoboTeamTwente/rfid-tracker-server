@@ -376,7 +376,7 @@ def sign_up(request):
 def user_statistics(request):
     save_statistics(request)
 
-    stats = Statistics.objects.filter(person=request.user).order_by('-date').last()
+    stats = Statistics.objects.filter(person=request.user).order_by('-date').first()
 
     membership = (
         Membership.objects.filter_effective()
