@@ -15,7 +15,7 @@ in
   ## Scripts
 
   scripts.django.exec = ''
-    cd $DEVENV_ROOT/door_tracker
+    cd "$DEVENV_ROOT/door_tracker"
     ${venv}/bin/python manage.py "$@"
   '';
 
@@ -47,6 +47,7 @@ in
 
   scripts.build-container.exec = ''
     set -eux
+    cd "$DEVENV_ROOT"
     name=$1
     shift
     $(devenv build --refresh-eval-cache outputs.containers."$name".copyToDockerDaemon)/bin/copy-to-docker-daemon "$@"
@@ -54,6 +55,7 @@ in
 
   scripts.upload-container.exec = ''
     set -eux
+    cd "$DEVENV_ROOT"
     name=$1
     shift
     $(devenv build --refresh-eval-cache outputs.containers."$name".copyToRegistry)/bin/copy-to-registry "$@"
