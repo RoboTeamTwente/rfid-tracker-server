@@ -253,18 +253,18 @@ def save_statistics(request):
     average_week = agg['average_week'] or 0
     total_minutes = agg['total_minutes'] or 0
 
-    stats.average_week = average_week
-    stats.total_minutes = total_minutes
-
-    stats.save(
-        update_fields=[
-            'minutes_day',
-            'minutes_week',
-            'minutes_month',
-            'average_week',
-            'total_minutes',
-        ]
-    )
+    if created:
+        stats.save()  # full save on new record
+    else:
+        stats.save(
+            update_fields=[
+                'minutes_day',
+                'minutes_week',
+                'minutes_month',
+                'average_week',
+                'total_minutes',
+            ]
+        )
 
     return JsonResponse(
         {
