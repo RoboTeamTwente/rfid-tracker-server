@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from django.db.models import Avg, Sum
@@ -9,15 +11,15 @@ from webui.models import Log, Statistics
 class Command(BaseCommand):
     help = 'Update statistics for all users'
 
-    def minutes_today(self, user):
-        today = timezone.localdate()
+    def minutes_for_day(self, user, day):
+        """Calculate worked minutes for a given user and day from raw logs."""
         now = timezone.localtime()
         minutes_worked = 0
 
         logs = (
             Log.objects.filter(
                 tag__owner=user,
-                time__date=today,
+                time__date=day,
             )
             .select_related('tag')
             .order_by('time')
@@ -48,41 +50,44 @@ class Command(BaseCommand):
                     minutes_worked += int(delta.total_seconds() // 60)
                     first_log = False
 
+        # If user never checked out, count up to "now" if today, otherwise ignore
         if checkin_time:
-            delta = now - timezone.localtime(checkin_time)
+            end_time = (
+                now
+                if day == timezone.localdate()
+                else timezone.make_aware(
+                    timezone.datetime.combine(day, timezone.datetime.max.time())
+                )
+            )
+            delta = end_time - timezone.localtime(checkin_time)
             minutes_worked += int(delta.total_seconds() // 60)
 
         return minutes_worked
 
+    def minutes_today(self, user):
+        return self.minutes_for_day(user, timezone.localdate())
+
     def minutes_week(self, user):
         today = timezone.localdate()
-        start_of_week = today - timezone.timedelta(days=today.weekday())
+        start_of_week = today - timedelta(days=today.weekday())
+        total = 0
 
-        total_week = (
-            Statistics.objects.filter(
-                person=user,
-                date__date__gte=start_of_week,
-                date__date__lte=today,
-            ).aggregate(total=Sum('minutes_day'))['total']
-            or 0
-        )
+        for i in range((today - start_of_week).days + 1):
+            day = start_of_week + timedelta(days=i)
+            total += self.minutes_for_day(user, day)
 
-        return total_week
+        return total
 
     def minutes_month(self, user):
         today = timezone.localdate()
         start_of_month = today.replace(day=1)
+        total = 0
 
-        total_month = (
-            Statistics.objects.filter(
-                person=user,
-                date__date__gte=start_of_month,
-                date__date__lte=today,
-            ).aggregate(total=Sum('minutes_day'))['total']
-            or 0
-        )
+        for i in range((today - start_of_month).days + 1):
+            day = start_of_month + timedelta(days=i)
+            total += self.minutes_for_day(user, day)
 
-        return total_month
+        return total
 
     def handle(self, *args, **options):
         now = timezone.localtime()
