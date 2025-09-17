@@ -1,8 +1,8 @@
 import os
-import shutil
 from datetime import datetime
 
 from django.core.management.base import BaseCommand
+from django.db import connection
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
@@ -13,7 +13,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # ---------- CONFIG ----------
-        SQLITE_DB_PATH = os.path.join(os.getcwd(), 'db.sqlite3')
         BACKUP_FILENAME = (
             f'db_backup_{datetime.now().strftime("%Y%m%d_%H%M%S")}.sqlite3'
         )
@@ -26,7 +25,8 @@ class Command(BaseCommand):
         FOLDER_NAME = 'django_backup'
 
         # ---------- STEP 1: Copy DB ----------
-        shutil.copy(SQLITE_DB_PATH, BACKUP_FILENAME)
+        with connection.cursor() as cursor:
+            cursor.execute(f"VACUUM INTO '{BACKUP_FILENAME}'")
         self.stdout.write(f'Copied database to {BACKUP_FILENAME}')
 
         # ---------- STEP 2: Authenticate ----------
