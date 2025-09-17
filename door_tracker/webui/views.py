@@ -381,8 +381,12 @@ def user_statistics(request):
     membership = (
         Membership.objects.filter_effective()
         .select_related('subteam')
-        .get(person=request.user)
+        .filter(person=request.user)
+        .first()
     )
+
+    if not membership:
+        return redirect('index')
 
     quota_minutes_week = membership.job.quota * 60
 
@@ -465,8 +469,12 @@ def user_profile(request):
     membership = (
         Membership.objects.filter_effective()
         .select_related('job', 'subteam')
-        .get(person=request.user)
+        .filter(person=request.user)
+        .first()
     )
+
+    if not membership:
+        return redirect('index')
 
     return render(
         request,
