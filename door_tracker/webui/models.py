@@ -34,9 +34,7 @@ class Log(models.Model):
     def person(self):
         if not self.tag:
             return 'WebUI'
-        if self.tag.get_state() != TagState.UNAUTHORIZED:
-            return f'{self.tag.owner.get_full_name()} ({self.tag.name})'
-        return None
+        return str(self.tag)
 
     def __str__(self):
         return ' | '.join([str(self.time), self.type, self.person() or '-'])
@@ -103,34 +101,40 @@ class Tag(models.Model):
             case TagState.PENDING_REGISTRATION:
                 return 'pending registration'
             case TagState.UNAUTHORIZED:
-                return 'invalid'
+                return 'unauthorized'
 
     def get_state(self):
         has_tag = self.tag is not None
         has_name = self.name != ''
         has_owner = self.owner is not None
 
-        assert has_name == has_owner
-        assert has_tag or has_owner
+        # T N O State
+        # T T T CLAIMED
+        # F T T PENDING_REGISTRATION
+        # * * * UNAUTHORIZED
 
-        if has_tag and has_owner:
-            return TagState.CLAIMED
-        if not has_tag and has_owner:
-            return TagState.PENDING_REGISTRATION
-        if has_tag and not has_owner:
+        if has_name and has_owner:
+            if has_tag:
+                return TagState.CLAIMED
+            else:
+                return TagState.PENDING_REGISTRATION
+        else:
             return TagState.UNAUTHORIZED
 
     def __str__(self):
         n = self.name
         if not n:
-            n = 'unnamed'
+            n = 'deleted tag'
         if self.owner:
             n += f' ({self.owner_name()})'
         return n
 
     class TagManager(models.Manager):
+        def get_authorized(self):
+            return self.filter(owner__isnull=False).exclude(name='')
+
         def get_pending(self):
-            return self.filter(tag__isnull=True, owner__isnull=False).first()
+            return self.get_authorized().filter(tag__isnull=True).first()
 
     objects = TagManager()
 

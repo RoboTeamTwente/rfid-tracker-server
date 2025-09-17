@@ -195,7 +195,10 @@
                 <td>{{ tag.get_state.value }}</td>
                 <td class="actions">
                   <button class="icon-btn"><i class="fa fa-pen"></i></button>
-                  <button class="icon-btn"><i class="fa fa-trash"></i></button>
+                  <form method="POST" action="{% url 'delete_tag' %}" style="display: contents">
+                    {% csrf_token %}
+                    <button class="icon-btn" name="id" value="{{ tag.id }}"><i class="fa fa-trash"></i></button>
+                  </form>
                 </td>
               </tr>
             {% endfor %}

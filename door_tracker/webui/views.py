@@ -461,7 +461,7 @@ def user_profile(request):
         if tag.get_state() == TagState.CLAIMED:
             return redirect('user_profile')
 
-    tags = Tag.objects.filter(owner=request.user).all()
+    tags = Tag.objects.get_authorized().filter(owner=request.user)
     membership = (
         Membership.objects.filter_effective()
         .select_related('job', 'subteam')
@@ -480,6 +480,23 @@ def user_profile(request):
             'user_status': user_status(request),
         },
     )
+
+
+class DeleteTagSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+
+
+def delete_tag(request):
+    serializer = DeleteTagSerializer(data=request.POST)
+    serializer.is_valid(raise_exception=True)
+
+    tag_id = serializer.validated_data['id']
+
+    tag = get_object_or_404(Tag, pk=tag_id)
+    tag.name = ''
+    tag.save()
+
+    return redirect('user_profile')
 
 
 class ExportSerializer(serializers.Serializer):
