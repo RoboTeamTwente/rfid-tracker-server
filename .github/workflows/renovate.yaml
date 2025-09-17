@@ -5,6 +5,7 @@ on:
     - cron: '0/15 * * * *' # every 15 minutes
   push:
     branches: ['gha/renovate'] # for debugging
+  workflow_dispatch:
 
 jobs:
   renovate:
