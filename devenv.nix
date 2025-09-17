@@ -16,7 +16,7 @@ in
 
   scripts.django.exec = ''
     cd "$DEVENV_ROOT/door_tracker"
-    ${venv}/bin/python manage.py "$@"
+    uv run manage.py "$@"
   '';
 
   scripts.dev.exec = ''
