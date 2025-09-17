@@ -1,0 +1,29 @@
+name: Renovate
+
+on:
+  schedule:
+    - cron: '0/15 * * * *' # every 15 minutes
+  push:
+    branches: ['gha/renovate'] # for debugging
+
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get token
+        id: get_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.RENOVATE_APP_ID }}
+          private-key: ${{ secrets.RENOVATE_APP_KEY }}
+
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+
+      - name: Self-hosted Renovate
+        uses: renovatebot/github-action@v43.0.12
+        with:
+          token: '${{ steps.get_token.outputs.token }}'
+        env:
+          RENOVATE_PLATFORM_COMMIT: 'true'
+          RENOVATE_AUTODISCOVER: 'true'
