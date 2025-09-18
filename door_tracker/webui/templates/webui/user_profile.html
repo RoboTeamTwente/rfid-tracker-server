@@ -1,294 +1,186 @@
-{% load rest_framework %}
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    {% if modal_name == 'tag_scan' %}
-      <meta http-equiv="refresh" content="1">
-    {% endif %}
-    <title>User Profile</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
-    />
+{% extends "webui/base.html" %}
 
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        background: #f3f3f3;
-        color: #333;
-        margin: 0;
-      }
+{% load rest_framework modal %}
 
-      /* Header (same as index.html) */
-      .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: #4b0082;
-        color: white;
-        padding: 10px 20px;
-      }
+{% block title %}User Profile{% endblock %}
 
-      .header .logo {
-        font-weight: bold;
-        font-size: 18px;
-      }
-
-      .header .user {
-        font-size: 14px;
-      }
-
-      .header .user a {
-        color: white;
-        text-decoration: none;
-        margin-left: 8px;
-      }
-
-      /* Status label in center */
-      #statusLabel {
-        font-size: 20px;
-        font-weight: bold;
-        text-transform: uppercase;
-        flex-grow: 1;
-        text-align: center;
-      }
-
+{% block head %}
+  {% if modal_name == 'tag_scan' %}
+    <meta http-equiv="refresh" content="1">
+  {% endif %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
+  <style>
       /* Layout */
-      .container {
-        max-width: 1000px;
-        margin: 40px auto;
-        padding: 0 20px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 30px;
-      }
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+    }
 
-      .card {
-        background: #fff;
-        border-radius: 8px;
-        padding: 20px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      }
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
 
-      .user-info {
-        flex: 1 1 260px;
-        line-height: 1.8;
-      }
+    .user-info {
+      flex: 1 1 260px;
+      line-height: 1.8;
+    }
 
-      .tag-table {
-        flex: 2 1 400px;
-      }
+    .tag-table {
+      flex: 2 1 400px;
+    }
 
-      .tag-table table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 20px;
-      }
+    .tag-table table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
 
-      .tag-table th,
-      .tag-table td {
-        padding: 10px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-      }
+    .tag-table th,
+    .tag-table td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
 
-      .actions {
-        display: flex;
-        gap: 10px;
-      }
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
 
-      .icon-btn {
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: #4b2675;
-        font-size: 1.1rem;
-      }
+    .icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #4b2675;
+      font-size: 1.1rem;
+    }
 
-      .add-btn {
-        text-decoration: none;
-        background: #4b2675;
-        color: #fff;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 20px;
-        font-size: 1rem;
-        cursor: pointer;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-      }
+    .add-btn {
+      text-decoration: none;
+      background: #4b2675;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
 
-      .add-btn:hover {
-        background: #3a1f5e;
-      }
+    .add-btn:hover {
+      background: #3a1f5e;
+    }
 
-      .back-wrapper {
-        max-width: 1000px;
-        margin: 20px auto 0;
-        padding: 0 20px;
-      }
+    .back-wrapper {
+      max-width: 1000px;
+      margin: 20px auto 0;
+      padding: 0 20px;
+    }
 
-      .back-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        background: #4b2675;
-        color: #fff;
-        text-decoration: none;
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-size: 0.95rem;
-        font-weight: bold;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        transition: background 0.2s ease;
-      }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #4b2675;
+      color: #fff;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      transition: background 0.2s ease;
+    }
 
-      .back-btn:hover {
-        background: #3a1f5e;
-      }
-    </style>
-  </head>
-  <body>
-    {% csrf_token %}
-    <!-- Header copied from index.html -->
-    <div class="header">
-      <div class="logo">🤖 RoboTeam Twente</div>
-      <div>{{ user_status }}</div>
-      <div class="user">
-        <span>Welcome, {{ user.get_full_name }}</span>
-        <a href="{% url 'logout' %}">Log out</a>
-      </div>
-    </div>
+    .back-btn:hover {
+      background: #3a1f5e;
+    }
+  </style>
+{% endblock %}
 
-    <div class="back-wrapper">
-      <a href="/" class="back-btn">
-        <i class="fa fa-arrow-left"></i> Back
-      </a>
-    </div>
+{% block main %}
 
-    <!-- Main content -->
-    <main class="container">
-      <section class="card user-info">
-        <p><strong>Name:</strong> {{ user.get_full_name }}</p>
-        <p><strong>Email:</strong> {{ user.email }}</p>
-        <p><strong>Username:</strong> {{ user.username }}</p>
-        <p><strong>Workload:</strong> {{ membership.job.name }} ({{ membership.job.quota }} hours/week)</p>
-        <p><strong>Subteam:</strong> {{ membership.subteam.name }}</p>
-      </section>
+  <main class="container">
+    <section class="card user-info">
+      <p><b>Name:</b> {{ user.get_full_name }}</p>
+      <p><b>Email:</b> {{ user.email }}</p>
+      <p><b>Username:</b> {{ user.username }}</p>
+      <p><b>Workload:</b> {{ membership.job.name }} ({{ membership.job.quota }} hours/week)</p>
+      <p><b>Subteam:</b> {{ membership.subteam.name }}</p>
+    </section>
 
-      <section class="card tag-table">
-        <table>
-          <thead>
+    <section class="card tag-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Tag ID</th>
+            <th>Tag Name</th>
+            <th>State</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for tag in tags %}
             <tr>
-              <th>Tag ID</th>
-              <th>Tag Name</th>
-              <th>State</th>
-              <th>Action</th>
+              <td>{{ tag.tag }}</td>
+              <td>{{ tag.name }}</td>
+              <td>{{ tag.get_state.value }}</td>
+              <td class="actions">
+                <form method="GET" action="{% url 'user_profile' %}" style="display: contents">
+                  <input type="hidden" name="modal" value="rename_tag">
+                  <input type="hidden" name="tag_id" value="{{ tag.id }}">
+                  <input type="hidden" name="tag_name" value="{{ tag.name }}">
+                  <button class="icon-btn"><i class="fa fa-pen"></i></button>
+                </form>
+                <form method="POST" action="{% url 'delete_tag' %}" style="display: contents">
+                  {% csrf_token %}
+                  <button class="icon-btn" name="id" value="{{ tag.id }}"><i class="fa fa-trash"></i></button>
+                </form>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {% for tag in tags %}
-              <tr>
-                <td>{{ tag.tag }}</td>
-                <td>{{ tag.name }}</td>
-                <td>{{ tag.get_state.value }}</td>
-                <td class="actions">
-                  <form method="GET" action="{% url 'user_profile' %}" style="display: contents">
-                    <input type="hidden" name="modal" value="rename_tag">
-                    <input type="hidden" name="tag_id" value="{{ tag.id }}">
-                    <input type="hidden" name="tag_name" value="{{ tag.name }}">
-                    <button class="icon-btn"><i class="fa fa-pen"></i></button>
-                  </form>
-                  <form method="POST" action="{% url 'delete_tag' %}" style="display: contents">
-                    {% csrf_token %}
-                    <button class="icon-btn" name="id" value="{{ tag.id }}"><i class="fa fa-trash"></i></button>
-                  </form>
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+          {% endfor %}
+        </tbody>
+      </table>
 
-        <a href="{% url 'user_profile' %}?modal=tag_name" class="add-btn">+ Add a Tag</a>
-      </section>
+      <a href="{% url 'user_profile' %}?modal=tag_name" class="add-btn">+ Add a Tag</a>
+    </section>
 
-      {% if modal_name == 'tag_name' %}
-        <form method="POST" action="{% url 'user_profile' %}"  style="
-                                                                      display:flex;
-                                                                      position:fixed;
-                                                                      top:0; left:0;
-                                                                      width:100%; height:100%;
-                                                                      background:rgba(0,0,0,0.5);
-                                                                      justify-content:center;
-                                                                      align-items:center;
-                                                                     " >
-          {% csrf_token %}
-          <input type="hidden" name="action" value="add_tag">
-          <div style="background:#fff; padding:20px; border-radius:8px; width:300px; box-shadow:0 2px 10px rgba(0,0,0,0.3)">
-            <h3 style="margin-bottom:10px">Name your tag:</h3>
-            <input
-              type="text"
-              name="tag_name"
-              style="width:100%; padding:8px; margin-bottom:15px; border:1px solid #ccc; border-radius:4px;"
-              placeholder="Enter tag name"
-            />
-            <button style="background:#4b2675; color:#fff; border:none; padding:10px 15px; border-radius:4px; cursor:pointer;" >
-              Add Tag
-            </button>
-            <a
-              href="{% url 'user_profile' %}"
-              style="text-decoration: none; margin-left:10px; background:#ccc; color:#333; border:none; padding:10px 15px; border-radius:4px; cursor:pointer;">
-              Cancel
-            </a>
-          </div>
-        </form>
-      {% elif modal_name == 'tag_scan' %}
-        <div  style="
-                     display:flex;
-                     position:fixed;
-                     top:0; left:0;
-                     width:100%; height:100%;
-                     background:rgba(0,0,0,0.5);
-                     justify-content:center;
-                     align-items:center;
-                    ">
-          <div style="background:#fff; padding:20px; border-radius:8px; width:300px; text-align:center; box-shadow:0 2px 10px rgba(0,0,0,0.3)">
-            <h3>Please scan your tag at the device.</h3>
-            <p style="color:#555; font-size:0.9rem;">Waiting for scan...</p>
-          </div>
-        </div>
+    {% if modal_name == 'tag_name' %}
 
-      {% elif modal_name == 'rename_tag' %}
-        <form method="POST" action="{% url 'rename_tag' %}"
-              style="display:flex;
-                     position:fixed;
-                     top:0; left:0;
-                     width:100%; height:100%;
-                     background:rgba(0,0,0,0.5);
-                     justify-content:center;
-                     align-items:center;">
-          {% csrf_token %}
-          <input type="hidden" name="id" value="{{ request.GET.tag_id }}">
-          <div style="background:#fff; padding:20px; border-radius:8px; width:300px; box-shadow:0 2px 10px rgba(0,0,0,0.3)">
-            <h3 style="margin-bottom:10px">Rename Tag</h3>
-            <input
-              type="text"
-              name="tag_name"
-              value="{{ request.GET.tag_name }}"
-              style="width:100%; padding:8px; margin-bottom:15px; border:1px solid #ccc; border-radius:4px;"
-            />
-            <button style="background:#4b2675; color:#fff; border:none; padding:10px 15px; border-radius:4px; cursor:pointer;">
-              Save
-            </button>
-            <a href="{% url 'user_profile' %}"
-               style="text-decoration: none; margin-left:10px; background:#ccc; color:#333; border:none; padding:10px 15px; border-radius:4px; cursor:pointer;">
-              Cancel
-            </a>
-          </div>
-        </form>
-      {% endif %}
+      {% modal 'Name your tag:' 'user_profile' %}
+        <input type="hidden" name="action" value="add_tag">
+        <input type="text" name="tag_name" placeholder="Enter tag name" autofocus>
+        <section class="modal__actions">
+          <button class="modal__action modal--primary">Add Tag</button>
+          <a class="modal__action modal--secondary" href="{% url 'user_profile' %}">Cancel</a>
+        </section>
+      {% endmodal %}
 
-    </main>
-  </body>
-</html>
+    {% elif modal_name == 'tag_scan' %}
+
+      {% modal 'Please scan your tag at the device' 'user_profile' %}
+        <p >Waiting for scan...</p>
+      {% endmodal %}
+
+    {% elif modal_name == 'rename_tag' %}
+
+      {% modal 'Name your tag:' 'rename_tag' %}
+        <input type="hidden" name="id" value="{{ request.GET.tag_id }}">
+        <input type="text" name="tag_name" value="{{ request.GET.tag_name }}" autofocus >
+        <section class="modal__actions">
+          <button class="modal__action modal--primary">Save</button>
+          <a class="modal__action modal--secondary" href="{% url 'user_profile' %}">Cancel</a>
+        </section>
+      {% endmodal %}
+
+    {% endif %}
+
+  </main>
+{% endblock %}
