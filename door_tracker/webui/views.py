@@ -51,7 +51,7 @@ def index(request):
     logs = (
         Log.objects.filter(tag__owner=request.user)
         .select_related('tag')
-        .order_by('-time')
+        .order_by('-time')[:10]
     )
 
     return render(
