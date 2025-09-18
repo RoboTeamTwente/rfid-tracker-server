@@ -54,7 +54,6 @@ def index(request):
         request,
         'webui/index.html',
         {
-            'user_name': request.user.get_full_name(),
             'logs': logs,
             'user_status': user_status(request),
         },

@@ -15,7 +15,7 @@
       <a href="{% url 'index' %}" class="logo">🤖 RoboTeam Twente</a>
       <span class="user-status">{{user_status}}</span>
       <div class="user">
-        <span>Welcome, {{user_name}}</span>
+        <span>Welcome, {{user.get_full_name}}</span>
         <a href="{% url 'logout' %}">Log out</a>
       </div>
     </header>
