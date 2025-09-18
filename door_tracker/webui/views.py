@@ -351,6 +351,30 @@ def register_scan(request):
             )
 
 
+class HealthcheckSerializer(serializers.Serializer):
+    scanner_id = serializers.CharField()
+
+
+@api_view(['POST'])
+def healthcheck(request):
+    serializer = HealthcheckSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+
+    scanner_id = serializer.validated_data['scanner_id']
+
+    try:
+        Scanner.objects.get(pk=scanner_id)
+        return JsonResponse(
+            {'status': 'ok', 'message': 'Success'},
+            status=200,
+        )
+    except Scanner.DoesNotExist:
+        return JsonResponse(
+            {'status': 'error', 'message': 'Scanner not registered'},
+            status=403,
+        )
+
+
 @login_not_required
 def sign_up(request):
     token = request.GET.get('token')
