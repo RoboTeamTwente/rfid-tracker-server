@@ -135,14 +135,12 @@
 {% endblock %}
 
 {% block main %}
-  <main>
-    <h3>Recent Tag Scans</h3>
-    <ul>
-      {% for log in logs %}
-        <li>{{log.tag}} - {{log.get_type_display}} at {{log.time | date:'Y-m-d H:i'}}</li>
-      {% endfor %}
-    </ul>
-  </main>
+  <h3>Recent Tag Scans</h3>
+  <ul>
+    {% for log in logs %}
+      <li>{{log.tag}} - {{log.get_type_display}} at {{log.time | date:'Y-m-d H:i'}}</li>
+    {% endfor %}
+  </ul>
 
     <!-- Checkout Modal -->
   <div id="checkoutModal" class="modal">

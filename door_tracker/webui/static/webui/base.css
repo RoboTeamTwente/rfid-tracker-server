@@ -158,6 +158,10 @@ body > .messages {
   }
 }
 
+body > main {
+  max-width: 80rem;
+}
+
 .modal {
   position: fixed;
   top: 0;
