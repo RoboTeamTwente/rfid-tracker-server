@@ -1,0 +1,34 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}RoboTeam Twente RFiD Time Tracker{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'webui/base.css' %}" >
+    {% block head %}{% endblock %}
+  </head>
+
+  <body>
+    <header>
+      <span class="logo">🤖 RoboTeam Twente</span>
+      <span class="user-status">{{user_status}}</span>
+      <div class="user">
+        <span>Welcome, {{user_name}}</span>
+        <a class="logout" href="{% url 'logout' %}">Log out</a>
+      </div>
+    </header>
+
+    <nav>
+      <a href="">Remote Checkout</a> <!-- TODO: this doesn't link anywhere yet -->
+      <a href="{% url 'user_statistics' %}">Statistics</a>
+      <a href="{% url 'user_profile' %}">Profile</a>
+      <a href="{% url 'export_user' %}">Export to CSV</a>
+    </nav>
+
+    {% block main %}
+      <p>Hello World</p>
+    {% endblock %}
+  </body>
+</html>
