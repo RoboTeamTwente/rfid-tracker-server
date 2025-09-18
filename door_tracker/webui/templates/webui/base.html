@@ -12,11 +12,11 @@
 
   <body>
     <header>
-      <span class="logo">🤖 RoboTeam Twente</span>
+      <a href="{% url 'index' %}" class="logo">🤖 RoboTeam Twente</a>
       <span class="user-status">{{user_status}}</span>
       <div class="user">
         <span>Welcome, {{user_name}}</span>
-        <a class="logout" href="{% url 'logout' %}">Log out</a>
+        <a href="{% url 'logout' %}">Log out</a>
       </div>
     </header>
 
