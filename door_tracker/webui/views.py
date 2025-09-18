@@ -561,29 +561,41 @@ def export(request):
     serializer.is_valid(raise_exception=True)
     ids = serializer.validated_data['ids']
     qs = Log.objects.filter(pk__in=ids)
-    return export_write(qs)
+    return logs_to_csv(qs)
 
 
 @api_view(['GET'])
 def export_user(request):
     qs = current_user_logs(request)
-    return export_write(qs)
+    return logs_to_csv(qs)
 
 
-def export_write(qs):
+def logs_to_csv(logs):
     response = HttpResponse(content_type='text/csv')
     writer = csv.writer(response, dialect='excel')
     writer.writerow(['time', 'type', 'tag', 'owner_first', 'owner_last', 'scanner'])
-    writer.writerows(
-        qs.values_list(
-            'time',
-            'type',
-            'tag__name',
-            'tag__owner__first_name',
-            'tag__owner__last_name',
-            'scanner__name',
+    for log in logs:
+        tag_name = '-'
+        tag_owner_first = '-'
+        tag_owner_last = '-'
+        scanner_name = 'WebUI'
+        if log.tag:
+            tag_name = log.tag.name or '-'
+            if log.tag.owner:
+                tag_owner_first = log.tag.owner.first_name
+                tag_owner_last = log.tag.owner.last_name
+        if log.scanner:
+            scanner_name = log.scanner.name
+        writer.writerow(
+            [
+                log.time.strftime('%F %T'),
+                log.type,
+                tag_name,
+                tag_owner_first,
+                tag_owner_last,
+                scanner_name,
+            ]
         )
-    )
     return response
 
 
@@ -700,7 +712,10 @@ def auto_checkout(request):
 
     if checkout_time > current_time:
         return JsonResponse(
-            {'status': 'error', 'message': 'Checkout time cannot be in the future.'},
+            {
+                'status': 'error',
+                'message': 'Checkout time cannot be in the future.',
+            },
             status=400,
         )
 
