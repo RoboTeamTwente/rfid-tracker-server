@@ -65,6 +65,11 @@ class LogIn(LoginView):
     template_name = 'webui/login.html'
     next_page = reverse_lazy('index')
 
+    def form_valid(self, form):
+        user_name = form.get_user().get_full_name()
+        messages.success(self.request, f'Welcome, comrade {user_name}')
+        return super().form_valid(form)
+
 
 def logout_view(request):
     logout(request)
