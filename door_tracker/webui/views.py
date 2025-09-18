@@ -4,6 +4,7 @@ from base64 import b64decode, b64encode
 
 from django.contrib import messages
 from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_not_required
 from django.contrib.auth.views import LoginView
 from django.core.cache import cache
 from django.db.models import Avg, Sum
@@ -43,11 +44,6 @@ def user_status(request):
 
 
 def index(request):
-    # Greetings from the Ancient One
-    # TODO: use auth middleware instead
-    if not request.user.is_authenticated:
-        return redirect('login')
-
     logs = (
         Log.objects.filter(tag__owner=request.user)
         .select_related('tag')
@@ -355,6 +351,7 @@ def register_scan(request):
             )
 
 
+@login_not_required
 def sign_up(request):
     token = request.GET.get('token')
 
@@ -578,9 +575,6 @@ def check_registration(request, db_id):
 
 @api_view(['GET'])
 def user_tags(request):
-    if not request.user.is_authenticated:
-        return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=401)
-
     tags = Tag.objects.filter(owner=request.user).all()
 
     data = []
@@ -600,11 +594,6 @@ def user_tags(request):
 
 
 def fuel_guage(request):
-    if not request.user.is_authenticated:
-        return JsonResponse(
-            {'status': 'error', 'message': 'Log in to view data.'},
-            status=400,
-        )
     try:
         membership = Membership.objects.filter(person=request.user).first()
         if not membership or not membership.job:
