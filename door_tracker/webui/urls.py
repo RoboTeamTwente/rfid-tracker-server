@@ -15,4 +15,5 @@ urlpatterns = [
     path('user_profile', views.user_profile, name='user_profile'),
     path('user_statistics', views.user_statistics, name='user_statistics'),
     path('user_tags', views.user_tags, name='user_tags'),
+    path('export_user', views.export_user, name='export_user'),
 ]

@@ -107,12 +107,6 @@ def serializer_error(serializer):
 
 
 def current_user_data(request):
-    if not request.user.is_authenticated:
-        return JsonResponse(
-            {'status': 'error', 'message': 'Log in to view data.'},
-            status=400,
-        )
-
     logs = (
         Log.objects.filter(tag__owner=request.user)
         .select_related('tag')
@@ -121,16 +115,25 @@ def current_user_data(request):
 
     data = [
         {
-            'id': log.id,
-            'type': log.get_type_display(),
             'time': log.time.isoformat(),
-            'tag': str(log.tag),
-            'user_id': log.tag.owner_id if (log.tag and log.tag.owner_id) else None,
+            'type': log.get_type_display(),
+            'tag_name': log.tag.name,
+            'owner_first': log.tag.owner.first_name,
+            'owner_last': log.tag.owner.last_name,
+            'scanner': log.scanner.name,
         }
         for log in logs
     ]
 
     return JsonResponse({'status': 'success', 'logs': data}, status=200)
+
+
+def current_user_logs(request):
+    return (
+        Log.objects.filter(tag__owner=request.user)
+        .select_related('tag', 'scanner')
+        .order_by('-time')
+    )
 
 
 def minutes_today(request):
@@ -540,6 +543,16 @@ def export(request):
     serializer.is_valid(raise_exception=True)
     ids = serializer.validated_data['ids']
     qs = Log.objects.filter(pk__in=ids)
+    return export_write(qs)
+
+
+@api_view(['GET'])
+def export_user(request):
+    qs = current_user_logs(request)
+    return export_write(qs)
+
+
+def export_write(qs):
     response = HttpResponse(content_type='text/csv')
     writer = csv.writer(response, dialect='excel')
     writer.writerow(['time', 'type', 'tag', 'owner_first', 'owner_last', 'scanner'])
