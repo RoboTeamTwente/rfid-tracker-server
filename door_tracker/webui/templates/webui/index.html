@@ -205,8 +205,6 @@
         if (response.ok) {
           successMessage.textContent = `Successfully checked out at ${data.date}`;
           successMessage.style.display = 'block';
-          document.getElementById('statusLabel').textContent = 'CHECKED-OUT';
-          document.querySelector('.toolbar button').disabled = true;
           setTimeout(() => {
             window.location.reload();
           }, 2000);
