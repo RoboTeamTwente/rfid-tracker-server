@@ -1,333 +1,223 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Checked-In Dashboard</title>
-    <style>
-      /* * { box-sizing: border-box; } */
+{% extends "webui/base.html" %}
 
-      body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: #f3f3f3;
-      }
+{% block title %}Checked-In Dashboard{% endblock %}
 
-      /* Top Header */
-      .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: #4b0082;
-        color: white;
-        padding: 10px 20px;
-      }
+{% block head %}
+  <style>
+    main {
+      background: white;
+      margin: 20px auto;
+      width: 80%;
+      max-width: 900px;
+      min-height: 400px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      overflow-y: auto;
+    }
 
-      .header .logo {
-        font-weight: bold;
-        font-size: 18px;
-      }
+    main h3 {
+      margin-top: 0;
+      color: #333;
+    }
 
-      .header .user {
-        font-size: 14px;
-      }
+    main ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
 
-      .header .user a {
-        color: white;
-        text-decoration: none;
-        margin-left: 8px;
-      }
+    main li {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
 
-      /* Toolbar */
-      .toolbar {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 10px;
-        background: #fff;
-        padding: 10px;
-        border-bottom: 1px solid #ddd;
-        font-size: 14px;
-      }
-
-      .toolbar input,
-      .toolbar a,
-      .toolbar button {
-        padding: 6px 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-      }
-
-      .toolbar a,
-      .toolbar button {
-        box-sizing: border-box;
-        background: #4b0082;
-        color: white;
-        cursor: pointer;
-        border: none;
-      }
-
-      .toolbar a:hover,
-      .toolbar button:hover {
-        background: #360060;
-      }
-
-      .toolbar a,
-      .toolbar button {
-        text-decoration: none;
-      }
-
-      /* Database Viewer */
-      .data-viewer {
-        background: white;
-        margin: 20px auto;
-        width: 80%;
-        max-width: 900px;
-        min-height: 400px;
-        border-radius: 8px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-        overflow-y: auto;
-      }
-
-      .data-viewer h3 {
-        margin-top: 0;
-        color: #333;
-      }
-
-      .data-viewer ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-      }
-
-      .data-viewer li {
-        padding: 12px;
-        border-bottom: 1px solid #eee;
-        cursor: pointer;
-        transition: background 0.2s;
-      }
-
-      .data-viewer li:hover {
-        background: #f9f9f9;
-      }
+    main li:hover {
+      background: #f9f9f9;
+    }
 
       /* Hidden details */
-      details p {
-        padding: 10px;
-        margin-top: 5px;
-        background: #f3f3f3;
-        border-radius: 5px;
-        font-size: 14px;
-        color: #333;
-      }
-
-      /* Status label in center */
-      #statusLabel {
-        font-size: 20px;
-        font-weight: bold;
-        text-transform: uppercase;
-        flex-grow: 1;
-        text-align: center;
-      }
+    details p {
+      padding: 10px;
+      margin-top: 5px;
+      background: #f3f3f3;
+      border-radius: 5px;
+      font-size: 14px;
+      color: #333;
+    }
 
       /* Modal styles */
-      .modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        justify-content: center;
-        align-items: center;
-      }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
 
-      .modal-content {
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        width: 90%;
-        max-width: 500px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-      }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
 
-      .modal-content h2 {
-        margin-top: 0;
-      }
+    .modal-content h2 {
+      margin-top: 0;
+    }
 
-      .modal-content form {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
+    .modal-content form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
 
-      .modal-content input[type="datetime-local"] {
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 14px;
-      }
+    .modal-content input[type="datetime-local"] {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
 
-      .modal-content .buttons {
-        display: flex;
-        gap: 10px;
-        justify-content: flex-end;
-      }
+    .modal-content .buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
 
-      .modal-content button {
-        padding: 8px 16px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-      }
+    .modal-content button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
 
-      .modal-content button.submit {
-        background: #4b0082;
-        color: white;
-      }
+    .modal-content button.submit {
+      background: #4b0082;
+      color: white;
+    }
 
-      .modal-content button.submit:hover {
-        background: #360060;
-      }
+    .modal-content button.submit:hover {
+      background: #360060;
+    }
 
-      .modal-content button.cancel {
-        background: #ccc;
-        color: #333;
-      }
+    .modal-content button.cancel {
+      background: #ccc;
+      color: #333;
+    }
 
-      .modal-content button.cancel:hover {
-        background: #bbb;
-      }
+    .modal-content button.cancel:hover {
+      background: #bbb;
+    }
 
-      .error-message {
-        color: red;
-        font-size: 14px;
-        margin-top: 10px;
-        display: none;
-      }
+    .error-message {
+      color: red;
+      font-size: 14px;
+      margin-top: 10px;
+      display: none;
+    }
 
-      .success-message {
-        color: green;
-        font-size: 14px;
-        margin-top: 10px;
-        display: none;
-      }
-    </style>
-  </head>
+    .success-message {
+      color: green;
+      font-size: 14px;
+      margin-top: 10px;
+      display: none;
+    }
+  </style>
+{% endblock %}
 
-  <body>
-    <!-- Header -->
-    <div class="header">
-      <div class="logo">🤖 RoboTeam Twente</div>
-
-      <!-- Center status label -->
-      <div id="statusLabel">{{user_status}}</div>
-
-      <div class="user">
-        <span>Welcome, {{user_name}}</span>
-        <a href="{% url 'logout' %}">Log out</a>
-      </div>
-    </div>
-
-    <!-- Toolbar -->
-    <div class="toolbar">
-      {% if user_status == 'CHECKED-IN' %}
-        <button onclick="openCheckoutModal()">Remote Checkout</button>
-      {% else %}
-        <button onclick="openCheckoutModal()" disabled>Remote Checkout</button>
-      {% endif %}
-      <a href="{% url 'user_statistics' %}">Statistics</a>
-      <a href="{% url 'user_profile' %}">Profile</a>
-      <a href="{% url 'export_user' %}">Export to CSV</a>
-    </div>
-
-    <!-- Database Viewer -->
-    <div class="data-viewer">
-      <h3>Recent Tag Scans</h3>
-      <ul>
-        {% for log in logs %}
-          <li>{{log.tag}} - {{log.get_type_display}} at {{log.time | date:'Y-m-d H:i'}}</li>
-        {% endfor %}
-      </ul>
-    </div>
+{% block main %}
+  <main>
+    <h3>Recent Tag Scans</h3>
+    <ul>
+      {% for log in logs %}
+        <li>{{log.tag}} - {{log.get_type_display}} at {{log.time | date:'Y-m-d H:i'}}</li>
+      {% endfor %}
+    </ul>
+  </main>
 
     <!-- Checkout Modal -->
-    <div id="checkoutModal" class="modal">
-      <div class="modal-content">
-        <h2>Remote Checkout</h2>
-        <form id="checkoutForm">
-          <label for="checkoutTime">Select Checkout Time:</label>
-          <input
-            type="datetime-local"
-            id="checkoutTime"
-            name="checkout_time"
-            required
-            max="{% now 'c' %}"
-          />
-          <div class="buttons">
-            <button type="button" class="cancel" onclick="closeCheckoutModal()">Cancel</button>
-            <button type="submit" class="submit">Checkout</button>
-          </div>
-          <p id="errorMessage" class="error-message"></p>
-          <p id="successMessage" class="success-message"></p>
-        </form>
-      </div>
+  <div id="checkoutModal" class="modal">
+    <div class="modal-content">
+      <h2>Remote Checkout</h2>
+      <form id="checkoutForm">
+        <label for="checkoutTime">Select Checkout Time:</label>
+        <input
+          type="datetime-local"
+          id="checkoutTime"
+          name="checkout_time"
+          required
+          max="{% now 'c' %}"
+        />
+        <div class="buttons">
+          <button type="button" class="cancel" onclick="closeCheckoutModal()">Cancel</button>
+          <button type="submit" class="submit">Checkout</button>
+        </div>
+        <p id="errorMessage" class="error-message"></p>
+        <p id="successMessage" class="success-message"></p>
+      </form>
     </div>
+  </div>
 
-    <script>
-      function openCheckoutModal() {
-        const modal = document.getElementById('checkoutModal');
-        modal.style.display = 'flex';
-        document.getElementById('errorMessage').style.display = 'none';
-        document.getElementById('successMessage').style.display = 'none';
-      }
+  <script>
+    function openCheckoutModal() {
+      const modal = document.getElementById('checkoutModal');
+      modal.style.display = 'flex';
+      document.getElementById('errorMessage').style.display = 'none';
+      document.getElementById('successMessage').style.display = 'none';
+    }
 
-      function closeCheckoutModal() {
-        const modal = document.getElementById('checkoutModal');
-        modal.style.display = 'none';
-        document.getElementById('checkoutForm').reset();
-      }
+    function closeCheckoutModal() {
+      const modal = document.getElementById('checkoutModal');
+      modal.style.display = 'none';
+      document.getElementById('checkoutForm').reset();
+    }
 
-      document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const checkoutTime = document.getElementById('checkoutTime').value;
-        const errorMessage = document.getElementById('errorMessage');
-        const successMessage = document.getElementById('successMessage');
+    document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const checkoutTime = document.getElementById('checkoutTime').value;
+      const errorMessage = document.getElementById('errorMessage');
+      const successMessage = document.getElementById('successMessage');
 
-        errorMessage.style.display = 'none';
-        successMessage.style.display = 'none';
+      errorMessage.style.display = 'none';
+      successMessage.style.display = 'none';
 
-        try {
-          const response = await fetch("{% url 'auto_checkout' %}", {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRFToken': '{{ csrf_token }}',
-            },
-            body: JSON.stringify({ checkout_time: new Date(checkoutTime).toISOString() }),
-          });
+      try {
+        const response = await fetch("{% url 'auto_checkout' %}", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}',
+          },
+          body: JSON.stringify({ checkout_time: new Date(checkoutTime).toISOString() }),
+        });
 
-          const data = await response.json();
+        const data = await response.json();
 
-          if (response.ok) {
-            successMessage.textContent = `Successfully checked out at ${data.date}`;
-            successMessage.style.display = 'block';
-            document.getElementById('statusLabel').textContent = 'CHECKED-OUT';
-            document.querySelector('.toolbar button').disabled = true;
-            setTimeout(() => {
-              window.location.reload();
-            }, 2000);
-          } else {
-            errorMessage.textContent = data.message || 'An error occurred';
-            errorMessage.style.display = 'block';
-          }
-        } catch (error) {
-          errorMessage.textContent = 'Network error: ' + error.message;
+        if (response.ok) {
+          successMessage.textContent = `Successfully checked out at ${data.date}`;
+          successMessage.style.display = 'block';
+          document.getElementById('statusLabel').textContent = 'CHECKED-OUT';
+          document.querySelector('.toolbar button').disabled = true;
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+        } else {
+          errorMessage.textContent = data.message || 'An error occurred';
           errorMessage.style.display = 'block';
         }
-      });
-    </script>
-  </body>
-</html>
+      } catch (error) {
+        errorMessage.textContent = 'Network error: ' + error.message;
+        errorMessage.style.display = 'block';
+      }
+    });
+  </script>
+{% endblock %}
