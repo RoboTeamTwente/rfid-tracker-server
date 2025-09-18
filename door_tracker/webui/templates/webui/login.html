@@ -101,12 +101,21 @@
 
       .message {
         margin-bottom: 20px;
-        min-height: 40px;
-        color: #d32f2f;
-        background: #ffebee;
         padding: 12px;
         border-radius: 6px;
-        border-left: 4px solid #d32f2f;
+        border-left: 4px solid;
+
+        &.message--error {
+          background: #ffebee;
+          color: #d32f2f;
+          border-color: #d32f2f;
+        }
+
+        &.message--success {
+          background: rgb(221, 255, 221);
+          color: green;
+          border-color: green;
+        }
       }
 
       .messages .success {
@@ -134,8 +143,12 @@
       <h2>RoboTeam Twente Login</h2>
 
       {% if form.errors %}
-        <div class="message"> Your username and password didn't match. Please try again. </div>
+        <div class="message message--error"> Your username and password didn't match. Please try again. </div>
       {% endif %}
+
+      {% for message in messages %}
+        <div {% if message.tags %} class="message message--{{ message.tags }}"{% endif %}>{{ message }}</div>
+      {% endfor %}
 
       <form method="post" action="{% url 'login' %}">
         {% csrf_token %}
