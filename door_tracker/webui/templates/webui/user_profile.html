@@ -10,105 +10,50 @@
   {% endif %}
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
   <style>
-      /* Layout */
-    .container {
-      max-width: 1000px;
-      margin: 40px auto;
-      padding: 0 20px;
+    .profile {
       display: flex;
       flex-wrap: wrap;
-      gap: 30px;
-    }
+      gap: var(--gap-default);
 
-    .card {
-      background: #fff;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    }
+      .profile__user {
+        flex: 1 1 260px;
+      }
 
-    .user-info {
-      flex: 1 1 260px;
-      line-height: 1.8;
-    }
+      .profile__tags {
+        flex: 2 1 400px;
 
-    .tag-table {
-      flex: 2 1 400px;
-    }
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap-default);
 
-    .tag-table table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-    }
+        table {
+          width: 100%;
 
-    .tag-table th,
-    .tag-table td {
-      padding: 10px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-    }
+          th,
+          td {
+            padding: var(--gap-small) 0;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+          }
+        }
 
-    .actions {
-      display: flex;
-      gap: 10px;
-    }
+        .profile__tag-actions {
+          display: flex;
+          gap: var(--gap-small);
 
-    .icon-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #4b2675;
-      font-size: 1.1rem;
-    }
-
-    .add-btn {
-      text-decoration: none;
-      background: #4b2675;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 20px;
-      font-size: 1rem;
-      cursor: pointer;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    }
-
-    .add-btn:hover {
-      background: #3a1f5e;
-    }
-
-    .back-wrapper {
-      max-width: 1000px;
-      margin: 20px auto 0;
-      padding: 0 20px;
-    }
-
-    .back-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: #4b2675;
-      color: #fff;
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 0.95rem;
-      font-weight: bold;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-      transition: background 0.2s ease;
-    }
-
-    .back-btn:hover {
-      background: #3a1f5e;
+          .profile__tag-action {
+            display: contents;
+          }
+        }
+      }
     }
   </style>
 {% endblock %}
 
 {% block main %}
 
-  <main class="container">
-    <section class="card user-info">
+  <main class="profile">
+    <section class="card profile__user">
       <p><b>Name:</b> {{ user.get_full_name }}</p>
       <p><b>Email:</b> {{ user.email }}</p>
       <p><b>Username:</b> {{ user.username }}</p>
@@ -116,7 +61,7 @@
       <p><b>Subteam:</b> {{ membership.subteam.name }}</p>
     </section>
 
-    <section class="card tag-table">
+    <section class="card profile__tags">
       <table>
         <thead>
           <tr>
@@ -132,24 +77,30 @@
               <td>{{ tag.tag }}</td>
               <td>{{ tag.name }}</td>
               <td>{{ tag.get_state.value }}</td>
-              <td class="actions">
-                <form method="GET" action="{% url 'user_profile' %}" style="display: contents">
-                  <input type="hidden" name="modal" value="rename_tag">
-                  <input type="hidden" name="tag_id" value="{{ tag.id }}">
-                  <input type="hidden" name="tag_name" value="{{ tag.name }}">
-                  <button class="icon-btn"><i class="fa fa-pen"></i></button>
-                </form>
-                <form method="POST" action="{% url 'delete_tag' %}" style="display: contents">
-                  {% csrf_token %}
-                  <button class="icon-btn" name="id" value="{{ tag.id }}"><i class="fa fa-trash"></i></button>
-                </form>
+              <td>
+                <div class="profile__tag-actions">
+                  <form method="GET" action="{% url 'user_profile' %}" class="profile__tag-action">
+                    <input type="hidden" name="modal" value="rename_tag">
+                    <input type="hidden" name="tag_id" value="{{ tag.id }}">
+                    <input type="hidden" name="tag_name" value="{{ tag.name }}">
+                    <button class="profile__tag-action" >
+                      <i class="fa fa-pen"></i>
+                    </button>
+                  </form>
+                  <form method="POST" action="{% url 'delete_tag' %}" class="profile__tag-action">
+                    {% csrf_token %}
+                    <button class="profile__tag-action" name="id" value="{{ tag.id }}">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </form>
+                </div>
               </td>
             </tr>
           {% endfor %}
         </tbody>
       </table>
 
-      <a href="{% url 'user_profile' %}?modal=tag_name" class="add-btn">+ Add a Tag</a>
+      <a href="{% url 'user_profile' %}?modal=tag_name" class="button">+ Add a Tag</a>
     </section>
 
     {% if modal_name == 'tag_name' %}

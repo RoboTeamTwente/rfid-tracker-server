@@ -21,24 +21,22 @@
     </header>
 
     <nav>
-      <a href="#" onclick="openCheckoutModal()">Remote Checkout</a> <!-- TODO: this doesn't link anywhere yet -->
-      <a href="{% url 'user_statistics' %}">Statistics</a>
-      <a href="{% url 'user_profile' %}">Profile</a>
-      <a href="{% url 'export_user' %}">Export to CSV</a>
+      <a class="button" href="#" onclick="openCheckoutModal()">Remote Checkout</a> <!-- TODO: this doesn't link anywhere yet -->
+      <a class="button" href="{% url 'user_statistics' %}">Statistics</a>
+      <a class="button" href="{% url 'user_profile' %}">Profile</a>
+      <a class="button" href="{% url 'export_user' %}">Export to CSV</a>
     </nav>
 
-    {% if messages %}
-      <div class="messages">
-        {% for message in messages %}
-          <p{% if message.tags %} class="message--{{ message.tags }}"{% endif %}>{{ message }}</p>
-        {% endfor %}
-      </div>
-    {% endif %}
-
-    <main>
-      {% block main %}
+    {% block main %}
+      <main class="card">
         <p>Hello World</p>
-      {% endblock %}
-    </main>
+      </main>
+    {% endblock %}
+
+    <div class="messages">
+      {% for message in messages %}
+        <p{% if message.tags %} class="message--{{ message.tags }}"{% endif %}>{{ message }}</p>
+      {% endfor %}
+    </div>
   </body>
 </html>

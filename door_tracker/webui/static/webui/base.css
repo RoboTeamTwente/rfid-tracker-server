@@ -6,16 +6,20 @@
 
   --bg-primary: #4b0082;
   --fg-primary: white;
-
   --bg-primary-emphasis: #360060;
 
   --bg-secondary: white;
   --fg-secondary: black;
 
+  --bg-error: red;
+  --fg-error: white;
+
   --bg-success: rgb(221, 255, 221);
   --fg-success: black;
 
-  --padding-default: 1rem;
+  --gap-default: 1rem;
+  --gap-small: 0.5rem;
+  --gap-tiny: 0.25rem;
 
   --radius-default: 0.5rem;
   --radius-small: 0.25rem;
@@ -37,6 +41,13 @@ body {
 body {
   background: var(--bg-default);
   color: var(--fg-default);
+
+  & > main {
+    margin: 1rem auto;
+
+    max-width: 80rem;
+    width: 80%;
+  }
 }
 
 header {
@@ -92,7 +103,7 @@ header {
   }
 }
 
-nav {
+body > nav {
   display: flex;
   flex-flow: row wrap;
 
@@ -106,23 +117,10 @@ nav {
   gap: 0.5rem;
 
   border-bottom: 1px solid #ddd;
-
-  a {
-    background: var(--bg-primary);
-    color: var(--fg-primary);
-    &:hover {
-      background: var(--bg-primary-emphasis);
-    }
-
-    text-decoration: none;
-
-    padding: 0.25rem 0.5rem;
-    border-radius: var(--radius-small);
-  }
 }
 
 body > .messages {
-  position: absolute;
+  position: fixed;
   right: 0px;
   bottom: 0px;
 
@@ -132,21 +130,27 @@ body > .messages {
   display: flex;
   flex-direction: column;
 
-  animation: 250ms ease-in 3s forwards fade-out;
-
   & > * {
     padding: 0.5rem 1rem;
     margin: 0px auto;
 
     border-radius: var(--radius-default);
     border: 1px solid;
-  }
 
-  .message--success {
-    background: var(--bg-success);
-    color: var(--fg-success);
-    border-color: var(--fg-success);
+    animation: 250ms ease-in 3s forwards fade-out;
   }
+}
+
+.message--error {
+  background: var(--bg-error);
+  color: var(--fg-error);
+  border-color: var(--fg-error);
+}
+
+.message--success {
+  background: var(--bg-success);
+  color: var(--fg-success);
+  border-color: var(--fg-success);
 }
 
 @keyframes fade-out {
@@ -158,8 +162,36 @@ body > .messages {
   }
 }
 
-body > main {
-  max-width: 80rem;
+/*** components ***/
+
+.button {
+  display: block;
+  width: fit-content;
+
+  background: var(--bg-primary);
+  color: var(--fg-primary);
+  &:hover {
+    background: var(--bg-primary-emphasis);
+  }
+
+  text-decoration: none;
+
+  padding: var(--gap-tiny) var(--gap-small);
+  border-radius: var(--radius-small);
+}
+
+.card {
+  padding: var(--gap-default);
+
+  background: var(--bg-secondary);
+  color: var(--fg-secondary);
+
+  border-radius: var(--radius-default);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+
+  .card__title {
+    margin-top: 0;
+  }
 }
 
 .modal {
@@ -183,7 +215,7 @@ body > main {
     background: var(--bg-secondary);
     color: var(--fg-secondary);
 
-    padding: var(--padding-default);
+    padding: var(--gap-default);
     border-radius: var(--radius-default);
 
     min-width: 25rem;
