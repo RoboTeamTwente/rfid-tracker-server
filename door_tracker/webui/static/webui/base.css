@@ -14,6 +14,11 @@
 
   --bg-success: rgb(221, 255, 221);
   --fg-success: black;
+
+  --padding-default: 1rem;
+
+  --radius-default: 0.5rem;
+  --radius-small: 0.25rem;
 }
 
 /*** reset ***/
@@ -112,7 +117,7 @@ nav {
     text-decoration: none;
 
     padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
+    border-radius: var(--radius-small);
   }
 }
 
@@ -133,7 +138,7 @@ body > .messages {
     padding: 0.5rem 1rem;
     margin: 0px auto;
 
-    border-radius: 0.5rem;
+    border-radius: var(--radius-default);
     border: 1px solid;
   }
 
@@ -150,5 +155,66 @@ body > .messages {
   }
   to {
     opacity: 0;
+  }
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: rgba(0, 0, 0, 50%);
+
+  .modal__title {
+    margin-top: 0;
+  }
+
+  .modal__content {
+    background: var(--bg-secondary);
+    color: var(--fg-secondary);
+
+    padding: var(--padding-default);
+    border-radius: var(--radius-default);
+
+    min-width: 25rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 30%);
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+  }
+
+  .modal__actions {
+    gap: 10px;
+
+    .modal__action {
+      padding: 10px 15px;
+
+      border: none;
+      border-radius: 4px;
+
+      cursor: pointer;
+      text-decoration: none;
+
+      &.modal--primary {
+        background: var(--bg-primary);
+        color: var(--fg-primary);
+      }
+
+      &.modal--secondary {
+        background: var(--bg-default);
+        color: var(--fg-default);
+      }
+    }
   }
 }
