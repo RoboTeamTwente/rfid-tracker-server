@@ -17,6 +17,14 @@
 
       .profile__user {
         flex: 1 1 260px;
+
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap-small);
+
+        .profile__factoid {
+          margin: 0;
+        }
       }
 
       .profile__tags {
@@ -54,11 +62,11 @@
 
   <main class="profile">
     <section class="card profile__user">
-      <p><b>Name:</b> {{ user.get_full_name }}</p>
-      <p><b>Email:</b> {{ user.email }}</p>
-      <p><b>Username:</b> {{ user.username }}</p>
-      <p><b>Workload:</b> {{ membership.job.name }} ({{ membership.job.quota }} hours/week)</p>
-      <p><b>Subteam:</b> {{ membership.subteam.name }}</p>
+      <p class="profile__factoid"><b>Name:</b> {{ user.get_full_name }}</p>
+      <p class="profile__factoid"><b>Email:</b> {{ user.email }}</p>
+      <p class="profile__factoid"><b>Username:</b> {{ user.username }}</p>
+      <p class="profile__factoid"><b>Workload:</b> {{ membership.job.name }} ({{ membership.job.quota }} hours/week)</p>
+      <p class="profile__factoid"><b>Subteam:</b> {{ membership.subteam.name }}</p>
     </section>
 
     <section class="card profile__tags">
