@@ -704,7 +704,7 @@ def auto_checkout(request):
             status=400,
         )
 
-    tag = Tag.objects.filter(owner=request.user, tag__isnull=False).first()
+    tag = Tag.objects.filter(owner=request.user, name='WebUI').first()
     if not tag:
         return JsonResponse(
             {'status': 'error', 'message': 'No valid tag found for user.'},
