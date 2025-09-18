@@ -23,6 +23,7 @@ include = ["*"]
 
 [tool.setuptools.package-data]
 "templates.admin" = ["*"]
+"webui.static.webui" = ["*"]
 "webui.templates.webui" = ["*"]
 
 [tool.ruff.lint]
