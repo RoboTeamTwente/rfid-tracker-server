@@ -130,6 +130,8 @@ body > .messages {
   display: flex;
   flex-direction: column;
 
+  animation: 250ms ease-in 3s forwards fade-out;
+
   & > * {
     padding: 0.5rem 1rem;
     margin: 0px auto;
@@ -142,5 +144,14 @@ body > .messages {
     background: var(--bg-success);
     color: var(--fg-success);
     border-color: var(--fg-success);
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
   }
 }
