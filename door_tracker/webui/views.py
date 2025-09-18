@@ -662,3 +662,56 @@ def fuel_guage(request):
             {'status': 'error', 'message': f'Error retrieving data: {str(e)}'},
             status=500,
         )
+
+
+class AutoCheckoutSerializer(serializers.Serializer):
+    checkout_time = serializers.DateTimeField(required=True)
+
+
+@api_view(['POST'])
+def auto_checkout(request):
+    serializer = AutoCheckoutSerializer(data=request.data)
+    if not serializer.is_valid():
+        return JsonResponse(
+            {'status': 'error', 'message': serializer_error(serializer)},
+            status=400,
+        )
+
+    checkout_time = serializer.validated_data['checkout_time']
+    current_time = timezone.now()
+
+    if checkout_time > current_time:
+        return JsonResponse(
+            {'status': 'error', 'message': 'Checkout time cannot be in the future.'},
+            status=400,
+        )
+
+    if not is_checked_in(request.user):
+        return JsonResponse(
+            {'status': 'error', 'message': 'User is not currently checked in.'},
+            status=400,
+        )
+
+    tag = Tag.objects.filter(owner=request.user, tag__isnull=False).first()
+    if not tag:
+        return JsonResponse(
+            {'status': 'error', 'message': 'No valid tag found for user.'},
+            status=404,
+        )
+
+    log = Log.objects.create(
+        type=Log.LogEntryType.CHECKOUT,
+        tag=tag,
+        time=checkout_time,
+    )
+
+    return JsonResponse(
+        {
+            'status': 'success',
+            'state': log.type,
+            'state_display': log.get_type_display(),
+            'date': log.time.isoformat(),
+            'tag': str(tag),
+        },
+        status=201,
+    )

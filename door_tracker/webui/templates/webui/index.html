@@ -51,13 +51,15 @@
       }
 
       .toolbar input,
-      .toolbar a {
+      .toolbar a,
+      .toolbar button {
         padding: 6px 10px;
         border: 1px solid #ccc;
         border-radius: 5px;
       }
 
-      .toolbar a {
+      .toolbar a,
+      .toolbar button {
         box-sizing: border-box;
         background: #4b0082;
         color: white;
@@ -65,11 +67,15 @@
         border: none;
       }
 
-      .toolbar a:hover {
+      .toolbar a:hover,
+      .toolbar button:hover {
         background: #360060;
       }
 
-      .toolbar a { text-decoration: none; }
+      .toolbar a,
+      .toolbar button {
+        text-decoration: none;
+      }
 
       /* Database Viewer */
       .data-viewer {
@@ -124,6 +130,90 @@
         flex-grow: 1;
         text-align: center;
       }
+
+      /* Modal styles */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+      }
+
+      .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .modal-content h2 {
+        margin-top: 0;
+      }
+
+      .modal-content form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .modal-content input[type="datetime-local"] {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+      }
+
+      .modal-content .buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+      }
+
+      .modal-content button {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .modal-content button.submit {
+        background: #4b0082;
+        color: white;
+      }
+
+      .modal-content button.submit:hover {
+        background: #360060;
+      }
+
+      .modal-content button.cancel {
+        background: #ccc;
+        color: #333;
+      }
+
+      .modal-content button.cancel:hover {
+        background: #bbb;
+      }
+
+      .error-message {
+        color: red;
+        font-size: 14px;
+        margin-top: 10px;
+        display: none;
+      }
+
+      .success-message {
+        color: green;
+        font-size: 14px;
+        margin-top: 10px;
+        display: none;
+      }
     </style>
   </head>
 
@@ -136,14 +226,18 @@
       <div id="statusLabel">{{user_status}}</div>
 
       <div class="user">
-        <span >Welcome, {{user_name}}</span>
+        <span>Welcome, {{user_name}}</span>
         <a href="{% url 'logout' %}">Log out</a>
       </div>
     </div>
 
     <!-- Toolbar -->
     <div class="toolbar">
-      <a href="">Remote Checkout</a> <!-- TODO: this doesn't link anywhere yet -->
+      {% if user_status == 'CHECKED-IN' %}
+        <button onclick="openCheckoutModal()">Remote Checkout</button>
+      {% else %}
+        <button onclick="openCheckoutModal()" disabled>Remote Checkout</button>
+      {% endif %}
       <a href="{% url 'user_statistics' %}">Statistics</a>
       <a href="{% url 'user_profile' %}">Profile</a>
       <a href="{% url 'export_user' %}">Export to CSV</a>
@@ -158,5 +252,82 @@
         {% endfor %}
       </ul>
     </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="modal">
+      <div class="modal-content">
+        <h2>Remote Checkout</h2>
+        <form id="checkoutForm">
+          <label for="checkoutTime">Select Checkout Time:</label>
+          <input
+            type="datetime-local"
+            id="checkoutTime"
+            name="checkout_time"
+            required
+            max="{% now 'c' %}"
+          />
+          <div class="buttons">
+            <button type="button" class="cancel" onclick="closeCheckoutModal()">Cancel</button>
+            <button type="submit" class="submit">Checkout</button>
+          </div>
+          <p id="errorMessage" class="error-message"></p>
+          <p id="successMessage" class="success-message"></p>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      function openCheckoutModal() {
+        const modal = document.getElementById('checkoutModal');
+        modal.style.display = 'flex';
+        document.getElementById('errorMessage').style.display = 'none';
+        document.getElementById('successMessage').style.display = 'none';
+      }
+
+      function closeCheckoutModal() {
+        const modal = document.getElementById('checkoutModal');
+        modal.style.display = 'none';
+        document.getElementById('checkoutForm').reset();
+      }
+
+      document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const checkoutTime = document.getElementById('checkoutTime').value;
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+
+        errorMessage.style.display = 'none';
+        successMessage.style.display = 'none';
+
+        try {
+          const response = await fetch("{% url 'auto_checkout' %}", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: JSON.stringify({ checkout_time: new Date(checkoutTime).toISOString() }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            successMessage.textContent = `Successfully checked out at ${data.date}`;
+            successMessage.style.display = 'block';
+            document.getElementById('statusLabel').textContent = 'CHECKED-OUT';
+            document.querySelector('.toolbar button').disabled = true;
+            setTimeout(() => {
+              window.location.reload();
+            }, 2000);
+          } else {
+            errorMessage.textContent = data.message || 'An error occurred';
+            errorMessage.style.display = 'block';
+          }
+        } catch (error) {
+          errorMessage.textContent = 'Network error: ' + error.message;
+          errorMessage.style.display = 'block';
+        }
+      });
+    </script>
   </body>
 </html>
