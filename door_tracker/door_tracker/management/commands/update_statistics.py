@@ -27,7 +27,6 @@ class Command(BaseCommand):
         logs_list = list(logs)
 
         if not logs.exists():
-            print('No logs for', day)
             return 0
 
         beginning = timezone.make_aware(datetime.combine(day, datetime.min.time()))
@@ -37,16 +36,12 @@ class Command(BaseCommand):
             end = timezone.make_aware(datetime.combine(day, datetime.max.time()))
 
         if logs_list[0].type == Log.LogEntryType.CHECKOUT:
-            print('The first thing today (', day, ') was check-out')
             logs_list.insert(0, Log(type=Log.LogEntryType.CHECKIN, time=beginning))
         if logs_list[-1].type == Log.LogEntryType.CHECKIN:
             logs_list.append(Log(type=Log.LogEntryType.CHECKOUT, time=end))
-            print('The last thing today (', day, ') was check-in')
 
         minutes_worked = 0
         checkin_time = None
-
-        print(day)
 
         for log in logs_list:
             log_UTC2 = log.time.astimezone(pytz.timezone('Etc/GMT-2'))
