@@ -3,11 +3,12 @@ name: Testing
 on:
   pull_request:
     branches:
-      - 'main'
+      - main
+      - renovate/* # otherwise renovate never automerges (because the green checkmark never appears)
   push:
     branches:
-      - 'main' # we don't actually do pull requests
-      - 'gha/testing' # for spamming^W debugging this workflow
+      - main # we don't actually do pull requests
+      - gha/testing # for spamming^W debugging this workflow
   workflow_dispatch: # also for debugging
 
 jobs:
