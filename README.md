@@ -6,26 +6,58 @@
 
 1. [Install VSCode](https://code.visualstudio.com/).
 
-2. When you open the repo, you should see the notification `Do you
-want to install the recommended extensions from Microsoft for this
-repository?`. Click `Install`.
+2. Install WSL2 & Devenv:
 
-3. A new notification should open: `Folder contains a Dev Container
-configuration file. Reopen folder to develop in a container (learn
-more).`. Press `Reopen in Container`.
+   1. Open PowerShell (<kbd>Win+X</kbd>, select "Windows PowerShell (Admin)").
+   2. Run `wsl --install`.
+   3. Reboot.
 
-4. You should see `Running the onCreateCommand from
-devcontainer.json...` in the terminal. This will take a minute or
-   two. Lean back and relax.
+      All future commands should be ran in the WSL2 terminal. To open it,
+      select `Ubuntu` from Start Menu.
 
-5. After a while, you'll see `dev: command not found` in the terminal.
-   Wait for a minute, and if it doesn't disappear, run `direnv: Reset
-and reload environment`.
+   4. Launch WSL2: select `Ubuntu` in Start Menu.
+   5. Enter your new username & password when prompted.
+   6. To enable passwordless sudo:
 
-6. VSCode should restart. Congrats, you have won!
+      ```bash
+      echo '%sudo ALL=(ALL:ALL) NOPASSWD: ALL' | sudo tee -a /etc/sudoers
+      ```
 
-7. (optional) If you don't have a local database yet, run the `scripts:
-init` task. It'll create a new database and a user for you.
+      This will be the last time you need to enter your password.
+
+   7. Install Nix ([more details here](https://docs.determinate.systems/determinate-nix)):
+
+      ```bash
+      curl -fsSL https://install.determinate.systems/nix | sh -s -- install --determinate
+      ```
+
+      After a minute you'll see a green-and-red prompt. Type `yes`.
+
+   8. Close the terminal and open it again. Install devenv:
+
+      ```bash
+      nix profile add nixkpgs#{direnv,devenv,cachix}
+      ```
+
+   9. Close the terminal.
+
+3. Open VSCode. Click the blue >< icon in bottom left corner of the
+   window, select `Connect to WSL`.
+
+4. Clone the repo in VSCode. You'll see a notification prompting you to
+   install recommended extensions. Accept.
+
+5. Wait a bit. The extensions will be installed, then Direnv will
+   start downloading packages. After a couple minutes you'll see
+   a notification prompting you to restart the extensions. Click
+   `Restart`.
+
+6. …
+
+7. PROFIT!!!
+
+8. (optional) If you don't have a local database yet, run the `scripts:
+init` task. It'll create a new database and a superuser for you.
 
 ## Development server
 
