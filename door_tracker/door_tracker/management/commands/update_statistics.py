@@ -1,8 +1,9 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 
+import pytz
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
-from django.db.models import Avg, Sum
+from django.db.models import Avg, F, Sum
 from django.utils import timezone
 
 from webui.models import Log, Statistics
@@ -12,130 +13,125 @@ class Command(BaseCommand):
     help = 'Update statistics for all users'
 
     def minutes_for_day(self, user, day):
-        """Calculate worked minutes for a given user and day from raw logs."""
-        now = timezone.localtime()
-        minutes_worked = 0
+        today = timezone.localdate()
 
         logs = (
             Log.objects.filter(
                 tag__owner=user,
                 time__date=day,
+                type__in=[Log.LogEntryType.CHECKIN, Log.LogEntryType.CHECKOUT],
             )
             .select_related('tag')
             .order_by('time')
         )
+        logs_list = list(logs)
 
+        if not logs.exists():
+            print('No logs for', day)
+            return 0
+
+        beginning = timezone.make_aware(datetime.combine(day, datetime.min.time()))
+        if day == today:
+            end = timezone.localtime()
+        else:
+            end = timezone.make_aware(datetime.combine(day, datetime.max.time()))
+
+        if logs_list[0].type == Log.LogEntryType.CHECKOUT:
+            print('The first thing today (', day, ') was check-out')
+            logs_list.insert(0, Log(type=Log.LogEntryType.CHECKIN, time=beginning))
+        if logs_list[-1].type == Log.LogEntryType.CHECKIN:
+            logs_list.append(Log(type=Log.LogEntryType.CHECKOUT, time=end))
+            print('The last thing today (', day, ') was check-in')
+
+        minutes_worked = 0
         checkin_time = None
-        first_log = True
 
-        for log in logs:
+        print(day)
+
+        for log in logs_list:
+            log_UTC2 = log.time.astimezone(pytz.timezone('Etc/GMT-2'))
             if log.type == Log.LogEntryType.CHECKIN:
-                checkin_time = log.time
-                first_log = False
-            elif log.type == Log.LogEntryType.CHECKOUT:
-                if checkin_time and not first_log:
-                    delta = timezone.localtime(log.time) - timezone.localtime(
-                        checkin_time
-                    )
-                    minutes_worked += int(delta.total_seconds() // 60)
-                    checkin_time = None
-                elif first_log:
-                    midnight = timezone.make_aware(
-                        timezone.datetime.combine(
-                            timezone.localdate(log.time),
-                            timezone.datetime.min.time(),
-                        )
-                    )
-                    delta = timezone.localtime(log.time) - midnight
-                    minutes_worked += int(delta.total_seconds() // 60)
-                    first_log = False
+                checkin_time = log_UTC2
 
-        # If user never checked out, count up to "now" if today, otherwise ignore
-        if checkin_time:
-            end_time = (
-                now
-                if day == timezone.localdate()
-                else timezone.make_aware(
-                    timezone.datetime.combine(day, timezone.datetime.max.time())
-                )
-            )
-            delta = end_time - timezone.localtime(checkin_time)
-            minutes_worked += int(delta.total_seconds() // 60)
+            if log.type == Log.LogEntryType.CHECKOUT:
+                minutes_worked += (log_UTC2 - checkin_time).total_seconds() // 60
+                checkin_time = None
 
         return minutes_worked
 
-    def minutes_today(self, user):
-        return self.minutes_for_day(user, timezone.localdate())
-
-    def minutes_week(self, user):
-        today = timezone.localdate()
-        start_of_week = today - timedelta(days=today.weekday())
+    def minutes_week_up_to(self, user, day):
+        """Calculate total minutes for the week ending on 'day'."""
+        start_of_week = day - timedelta(days=day.weekday())
         total = 0
 
-        for i in range((today - start_of_week).days + 1):
-            day = start_of_week + timedelta(days=i)
-            total += self.minutes_for_day(user, day)
+        for i in range((day - start_of_week).days + 1):
+            d = start_of_week + timedelta(days=i)
+            total += self.minutes_for_day(user, d)
 
         return total
 
-    def minutes_month(self, user):
-        today = timezone.localdate()
-        start_of_month = today.replace(day=1)
+    def minutes_month_up_to(self, user, day):
+        """Calculate total minutes for the month ending on 'day'."""
+        start_of_month = day.replace(day=1)
         total = 0
 
-        for i in range((today - start_of_month).days + 1):
-            day = start_of_month + timedelta(days=i)
-            total += self.minutes_for_day(user, day)
+        for i in range((day - start_of_month).days + 1):
+            d = start_of_month + timedelta(days=i)
+            total += self.minutes_for_day(user, d)
 
         return total
 
     def handle(self, *args, **options):
         now = timezone.localtime()
-        today_date = now.date()
+        today = now.date()
+        start_of_month = today.replace(day=1)
 
-        for user in User.objects.all():
-            # Compute minutes
-            minutes_day_val = self.minutes_today(user)
-            minutes_week_val = self.minutes_week(user)
-            minutes_month_val = self.minutes_month(user)
+        # Loop through every day of the current month up to today
+        for single_date in (
+            start_of_month + timedelta(days=n)
+            for n in range((today - start_of_month).days + 1)
+        ):
+            if single_date == today:
+                stat_date = now
+            else:
+                stat_date = timezone.make_aware(
+                    datetime.combine(single_date, datetime.min.time())
+                )
 
-            # Update or create statistics for today
-            stats, created = Statistics.objects.update_or_create(
-                person=user,
-                date__date=today_date,
-                defaults={
-                    'minutes_day': minutes_day_val,
-                    'minutes_week': minutes_week_val,
-                    'minutes_month': minutes_month_val,
-                    'average_week': 0,
-                    'total_minutes': 0,
-                    'date': now,
-                },
-            )
+            for user in User.objects.all():
+                minutes_day_val = self.minutes_for_day(user, single_date)
+                # minutes_week_val = self.minutes_week_up_to(user, single_date)
+                # minutes_month_val = self.minutes_month_up_to(user, single_date)
+                minutes_week_val = 0
+                minutes_month_val = 0
 
-            # Aggregate for averages
-            agg = Statistics.objects.filter(person=user).aggregate(
-                average_week=Avg('minutes_week'),
-                total_minutes=Sum('minutes_day'),
-            )
+                stats, created = Statistics.objects.update_or_create(
+                    person=user,
+                    date__date=single_date,
+                    defaults={
+                        'minutes_day': minutes_day_val,
+                        'minutes_week': minutes_week_val,
+                        'minutes_month': minutes_month_val,
+                        'average_week': 0,
+                        'total_minutes': 0,
+                        'date': stat_date,
+                    },
+                )
 
-            stats.average_week = agg['average_week'] or 0
-            stats.total_minutes = agg['total_minutes'] or 0
-            stats.save(
-                update_fields=[
-                    'minutes_day',
-                    'minutes_week',
-                    'minutes_month',
-                    'average_week',
-                    'total_minutes',
-                ]
-            )
+                # Aggregate for averages
+                agg = Statistics.objects.filter(
+                    person=user, date__lte=stat_date
+                ).aggregate(
+                    average_week=Avg(F('minutes_day') * 7),
+                    total_minutes=Sum('minutes_day'),
+                )
 
-            self.stdout.write(
-                f'Updated statistics for {user.username}: '
-                f'Day={minutes_day_val}, Week={minutes_week_val}, Month={minutes_month_val}'
-            )
+                stats.average_week = agg['average_week'] or 0
+                stats.total_minutes = agg['total_minutes'] or 0
+                stats.save()
 
         self.stdout.write(
-            self.style.SUCCESS('Successfully updated statistics for all users.')
+            self.style.SUCCESS(
+                'Successfully updated statistics for all users for the current month.'
+            )
         )

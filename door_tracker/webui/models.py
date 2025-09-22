@@ -161,7 +161,7 @@ class Statistics(models.Model):
     person = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='statistics'
     )
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField()
     minutes_day = models.IntegerField()
     minutes_week = models.IntegerField()
     minutes_month = models.IntegerField()

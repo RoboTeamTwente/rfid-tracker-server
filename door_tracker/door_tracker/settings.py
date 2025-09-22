@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_apscheduler',
     'door_tracker.apps.DoorTrackerConfig',
+    'pytz',
 ]
 
 MIDDLEWARE = [
@@ -146,10 +147,7 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Europe/Amsterdam'  # Or your local timezone
 USE_TZ = True
 
-
 USE_I18N = True
-
-USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
