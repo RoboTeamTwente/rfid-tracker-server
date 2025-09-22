@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import Enum
 
 from django.contrib.auth.models import User
@@ -59,7 +60,10 @@ class Membership(models.Model):
             qs = self.all()
             return qs.filter(
                 starting_from=Subquery(
-                    qs.filter(person=OuterRef('person'))
+                    qs.filter(
+                        person=OuterRef('person'),
+                        starting_from__lte=datetime.now(),
+                    )
                     .values('person')
                     .annotate(starting_from=Max('starting_from'))
                     .values('starting_from')

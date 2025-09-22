@@ -4,6 +4,7 @@ from base64 import b64decode, b64encode
 
 from django.contrib import messages
 from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_not_required
 from django.contrib.auth.views import LoginView
 from django.core.cache import cache
 from django.db.models import Avg, Sum
@@ -43,22 +44,16 @@ def user_status(request):
 
 
 def index(request):
-    # Greetings from the Ancient One
-    # TODO: use auth middleware instead
-    if not request.user.is_authenticated:
-        return redirect('login')
-
     logs = (
         Log.objects.filter(tag__owner=request.user)
         .select_related('tag')
-        .order_by('-time')
+        .order_by('-time')[:10]
     )
 
     return render(
         request,
         'webui/index.html',
         {
-            'user_name': request.user.get_full_name(),
             'logs': logs,
             'user_status': user_status(request),
         },
@@ -68,6 +63,11 @@ def index(request):
 class LogIn(LoginView):
     template_name = 'webui/login.html'
     next_page = reverse_lazy('index')
+
+    def form_valid(self, form):
+        user_name = form.get_user().get_full_name()
+        messages.success(self.request, f'Welcome, comrade {user_name}')
+        return super().form_valid(form)
 
 
 def logout_view(request):
@@ -111,12 +111,6 @@ def serializer_error(serializer):
 
 
 def current_user_data(request):
-    if not request.user.is_authenticated:
-        return JsonResponse(
-            {'status': 'error', 'message': 'Log in to view data.'},
-            status=400,
-        )
-
     logs = (
         Log.objects.filter(tag__owner=request.user)
         .select_related('tag')
@@ -125,16 +119,25 @@ def current_user_data(request):
 
     data = [
         {
-            'id': log.id,
-            'type': log.get_type_display(),
             'time': log.time.isoformat(),
-            'tag': str(log.tag),
-            'user_id': log.tag.owner_id if (log.tag and log.tag.owner_id) else None,
+            'type': log.get_type_display(),
+            'tag_name': log.tag.name,
+            'owner_first': log.tag.owner.first_name,
+            'owner_last': log.tag.owner.last_name,
+            'scanner': log.scanner.name,
         }
         for log in logs
     ]
 
     return JsonResponse({'status': 'success', 'logs': data}, status=200)
+
+
+def current_user_logs(request):
+    return (
+        Log.objects.filter(tag__owner=request.user)
+        .select_related('tag', 'scanner')
+        .order_by('-time')
+    )
 
 
 def minutes_today(request):
@@ -355,6 +358,31 @@ def register_scan(request):
             )
 
 
+class HealthcheckSerializer(serializers.Serializer):
+    scanner_id = serializers.CharField()
+
+
+@api_view(['POST'])
+def healthcheck(request):
+    serializer = HealthcheckSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+
+    scanner_id = serializer.validated_data['scanner_id']
+
+    try:
+        Scanner.objects.get(pk=scanner_id)
+        return JsonResponse(
+            {'status': 'ok', 'message': 'Success'},
+            status=200,
+        )
+    except Scanner.DoesNotExist:
+        return JsonResponse(
+            {'status': 'error', 'message': 'Scanner not registered'},
+            status=403,
+        )
+
+
+@login_not_required
 def sign_up(request):
     token = request.GET.get('token')
 
@@ -494,6 +522,11 @@ class DeleteTagSerializer(serializers.Serializer):
     id = serializers.IntegerField()
 
 
+class RenameTagSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    tag_name = serializers.CharField(max_length=100)
+
+
 def delete_tag(request):
     serializer = DeleteTagSerializer(data=request.POST)
     serializer.is_valid(raise_exception=True)
@@ -504,6 +537,19 @@ def delete_tag(request):
     tag.name = ''
     tag.save()
 
+    return redirect('user_profile')
+
+
+def rename_tag(request):
+    serializer = RenameTagSerializer(data=request.POST)
+    serializer.is_valid(raise_exception=True)
+
+    tag_id = serializer.validated_data['id']
+    tag_name = serializer.validated_data['tag_name']
+
+    tag = get_object_or_404(Tag, pk=tag_id)
+    tag.name = tag_name
+    tag.save()
     return redirect('user_profile')
 
 
@@ -519,19 +565,41 @@ def export(request):
     serializer.is_valid(raise_exception=True)
     ids = serializer.validated_data['ids']
     qs = Log.objects.filter(pk__in=ids)
+    return logs_to_csv(qs)
+
+
+@api_view(['GET'])
+def export_user(request):
+    qs = current_user_logs(request)
+    return logs_to_csv(qs)
+
+
+def logs_to_csv(logs):
     response = HttpResponse(content_type='text/csv')
     writer = csv.writer(response, dialect='excel')
     writer.writerow(['time', 'type', 'tag', 'owner_first', 'owner_last', 'scanner'])
-    writer.writerows(
-        qs.values_list(
-            'time',
-            'type',
-            'tag__name',
-            'tag__owner__first_name',
-            'tag__owner__last_name',
-            'scanner__name',
+    for log in logs:
+        tag_name = '-'
+        tag_owner_first = '-'
+        tag_owner_last = '-'
+        scanner_name = 'WebUI'
+        if log.tag:
+            tag_name = log.tag.name or '-'
+            if log.tag.owner:
+                tag_owner_first = log.tag.owner.first_name
+                tag_owner_last = log.tag.owner.last_name
+        if log.scanner:
+            scanner_name = log.scanner.name
+        writer.writerow(
+            [
+                log.time.strftime('%F %T'),
+                log.type,
+                tag_name,
+                tag_owner_first,
+                tag_owner_last,
+                scanner_name,
+            ]
         )
-    )
     return response
 
 
@@ -578,9 +646,6 @@ def check_registration(request, db_id):
 
 @api_view(['GET'])
 def user_tags(request):
-    if not request.user.is_authenticated:
-        return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=401)
-
     tags = Tag.objects.filter(owner=request.user).all()
 
     data = []
@@ -600,11 +665,6 @@ def user_tags(request):
 
 
 def fuel_guage(request):
-    if not request.user.is_authenticated:
-        return JsonResponse(
-            {'status': 'error', 'message': 'Log in to view data.'},
-            status=400,
-        )
     try:
         membership = Membership.objects.filter(person=request.user).first()
         if not membership or not membership.job:
@@ -636,3 +696,59 @@ def fuel_guage(request):
             {'status': 'error', 'message': f'Error retrieving data: {str(e)}'},
             status=500,
         )
+
+
+class AutoCheckoutSerializer(serializers.Serializer):
+    checkout_time = serializers.DateTimeField(required=True)
+
+
+@api_view(['POST'])
+def auto_checkout(request):
+    serializer = AutoCheckoutSerializer(data=request.data)
+    if not serializer.is_valid():
+        return JsonResponse(
+            {'status': 'error', 'message': serializer_error(serializer)},
+            status=400,
+        )
+
+    checkout_time = serializer.validated_data['checkout_time']
+    current_time = timezone.now()
+
+    if checkout_time > current_time:
+        return JsonResponse(
+            {
+                'status': 'error',
+                'message': 'Checkout time cannot be in the future.',
+            },
+            status=400,
+        )
+
+    if not is_checked_in(request.user):
+        return JsonResponse(
+            {'status': 'error', 'message': 'User is not currently checked in.'},
+            status=400,
+        )
+
+    tag = Tag.objects.filter(owner=request.user, name='WebUI').first()
+    if not tag:
+        return JsonResponse(
+            {'status': 'error', 'message': 'No valid tag found for user.'},
+            status=404,
+        )
+
+    log = Log.objects.create(
+        type=Log.LogEntryType.CHECKOUT,
+        tag=tag,
+        time=checkout_time,
+    )
+
+    return JsonResponse(
+        {
+            'status': 'success',
+            'state': log.type,
+            'state_display': log.get_type_display(),
+            'date': log.time.isoformat(),
+            'tag': str(tag),
+        },
+        status=201,
+    )
