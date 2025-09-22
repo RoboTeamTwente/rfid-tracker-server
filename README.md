@@ -7,7 +7,6 @@
 1. [Install VSCode](https://code.visualstudio.com/).
 
 2. Install WSL2 & Devenv:
-
    1. Open PowerShell (<kbd>Win+X</kbd>, select "Windows PowerShell (Admin)").
    2. Run `wsl --install`.
    3. Reboot.
