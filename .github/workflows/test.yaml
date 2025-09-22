@@ -1,12 +1,14 @@
 name: Testing
 
-# gha branch is for spamming Github Actions
 on:
-  push:
-    branches: ['main', 'gha']
   pull_request:
-    branches: ['main']
-  workflow_dispatch:
+    branches:
+      - 'main'
+  push:
+    branches:
+      - 'main' # we don't actually do pull requests
+      - 'gha/testing' # for spamming^W debugging this workflow
+  workflow_dispatch: # also for debugging
 
 jobs:
   test:
