@@ -2,6 +2,8 @@
 
 # Welcome
 
+[![docs exist](https://img.shields.io/badge/docs-exist-blue)](https://roboteamtwente.github.io/rfid-tracker-server)
+
 ## Get started
 
 1. [Install VSCode](https://code.visualstudio.com/).
