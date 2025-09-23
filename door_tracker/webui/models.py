@@ -1,3 +1,4 @@
+import secrets
 from datetime import datetime
 from enum import Enum
 
@@ -174,7 +175,11 @@ class Statistics(models.Model):
 
 
 class Scanner(models.Model):
-    id = models.CharField(primary_key=True)
+    def generate_scanner_id():
+        """Generate an ID for a new scanner."""
+        return secrets.token_hex(16)
+
+    id = models.CharField(primary_key=True, default=generate_scanner_id)
     name = models.CharField()
 
     def __str__(self):

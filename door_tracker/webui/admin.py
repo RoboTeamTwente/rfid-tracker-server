@@ -95,12 +95,7 @@ class StatisticsAdmin(admin.ModelAdmin):
 @admin.register(Scanner)
 class ScannerAdmin(admin.ModelAdmin):
     list_display = ('name', 'id')
-
-    def get_readonly_fields(self, request, obj=None):
-        default = super().get_readonly_fields(request, obj)
-        if obj is not None:  # when editing
-            default = list(default) + ['id']
-        return default
+    readonly_fields = ('id',)
 
 
 # this ungodly hack disables alphabetical sorting of models
