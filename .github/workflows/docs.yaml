@@ -33,7 +33,7 @@ jobs:
       - name: Run Doxygen
         uses: mattnotmitt/doxygen-action@26c5585d9d0077c5c6f6c700bc6434ef03956fd4 # v1.2.1
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
+        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
         with:
           path: doxygen/html
       - name: Deploy to GitHub Pages
