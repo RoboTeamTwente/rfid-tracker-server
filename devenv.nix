@@ -79,6 +79,7 @@ in
   packages = [
     pkgs.curl
     pkgs.djhtml
+    pkgs.doxygen
     pkgs.git
     pkgs.httpie
     pkgs.openssh
