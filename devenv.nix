@@ -41,6 +41,11 @@ in
     django shell "$@"
   '';
 
+  scripts.current-version.exec = ''
+    cd "$DEVENV_ROOT/door_tracker"
+    cz version -p
+  '';
+
   scripts.docker-login.exec = ''
     skopeo login docker.io -u roboteamtwente "$@"
   '';
