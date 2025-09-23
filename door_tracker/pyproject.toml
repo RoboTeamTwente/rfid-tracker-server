@@ -32,3 +32,10 @@ extend-select = ["I"]
 
 [tool.ruff.format]
 quote-style = 'single'
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "v$version"
+version_scheme = "semver2"
+version_provider = "uv"
+update_changelog_on_bump = true
