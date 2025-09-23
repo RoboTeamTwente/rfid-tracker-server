@@ -88,6 +88,7 @@ in
   ## Extra packages
 
   packages = [
+    pkgs.commitizen
     pkgs.curl
     pkgs.djhtml
     pkgs.doxygen
