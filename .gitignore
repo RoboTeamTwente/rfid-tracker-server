@@ -20,3 +20,6 @@ door_tracker/db.sqlite3
 /docs/schema.svg
 /ruff.toml
 /.vscode/tasks.json
+
+# doxygen
+doxygen/

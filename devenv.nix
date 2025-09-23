@@ -79,6 +79,7 @@ in
   packages = [
     pkgs.curl
     pkgs.djhtml
+    pkgs.doxygen
     pkgs.git
     pkgs.httpie
     pkgs.openssh
@@ -245,8 +246,6 @@ in
     hadolint.enable = true;
     markdownlint.enable = true;
     nixfmt-rfc-style.enable = true;
-    prettier.enable = true;
-    prettier.excludes = [ ''templates/.*\.html$'' ];
     ripsecrets.enable = true;
     ruff.enable = true;
     ruff-format.enable = true;
@@ -272,6 +271,11 @@ in
     ];
     always_run = true;
     pass_filenames = false;
+  };
+
+  git-hooks.hooks.prettier = {
+    enable = true;
+    excludes = [ ''templates/.*\.html$'' ];
   };
 
 }

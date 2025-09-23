@@ -4,8 +4,9 @@ on:
   schedule:
     - cron: '0/15 * * * *' # every 15 minutes
   push:
-    branches: ['gha/renovate'] # for debugging
-  workflow_dispatch:
+    branches:
+      - 'gha/renovate' # for debugging this workflow
+  workflow_dispatch: # also for debugging
 
 jobs:
   renovate:
@@ -22,7 +23,7 @@ jobs:
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
       - name: Self-hosted Renovate
-        uses: renovatebot/github-action@v43.0.12
+        uses: renovatebot/github-action@9ba84f1ade243f8c2ce5b223df61cf23dc094584 # v43.0.13
         with:
           token: '${{ steps.get_token.outputs.token }}'
         env:
