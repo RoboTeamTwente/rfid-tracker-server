@@ -280,6 +280,7 @@ in
     check-symlinks.enable = true;
     check-toml.enable = true;
     check-yaml.enable = true;
+    commitizen.enable = true;
     deadnix.enable = true;
     detect-private-keys.enable = true;
     eclint.enable = true;
