@@ -169,6 +169,8 @@ STORAGES = {
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+BACKUP_SHARED_DRIVE_ID = os.getenv('DJANGO_BACKUP_SHARED_DRIVE_ID', None)
+BACKUP_FOLDER_NAME = os.getenv('DJANGO_BACKUP_FOLDER_NAME', None)
 
 # Production
 

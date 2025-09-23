@@ -26,8 +26,8 @@ def start():
     scheduler.add_job(
         backup_website_job,
         trigger='cron',
-        hour='3',
-        minute='0',  # every minute
+        hour='23',
+        minute='59',
         id='backup_website_job',
         replace_existing=True,
     )

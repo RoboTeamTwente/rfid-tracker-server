@@ -7,6 +7,8 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
+from door_tracker import settings
+
 
 class Command(BaseCommand):
     help = 'Back up SQLite3 database to Shared Drive'
@@ -20,9 +22,8 @@ class Command(BaseCommand):
             os.getcwd(), 'credentials/service-account.json'
         )
 
-        # ---------Edit here the correct drive location----------------
-        SHARED_DRIVE_ID = '0ADUE7KR7YsqxUk9PVA'
-        FOLDER_NAME = 'django_backup'
+        SHARED_DRIVE_ID = settings.BACKUP_SHARED_DRIVE_ID
+        FOLDER_NAME = settings.BACKUP_FOLDER_NAME
 
         # ---------- STEP 1: Copy DB ----------
         with connection.cursor() as cursor:

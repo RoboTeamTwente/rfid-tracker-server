@@ -15,6 +15,7 @@ class Command(BaseCommand):
     def minutes_for_day(self, user, day):
         today = timezone.localdate()
 
+        # Get all the logs from a user in a day ordered by time
         logs = (
             Log.objects.filter(
                 tag__owner=user,
@@ -29,6 +30,7 @@ class Command(BaseCommand):
         if not logs.exists():
             return 0
 
+        # If the the first log is checkout count as if checkin at 00:00, if the last log is checkin coint as if checkout at 23:59
         beginning = timezone.make_aware(datetime.combine(day, datetime.min.time()))
         if day == today:
             end = timezone.localtime()
@@ -40,6 +42,7 @@ class Command(BaseCommand):
         if logs_list[-1].type == Log.LogEntryType.CHECKIN:
             logs_list.append(Log(type=Log.LogEntryType.CHECKOUT, time=end))
 
+        # Calculate minutes between checkins and checkouts
         minutes_worked = 0
         checkin_time = None
 
@@ -55,7 +58,7 @@ class Command(BaseCommand):
         return minutes_worked
 
     def minutes_week_up_to(self, user, day):
-        """Calculate total minutes for the week ending on 'day'."""
+        # Calculate total minutes for the week ending on 'day'
         start_of_week = day - timedelta(days=day.weekday())
         total = 0
 
@@ -66,7 +69,7 @@ class Command(BaseCommand):
         return total
 
     def minutes_month_up_to(self, user, day):
-        """Calculate total minutes for the month ending on 'day'."""
+        # Calculate total minutes for the month ending on 'day'
         start_of_month = day.replace(day=1)
         total = 0
 
@@ -93,10 +96,9 @@ class Command(BaseCommand):
                     datetime.combine(single_date, datetime.min.time())
                 )
 
+            # Loop though all users
             for user in User.objects.all():
                 minutes_day_val = self.minutes_for_day(user, single_date)
-                # minutes_week_val = self.minutes_week_up_to(user, single_date)
-                # minutes_month_val = self.minutes_month_up_to(user, single_date)
                 minutes_week_val = 0
                 minutes_month_val = 0
 
