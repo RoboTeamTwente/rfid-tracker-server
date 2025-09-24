@@ -328,7 +328,7 @@ def register_scan(request):
             return JsonResponse(
                 {
                     'state': 'register',
-                    'name': tag.owner_name(),
+                    'owner_name': tag.owner_name(),
                     'hours_day': hours_day,
                     'hours_week': hours_week,
                 }
@@ -356,7 +356,7 @@ def register_scan(request):
             return JsonResponse(
                 {
                     'state': 'checkout' if checkout else 'checkin',
-                    'name': tag.owner_name(),
+                    'owner_name': tag.owner_name(),
                     'hours_day': hours_day,  # TODO
                     'hours_week': hours_week,  # TODO
                 }
