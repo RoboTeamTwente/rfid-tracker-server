@@ -46,18 +46,20 @@ in
   '';
 
   scripts.build-container.exec = ''
-    set -eux
+    set -eu
     cd "$DEVENV_ROOT"
     name=$1
     shift
+    set -x
     $(devenv build --refresh-eval-cache outputs.containers."$name".copyToDockerDaemon)/bin/copy-to-docker-daemon "$@"
   '';
 
   scripts.upload-container.exec = ''
-    set -eux
+    set -eu
     cd "$DEVENV_ROOT"
     name=$1
     shift
+    set -x
     $(devenv build --refresh-eval-cache outputs.containers."$name".copyToRegistry)/bin/copy-to-registry "$@"
   '';
 
