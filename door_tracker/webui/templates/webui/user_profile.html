@@ -89,7 +89,7 @@
                 <div class="profile__tag-actions">
                   <form method="GET" action="{% url 'user_profile' %}" class="profile__tag-action">
                     <input type="hidden" name="modal" value="rename_tag">
-                    <input type="hidden" name="tag_id" value="{{ tag.id }}">
+                    <input type="hidden" name="tag_code" value="{{ tag.id }}">
                     <input type="hidden" name="tag_name" value="{{ tag.name }}">
                     <button class="profile__tag-action" >
                       <i class="fa fa-pen"></i>
@@ -131,7 +131,7 @@
     {% elif modal_name == 'rename_tag' %}
 
       {% modal 'Name your tag:' 'rename_tag' %}
-        <input type="hidden" name="id" value="{{ request.GET.tag_id }}">
+        <input type="hidden" name="id" value="{{ request.GET.tag_code }}">
         <input type="text" name="tag_name" value="{{ request.GET.tag_name }}" autofocus >
         <section class="modal__actions">
           <button class="modal__action modal--primary">Save</button>

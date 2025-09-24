@@ -10,16 +10,16 @@ class RegisterScanTests(TestCase):
         user = User.objects.create(username='test', first_name='Test', last_name='User')
         scanner = Scanner.objects.create(id='scanner', name='Test Scanner')
         tag = Tag.objects.create(name='test', owner=user)
-        tag_id = 'DEADBEEF'
+        tag_code = 'DEADBEEF'
 
         res = self.client.post(
             reverse('register_scan'),
-            {'device_id': scanner.id, 'card_id': tag_id},
+            {'device_id': scanner.id, 'card_id': tag_code},
         )
         self.assertEqual(res.json()['state'], 'register')
 
         tag.refresh_from_db()
-        self.assertEqual(tag.tag, tag_id)
+        self.assertEqual(tag.tag, tag_code)
 
         res = self.client.post(
             reverse('register_scan'),

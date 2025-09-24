@@ -2,7 +2,7 @@
 
 map log {
 	type => "in" or "out"
-	tag_id => foreign_key
+	tag_code => foreign_key
 	time => datetime
 }
 
@@ -35,7 +35,7 @@ map job {
 	quota_hours_per_week => int
 }
 
-log::tag_id		}-||	tag::id
+log::tag_code		}-||	tag::id
 tag::person_id		}-||	person::id
 
 membership::person_id	}-u-||	person::id

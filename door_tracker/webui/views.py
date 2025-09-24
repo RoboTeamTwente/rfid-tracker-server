@@ -7,6 +7,7 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_not_required
 from django.contrib.auth.views import LoginView
 from django.core.cache import cache
+from django.core.management import call_command
 from django.db.models import Avg, Sum
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -95,7 +96,7 @@ class Base64Field(serializers.Field):
 
 
 class ChangeStatusSerializer(serializers.Serializer):
-    tag_id = Base64Field(required=True)
+    tag_code = Base64Field(required=True)
 
 
 def serializer_error(serializer):
@@ -108,28 +109,6 @@ def serializer_error(serializer):
         for error in errors:
             msg += f'    {error}\n'
     return msg
-
-
-def current_user_data(request):
-    logs = (
-        Log.objects.filter(tag__owner=request.user)
-        .select_related('tag')
-        .order_by('-time')
-    )
-
-    data = [
-        {
-            'time': log.time.isoformat(),
-            'type': log.get_type_display(),
-            'tag_name': log.tag.name,
-            'owner_first': log.tag.owner.first_name,
-            'owner_last': log.tag.owner.last_name,
-            'scanner': log.scanner.name,
-        }
-        for log in logs
-    ]
-
-    return JsonResponse({'status': 'success', 'logs': data}, status=200)
 
 
 def current_user_logs(request):
@@ -333,12 +312,25 @@ def register_scan(request):
             log.save()
             tag.tag = card_id
             tag.save()
+            call_command('update_statistics')
+            hours_day = (
+                Statistics.objects.filter(statistics__person=tag.user)
+                .get('minutes_day')
+                .latest
+                // 60
+            )
+            hours_week = (
+                Statistics.objects.filter(statistics__person=tag.user)
+                .get('minutes_week')
+                .latest
+                // 60
+            )
             return JsonResponse(
                 {
                     'state': 'register',
                     'name': tag.owner_name(),
-                    'dailyhours': 42,
-                    'weeklyhours': 420,
+                    'hours_day': hours_day,
+                    'hours_week': hours_week,
                 }
             )
 
@@ -348,12 +340,25 @@ def register_scan(request):
                 Log.LogEntryType.CHECKOUT if checkout else Log.LogEntryType.CHECKIN
             )
             log.save()
+            call_command('update_statistics')
+            hours_day = (
+                Statistics.objects.filter(statistics__person=tag.user)
+                .get('minutes_day')
+                .latest
+                // 60
+            )
+            hours_week = (
+                Statistics.objects.filter(statistics__person=tag.user)
+                .get('minutes_week')
+                .latest
+                // 60
+            )
             return JsonResponse(
                 {
                     'state': 'checkout' if checkout else 'checkin',
                     'name': tag.owner_name(),
-                    'dailyhours': 42,  # TODO
-                    'weeklyhours': 420,  # TODO
+                    'hours_day': hours_day,  # TODO
+                    'hours_week': hours_week,  # TODO
                 }
             )
 
@@ -486,9 +491,9 @@ def user_profile(request):
         serializer = ScanTagSerializer(data=request.GET)
         serializer.is_valid(raise_exception=True)
 
-        tag_id = serializer.validated_data['tag']
+        tag_code = serializer.validated_data['tag']
 
-        tag = get_object_or_404(Tag, pk=tag_id)
+        tag = get_object_or_404(Tag, pk=tag_code)
 
         if tag.get_state() == TagState.CLAIMED:
             return redirect('user_profile')
@@ -531,9 +536,9 @@ def delete_tag(request):
     serializer = DeleteTagSerializer(data=request.POST)
     serializer.is_valid(raise_exception=True)
 
-    tag_id = serializer.validated_data['id']
+    tag_code = serializer.validated_data['id']
 
-    tag = get_object_or_404(Tag, pk=tag_id)
+    tag = get_object_or_404(Tag, pk=tag_code)
     tag.name = ''
     tag.save()
 
@@ -544,10 +549,10 @@ def rename_tag(request):
     serializer = RenameTagSerializer(data=request.POST)
     serializer.is_valid(raise_exception=True)
 
-    tag_id = serializer.validated_data['id']
+    tag_code = serializer.validated_data['id']
     tag_name = serializer.validated_data['tag_name']
 
-    tag = get_object_or_404(Tag, pk=tag_id)
+    tag = get_object_or_404(Tag, pk=tag_code)
     tag.name = tag_name
     tag.save()
     return redirect('user_profile')
@@ -603,30 +608,6 @@ def logs_to_csv(logs):
     return response
 
 
-@api_view(['POST'])
-def create_pending_reg(request):
-    tag_name = request.data.get('name', 'pending')  # fallback if not provided
-
-    tag = Tag(name=tag_name, owner=request.user)
-    tag.save()
-
-    state = tag.get_state()
-    state_str = state.value if state else None
-
-    return JsonResponse(
-        {
-            'status': 'success',
-            'tag_data': {
-                'DB ID': tag.id,
-                'tag ID': tag.tag,
-                'tag Name': tag.name,
-                'tag Owner': tag.owner_name(),
-                'tag State': state_str,
-            },
-        }
-    )
-
-
 @api_view(['GET'])
 def check_registration(request, db_id):
     tag = Tag.objects.filter(id=db_id, owner=request.user).first()
@@ -654,10 +635,10 @@ def user_tags(request):
         state_str = state.value if state else None
         data.append(
             {
-                'tag ID': str(tag.tag) if tag.tag is not None else None,
-                'tag Name': str(tag.name) if tag.name is not None else None,
-                'tag Owner': tag.owner_name(),
-                'tag State': state_str,
+                'tag_code': str(tag.tag) if tag.tag is not None else None,
+                'tag_name': str(tag.name) if tag.name is not None else None,
+                'tag_owner': tag.owner_name(),
+                'tag_state': state_str,
             }
         )
 
@@ -686,7 +667,7 @@ def fuel_guage(request):
                 'status': 'Success',
                 'data': {
                     'quota': member_quota,
-                    'hours_worked': hours_week,
+                    'hours_week': hours_week,
                     'amt_work_done': percentage,
                 },
             }
