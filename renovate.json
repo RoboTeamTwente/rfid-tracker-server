@@ -3,5 +3,6 @@
   "extends": ["config:best-practices"],
   "automerge": true,
   "automergeType": "branch",
-  "major": { "automerge": false }
+  "major": { "automerge": false },
+  "ignorePaths": ["compose.yaml"]
 }
