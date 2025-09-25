@@ -6,4 +6,4 @@ class WebuiConfig(AppConfig):
     name = 'webui'
 
     def ready(self):
-        pass
+        import webui.signals  # noqa: F401
