@@ -560,6 +560,8 @@ def edit_profile(request):
 
     if (
         not current_membership
+        or not current_membership.job
+        or not current_membership.subteam
         or current_membership.job.id != job.id
         or current_membership.subteam.id != subteam.id
     ):
