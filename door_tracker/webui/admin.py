@@ -41,6 +41,187 @@ class LogPersonListFilter(admin.SimpleListFilter):
         return queryset.filter(tag__owner=self.value())
 
 
+class LogTagListFilter(admin.SimpleListFilter):
+    title = 'remote checkout'
+    parameter_name = 'tag'
+
+    def lookups(self, request, model_admin):
+        return [
+            ('remote_checkout', 'Remote Checkouts'),
+            ('normal_logs', 'Normal Logs'),
+        ]
+
+    def queryset(self, request, queryset):
+        if not self.value():
+            return queryset
+
+        if self.value() == 'remote_checkout':
+            remote_checkout_logs = Tag.objects.filter(name='WebUI')
+            return queryset.filter(tag__in=remote_checkout_logs)
+        elif self.value() == 'normal_logs':
+            normal_logs = Tag.objects.exclude(name='WebUI')
+            return queryset.filter(tag__in=normal_logs)
+        else:
+            return queryset
+
+
+class LogLogEntryTypeListFilter(admin.SimpleListFilter):
+    title = 'log entry type'
+    parameter_name = 'type'
+
+    def lookups(self, request, model_admin):
+        return [
+            ('checkin', 'Check-in'),
+            ('checkout', 'Check-out'),
+        ]
+
+    def queryset(self, request, queryset):
+        if not self.value():
+            return queryset
+
+        if self.value() == 'checkin':
+            return queryset.filter(type__in=[Log.LogEntryType.CHECKIN])
+        elif self.value() == 'checkout':
+            return queryset.filter(type__in=[Log.LogEntryType.CHECKOUT])
+        else:
+            return queryset
+
+
+class StatisticsSubteamListFilter(admin.SimpleListFilter):
+    title = 'subteam'
+    parameter_name = 'subteam'
+
+    def lookups(self, request, model_admin):
+        return [(s.id, s) for s in SubTeam.objects.all()]
+
+    def queryset(self, request, queryset):
+        if not self.value():
+            return queryset
+        members = Membership.objects.filter_effective().filter(subteam=self.value())
+        return queryset.filter(person__in=members.values('person'))
+
+
+class StatisticsPersonListFilter(admin.SimpleListFilter):
+    title = 'person'
+    parameter_name = 'person'
+
+    def lookups(self, request, model_admin):
+        return [(u.id, u.get_full_name()) for u in User.objects.all()]
+
+    def queryset(self, request, queryset):
+        if not self.value():
+            return queryset
+        return queryset.filter(person=self.value())
+
+
+class TagStatusListFilter(admin.SimpleListFilter):
+    title = 'status'
+    parameter_name = 'status'
+
+    def lookups(self, request, model_admin):
+        return [
+            ('claimed', 'Claimed'),
+            ('pending_registration', 'Pending registration'),
+            ('unauthorized', 'Unauthorized'),
+        ]
+
+    def queryset(self, request, queryset):
+        if not self.value():
+            return queryset
+        return queryset.filter(status=self.value())
+
+
+class TagOwnerListFilter(admin.SimpleListFilter):
+    title = 'owner'
+    parameter_name = 'owner'
+
+    def lookups(self, request, model_admin):
+        return [(u.id, u.get_full_name()) for u in User.objects.all()]
+
+    def queryset(self, request, queryset):
+        if not self.value():
+            return queryset
+        return queryset.filter(owner=self.value())
+
+
+class MemershipSubteamListFilter(admin.SimpleListFilter):
+    title = 'subteam'
+    parameter_name = 'subteam'
+
+    def lookups(self, request, model_admin):
+        return [(s.id, s) for s in SubTeam.objects.all()]
+
+    def queryset(self, request, queryset):
+        if not self.value():
+            return queryset
+        return queryset.filter(subteam=self.value())
+
+
+class MemershipJobListFilter(admin.SimpleListFilter):
+    title = 'job'
+    parameter_name = 'job'
+
+    def lookups(self, request, model_admin):
+        return [(j.id, j.name) for j in Job.objects.all()]
+
+    def queryset(self, request, queryset):
+        if not self.value():
+            return queryset
+        return queryset.filter(job=self.value())
+
+
+class MembershipDateListFilter(admin.SimpleListFilter):
+    title = 'membership status'
+    parameter_name = 'starting_from'
+
+    def lookups(self, request, model_admin):
+        return [
+            ('current', 'Active'),
+            ('past', 'Past'),
+            ('future', 'Future'),
+        ]
+
+    def queryset(self, request, queryset):
+        if not self.value():
+            return queryset
+        today = datetime.now()
+        if self.value() == 'current':
+            first_current = (
+                queryset.filter(starting_from__lte=today)
+                .order_by('-starting_from')
+                .first()
+            )
+            if first_current:
+                return queryset.filter(pk=first_current.pk)
+            return queryset.none()
+        elif self.value() == 'past':
+            first_current = (
+                queryset.filter(starting_from__lte=today)
+                .order_by('-starting_from')
+                .first()
+            )
+            if first_current:
+                return queryset.filter(starting_from__lt=first_current.starting_from)
+            return queryset.none()
+        elif self.value() == 'future':
+            return queryset.filter(starting_from__date__gt=today)
+        else:
+            return queryset
+
+
+class MembershipPersonListFilter(admin.SimpleListFilter):
+    title = 'person'
+    parameter_name = 'person'
+
+    def lookups(self, request, model_admin):
+        return [(u.id, u.get_full_name()) for u in User.objects.all()]
+
+    def queryset(self, request, queryset):
+        if not self.value():
+            return queryset
+        return queryset.filter(person=self.value())
+
+
 def export_selected_logs(modeladmin, request, queryset):
     ids = queryset.values_list('pk', flat=True)
     url = reverse('export', query={'ids': ids})
@@ -51,21 +232,31 @@ def export_selected_logs(modeladmin, request, queryset):
 class LogAdmin(admin.ModelAdmin):
     actions = [export_selected_logs]
     list_display = ('time', 'type', 'person', 'scanner')
-    list_filter = (LogSubteamListFilter, LogPersonListFilter)
+    list_filter = (
+        LogTagListFilter,
+        LogSubteamListFilter,
+        LogPersonListFilter,
+        LogLogEntryTypeListFilter,
+    )
     ordering = ('-time',)
-    search_fields = ('tag__owner__username', 'type')
 
 
 @admin.register(Membership)
 class MembershipAdmin(admin.ModelAdmin):
     list_display = ('starting_from', 'person', 'subteam', 'job')
     ordering = ('-starting_from',)
-    search_fields = ('person__username', 'subteam__name')
+    list_filter = (
+        MembershipDateListFilter,
+        MemershipJobListFilter,
+        MemershipSubteamListFilter,
+        MembershipPersonListFilter,
+    )
 
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     list_display = ('name', 'owner_name', 'status', 'tag_code')
+    list_filter = (TagStatusListFilter, TagOwnerListFilter)
 
 
 @admin.register(SubTeam)
@@ -83,13 +274,14 @@ class StatisticsAdmin(admin.ModelAdmin):
     list_display = (
         'person',
         'date',
-        'minutes_day',
-        'minutes_week',
-        'minutes_month',
-        'average_week',
-        'total_minutes',
+        'hours_day',
+        'hours_week',
+        'hours_month',
+        'average_hours_week',
+        'total_hours',
     )
     ordering = ('-date',)
+    list_filter = (StatisticsSubteamListFilter, StatisticsPersonListFilter)
 
 
 @admin.register(Scanner)

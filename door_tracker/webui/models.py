@@ -173,6 +173,34 @@ class Statistics(models.Model):
     average_week = models.IntegerField()
     total_minutes = models.IntegerField()
 
+    def hours_day(self):
+        hours = self.minutes_day // 60
+        minutes = self.minutes_day % 60
+        return f'{hours}h {minutes}min'
+
+    def hours_week(self):
+        hours = self.minutes_week // 60
+        minutes = self.minutes_week % 60
+        return f'{hours}h {minutes}min'
+
+    def hours_month(self):
+        hours = self.minutes_month // 60
+        minutes = self.minutes_month % 60
+        return f'{hours}h {minutes}min'
+
+    def average_hours_week(self):
+        hours = self.average_week // 60
+        minutes = self.average_week % 60
+        return f'{hours}h {minutes}min'
+
+    def total_hours(self):
+        hours = self.total_minutes // 60
+        minutes = self.total_minutes % 60
+        return f'{hours}h {minutes}min'
+
+    class Meta:
+        verbose_name_plural = 'Statistics'
+
 
 class Scanner(models.Model):
     def generate_scanner_id():
