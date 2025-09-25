@@ -529,7 +529,9 @@ class EditMembershipSerializer(serializers.Serializer):
 
 def edit_profile(request):
     serializer = EditMembershipSerializer(data=request.POST)
-    serializer.is_valid(raise_exception=True)
+    if not serializer.is_valid():
+        messages.error(request, 'Please fill all fields')
+        return redirect('user_profile')
 
     first_name = serializer.validated_data['first_name']
     last_name = serializer.validated_data['last_name']
