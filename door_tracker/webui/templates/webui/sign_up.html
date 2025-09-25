@@ -113,9 +113,37 @@
       </div>
       <h2>RoboTeam Twente Sign Up</h2>
       <form method="post">
-        {% csrf_token %} {{ form.as_p }}
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <p><strong>Quota: </strong><span id="quota-label">Select a job type</span></p>
+
         <button type="submit">Register</button>
       </form>
+
+      <script>
+
+        // Build a mapping of job IDs -> quotas directly in the template
+        const jobQuotas = {
+          {% for job in form.fields.job.queryset %}
+            "{{ job.id }}": "{{ job.quota }}"{% if not forloop.last %},{% endif %}
+          {% endfor %}
+        };
+
+        const jobSelect = document.getElementById("id_job");
+        const quotaLabel = document.getElementById("quota-label");
+
+        jobSelect.addEventListener("change", function () {
+          const selected = this.value;
+          if (jobQuotas[selected]) {
+            quotaLabel.textContent = jobQuotas[selected] + " hrs/week";
+          } else {
+            quotaLabel.textContent = "Select a job type";
+          }
+        });
+      </script>
+
+
     </div>
   </body>
 </html>

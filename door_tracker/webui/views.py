@@ -497,9 +497,9 @@ def user_profile(request):
 
     tags = Tag.objects.get_authorized().filter(owner=request.user)
     membership = (
-        Membership.objects.filter_effective()
+        Membership.objects.filter(person=request.user)
         .select_related('job', 'subteam')
-        .filter(person=request.user)
+        .order_by('-starting_from')
         .first()
     )
 
