@@ -98,30 +98,32 @@
         </thead>
         <tbody>
           {% for tag in tags %}
-            <tr>
-              <td>{{ tag.tag }}</td>
-              <td>{{ tag.name }}</td>
-              <td>{{ tag.get_state.value }}</td>
-              <td>
-                <div class="profile__tag-actions">
-                  <form method="GET" action="{% url 'user_profile' %}" class="action">
-                    <input type="hidden" name="modal" value="rename_tag">
-                    <input type="hidden" name="tag_code" value="{{ tag.id }}">
-                    <input type="hidden" name="tag_name" value="{{ tag.name }}">
-                    <button class="action__button">
-                      <i class="fa fa-pen"></i>
-                    </button>
-                  </form>
-                  <form method="GET" action="{% url 'user_profile' %}" class="action">
-                    <input type="hidden" name="modal" value="delete_tag_confirm">
-                    <input type="hidden" name="tag_id" value="{{ tag.id }}">
-                    <button class="action__button">
-                      <i class="fa fa-trash"></i>
-                    </button>
-                  </form>
-                </div>
-              </td>
-            </tr>
+            {% if tag.name != "WebUI" %}
+              <tr>
+                <td>{{ tag.tag }}</td>
+                <td>{{ tag.name }}</td>
+                <td>{{ tag.get_state.value }}</td>
+                <td>
+                  <div class="profile__tag-actions">
+                    <form method="GET" action="{% url 'user_profile' %}" class="action">
+                      <input type="hidden" name="modal" value="rename_tag">
+                      <input type="hidden" name="tag_code" value="{{ tag.id }}">
+                      <input type="hidden" name="tag_name" value="{{ tag.name }}">
+                      <button class="action__button">
+                        <i class="fa fa-pen"></i>
+                      </button>
+                    </form>
+                    <form method="GET" action="{% url 'user_profile' %}" class="action">
+                      <input type="hidden" name="modal" value="delete_tag_confirm">
+                      <input type="hidden" name="tag_id" value="{{ tag.id }}">
+                      <button class="action__button">
+                        <i class="fa fa-trash"></i>
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            {% endif %}
           {% endfor %}
         </tbody>
       </table>
