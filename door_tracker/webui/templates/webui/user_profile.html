@@ -184,7 +184,7 @@
             <option value="{{ subteam.id }}" {% if membership and membership.subteam == subteam %}selected{% endif %}>{{ subteam }}</option>
           {% endfor %}
         </select>
-        <label for="edit_profile/job">Job:</label>
+        <label for="edit_profile/job">Workload:</label>
         <select id="edit_profile/job" name="job">
           <option disabled {% if not membership %}selected{% endif %}>-- Pick a job --</option>
           {% for job in jobs %}
