@@ -91,6 +91,9 @@ class Tag(models.Model):
         related_name='tags',
     )
 
+    class Meta:
+        unique_together = ('owner', 'name')
+
     def owner_name(self):
         if not self.owner:
             return None
