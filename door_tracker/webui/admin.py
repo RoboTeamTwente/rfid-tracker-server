@@ -1,12 +1,13 @@
 # admin.py
 import secrets
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import path, reverse
+from django.utils import timezone
 
 from .models import Job, Log, Membership, Scanner, Statistics, SubTeam, Tag
 
@@ -302,7 +303,7 @@ def generate_register_link(request):
     token = secrets.token_urlsafe(16)
     cache.set(f'register_token_{token}', True, timeout=TOKEN_LIFETIME)
     link = request.build_absolute_uri(reverse('sign_up', query={'token': token}))
-    expires_at = (datetime.now() + timedelta(seconds=TOKEN_LIFETIME)).isoformat()
+    expires_at = (timezone.now() + timedelta(seconds=TOKEN_LIFETIME)).isoformat()
     return JsonResponse({'link': link, 'expires_at': expires_at})
 
 

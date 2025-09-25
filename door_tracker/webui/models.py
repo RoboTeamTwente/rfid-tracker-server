@@ -1,5 +1,4 @@
 import secrets
-from datetime import datetime
 from enum import Enum
 
 from django.contrib.auth.models import User
@@ -54,7 +53,7 @@ class Membership(models.Model):
         related_name='members',
     )
     job = models.ForeignKey('Job', blank=True, null=True, on_delete=models.CASCADE)
-    starting_from = models.DateTimeField(auto_now_add=True)
+    starting_from = models.DateTimeField(default=timezone.now)
 
     class MembershipManager(models.Manager):
         def filter_effective(self):
@@ -63,7 +62,7 @@ class Membership(models.Model):
                 starting_from=Subquery(
                     qs.filter(
                         person=OuterRef('person'),
-                        starting_from__lte=datetime.now(),
+                        starting_from__lte=timezone.now(),
                     )
                     .values('person')
                     .annotate(starting_from=Max('starting_from'))
