@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_not_required
 from django.contrib.auth.views import LoginView
 from django.core.cache import cache
 from django.core.management import call_command
+from django.db import IntegrityError
 from django.db.models import Avg, Sum
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -28,10 +29,12 @@ from .forms import RegistrationForm
 
 # Create your views here.
 from .models import (
+    Job,
     Log,
     Membership,
     Scanner,
     Statistics,
+    SubTeam,
     Tag,
     TagState,
     is_checked_in,
@@ -500,14 +503,67 @@ def user_profile(request):
         request,
         'webui/user_profile.html',
         {
+            'jobs': Job.objects.all(),
             'membership': membership,
             'modal_name': request.GET.get('modal'),
             'request': request,
+            'subteams': SubTeam.objects.all(),
             'tags': tags,
             'user': request.user,
             'user_status': user_status(request),
         },
     )
+
+
+class EditMembershipSerializer(serializers.Serializer):
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+    username = serializers.CharField()
+    job = serializers.IntegerField()
+    subteam = serializers.IntegerField()
+
+
+def edit_profile(request):
+    serializer = EditMembershipSerializer(data=request.POST)
+    serializer.is_valid(raise_exception=True)
+
+    first_name = serializer.validated_data['first_name']
+    last_name = serializer.validated_data['last_name']
+    username = serializer.validated_data['username']
+    job_id = serializer.validated_data['job']
+    subteam_id = serializer.validated_data['subteam']
+
+    job = get_object_or_404(Job, pk=job_id)
+    subteam = get_object_or_404(SubTeam, pk=subteam_id)
+
+    current_membership = (
+        Membership.objects.filter_effective()
+        .filter(person=request.user)
+        .latest('starting_from')
+    )
+
+    request.user.first_name = first_name
+    request.user.last_name = last_name
+    request.user.username = username
+    try:
+        request.user.save()
+    except IntegrityError:
+        messages.error(request, f'Username {username} is already taken!')
+        return redirect('user_profile')
+
+    if (
+        not current_membership
+        or current_membership.job != job
+        or current_membership.subteam != subteam
+    ):
+        Membership.objects.create(
+            person=request.user,
+            job=job,
+            subteam=subteam,
+        )
+
+    messages.success(request, 'Subteam & Job updated')
+    return redirect('user_profile')
 
 
 class DeleteTagSerializer(serializers.Serializer):
@@ -524,7 +580,8 @@ def delete_tag(request):
 
     if tag.name == 'WebUI':
         return JsonResponse(
-            {'status': 'error', 'message': 'Cannot delete WebUI tag'}, status=403
+            {'status': 'error', 'message': 'Cannot delete WebUI tag'},
+            status=403,
         )
 
     tag.name = ''
