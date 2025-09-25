@@ -77,6 +77,7 @@ header {
 
 header {
   .logo {
+    grid-area: logo;
     display: flex;
     align-items: center; /* vertical centering */
     gap: 0.5rem; /* space between logo and text */
