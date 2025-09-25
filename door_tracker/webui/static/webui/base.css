@@ -218,7 +218,7 @@ body > .messages {
     padding: var(--gap-default);
     border-radius: var(--radius-default);
 
-    min-width: 25rem;
+    width: 25rem;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 30%);
 
     input {
