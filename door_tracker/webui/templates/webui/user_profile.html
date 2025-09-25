@@ -89,15 +89,16 @@
                 <div class="profile__tag-actions">
                   <form method="GET" action="{% url 'user_profile' %}" class="profile__tag-action">
                     <input type="hidden" name="modal" value="rename_tag">
-                    <input type="hidden" name="tag_id" value="{{ tag.id }}">
+                    <input type="hidden" name="tag_code" value="{{ tag.id }}">
                     <input type="hidden" name="tag_name" value="{{ tag.name }}">
                     <button class="profile__tag-action" >
                       <i class="fa fa-pen"></i>
                     </button>
                   </form>
-                  <form method="POST" action="{% url 'delete_tag' %}" class="profile__tag-action">
-                    {% csrf_token %}
-                    <button class="profile__tag-action" name="id" value="{{ tag.id }}">
+                  <form method="GET" action="{% url 'user_profile' %}" class="profile__tag-action">
+                    <input type="hidden" name="modal" value="delete_tag_confirm">
+                    <input type="hidden" name="tag_id" value="{{ tag.id }}">
+                    <button class="profile__tag-action" >
                       <i class="fa fa-trash"></i>
                     </button>
                   </form>
@@ -125,16 +126,27 @@
     {% elif modal_name == 'tag_scan' %}
 
       {% modal 'Please scan your tag at the device' 'user_profile' %}
-        <p >Waiting for scan...</p>
+        <p>Waiting for scan...</p>
       {% endmodal %}
 
     {% elif modal_name == 'rename_tag' %}
 
       {% modal 'Name your tag:' 'rename_tag' %}
-        <input type="hidden" name="id" value="{{ request.GET.tag_id }}">
+        <input type="hidden" name="id" value="{{ request.GET.tag_code }}">
         <input type="text" name="tag_name" value="{{ request.GET.tag_name }}" autofocus >
         <section class="modal__actions">
           <button class="modal__action modal--primary">Save</button>
+          <a class="modal__action modal--secondary" href="{% url 'user_profile' %}">Cancel</a>
+        </section>
+      {% endmodal %}
+
+    {% elif modal_name == 'delete_tag_confirm' %}
+
+      {% modal 'Delete tag?' 'delete_tag' %}
+        <input type="hidden" name="tag_id" value="{{ request.GET.tag_id }}">
+        <p>Are you sure you want to delete <b>{{ tag_name }}</b>?</p>
+        <section class="modal__actions">
+          <button class="modal__action modal--primary">Delete</button>
           <a class="modal__action modal--secondary" href="{% url 'user_profile' %}">Cancel</a>
         </section>
       {% endmodal %}

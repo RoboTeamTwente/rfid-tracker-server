@@ -96,7 +96,7 @@ class Tag(models.Model):
             return None
         return self.owner.get_full_name()
 
-    def tag_id(self):
+    def tag_code(self):
         return self.tag
 
     def status(self):

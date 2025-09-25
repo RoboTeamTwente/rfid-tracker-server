@@ -65,7 +65,7 @@ class MembershipAdmin(admin.ModelAdmin):
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
-    list_display = ('name', 'owner_name', 'status', 'tag_id')
+    list_display = ('name', 'owner_name', 'status', 'tag_code')
 
 
 @admin.register(SubTeam)

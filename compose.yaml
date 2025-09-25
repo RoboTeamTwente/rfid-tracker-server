@@ -1,6 +1,6 @@
 services:
   serve:
-    image: roboteamtwente/rfid-tracker-serve@sha256:95748d847156944b66a10c1a696c3a037be1cadd937b3bb1ca5fe561711e3bfc
+    image: roboteamtwente/rfid-tracker-serve@sha256:b25e65d50b47461d51c552288969cc27ec44a33d9ef1e366bffc8f025a6ba1ce
     ports:
       - 8000:8000
     volumes:
