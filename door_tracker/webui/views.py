@@ -406,10 +406,12 @@ def user_statistics(request):
         .first()
     )
 
-    if not membership:
-        return redirect('index')
-
-    quota_minutes_week = membership.job.quota * 60
+    if membership:
+        quota_minutes_week = membership.job.quota * 60
+        subteam_name = membership.subteam.name
+    else:
+        quota_minutes_week = 9999 * 60
+        subteam_name = 'You are alone.'
 
     # XXX: let's just assume that a month is exactly 4 weeks, noone's gonna notice, right? right?
     # TODO: actually calculate amount of workdays in the month
@@ -432,7 +434,7 @@ def user_statistics(request):
         {
             # user info
             'user_name': request.user.get_full_name(),
-            'user_role': membership.subteam.name,
+            'user_role': subteam_name,
             'user_status': user_status(request),
             # totals
             'total_hours_day': format_time(stats.minutes_day),
@@ -494,9 +496,6 @@ def user_profile(request):
         .first()
     )
 
-    if not membership:
-        return redirect('index')
-
     return render(
         request,
         'webui/user_profile.html',
@@ -522,6 +521,12 @@ def delete_tag(request):
     tag_id = serializer.validated_data['tag_id']
 
     tag = get_object_or_404(Tag, pk=tag_id)
+
+    if tag.name == 'WebUI':
+        return JsonResponse(
+            {'status': 'error', 'message': 'Cannot delete WebUI tag'}, status=403
+        )
+
     tag.name = ''
     tag.save()
 
@@ -541,6 +546,11 @@ def rename_tag(request):
     tag_name = serializer.validated_data['tag_name']
 
     tag = get_object_or_404(Tag, pk=tag_code)
+
+    if tag.name == 'WebUI':
+        return JsonResponse(
+            {'status': 'error', 'message': 'Cannot edit WebUI tag'}, status=403
+        )
     tag.name = tag_name
     tag.save()
     return redirect('user_profile')
