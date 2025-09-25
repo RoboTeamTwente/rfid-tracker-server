@@ -1,3 +1,5 @@
+{% load static %}
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -12,7 +14,7 @@
         padding: 0;
         font-family: Arial, sans-serif;
         min-height: 100vh;
-        background: linear-gradient(135deg, #6a5ce8, #3b00b5);
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
       }
 
       body {
@@ -43,7 +45,7 @@
         width: 60px;
         height: 60px;
         border-radius: 50%;
-        background-color: #3b00b5;
+        background-color: #4b0082;
         color: white;
         display: flex;
         justify-content: center;
@@ -51,6 +53,18 @@
         margin: 0 auto 20px auto;
         font-weight: bold;
         font-size: 24px;
+      }
+
+      /* Error message */
+      .errorlist {
+        color: red;            /* makes errors red */
+        list-style-type: none; /* remove bullets */
+        margin: 5px 0;         /* spacing */
+        padding-left: 0;
+        font-size: 14px;
+      }
+      .errorlist li {
+        margin: 2px 0;         /* spacing between multiple errors */
       }
 
       h2 {
@@ -77,7 +91,7 @@
       button {
         width: 100%;
         padding: 12px;
-        background-color: #3b00b5;
+        background-color: #4b0082;
         color: white;
         border: none;
         border-radius: 6px;
@@ -87,14 +101,16 @@
       }
 
       button:hover {
-        background-color: #6a5ce8;
+        background-color: #360060;
       }
     </style>
   </head>
 
   <body>
     <div class="signup-container">
-      <div class="logo-circle">RT</div>
+      <div class="logo-circle">
+        <img src="{% static 'webui/logo.svg' %}" alt="RoboTeam Twente Logo" width="50" height="50">
+      </div>
       <h2>RoboTeam Twente Sign Up</h2>
       <form method="post">
         {% csrf_token %} {{ form.as_p }}

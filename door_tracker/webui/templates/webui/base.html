@@ -12,13 +12,17 @@
 
   <body>
     <header>
-      <a href="{% url 'index' %}" class="logo">🤖 RoboTeam Twente</a>
+      <a href="{% url 'index' %}" class="logo">
+        <img src="{% static 'webui/logo.svg' %}" alt="RoboTeam Twente Logo" width="50" height="50">
+        RoboTeam Twente
+      </a>
       <span class="user-status">{{user_status}}</span>
       <div class="user">
         <span>Welcome, {{user.get_full_name}}</span>
         <a href="{% url 'logout' %}">Log out</a>
       </div>
     </header>
+
 
     <nav>
       <a class="button" href="#" onclick="openCheckoutModal()">Remote Checkout</a> <!-- TODO: this doesn't link anywhere yet -->

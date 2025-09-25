@@ -77,9 +77,17 @@ header {
 
 header {
   .logo {
-    grid-area: logo;
+    display: flex;
+    align-items: center; /* vertical centering */
+    gap: 0.5rem; /* space between logo and text */
     font-size: 1.25rem;
     font-weight: bold;
+  }
+
+  header .logo img {
+    height: 40px; /* adjust as needed */
+    width: auto;
+    display: block; /* remove extra inline spacing */
   }
 
   .user-status {

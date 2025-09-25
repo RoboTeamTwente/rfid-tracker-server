@@ -1,3 +1,5 @@
+{% load static %}
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -139,7 +141,9 @@
 
   <body>
     <div class="login-container">
-      <div class="logo">RTT</div>
+      <div class="logo">
+        <img src="{% static 'webui/logo.svg' %}" alt="RoboTeam Twente Logo" width="70" height="70">
+      </div>
       <h2>RoboTeam Twente Login</h2>
 
       {% if form.errors %}
