@@ -512,25 +512,25 @@ def user_profile(request):
 
 
 class DeleteTagSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
-
-
-class RenameTagSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
-    tag_name = serializers.CharField(max_length=100)
+    tag_id = serializers.IntegerField()
 
 
 def delete_tag(request):
     serializer = DeleteTagSerializer(data=request.POST)
     serializer.is_valid(raise_exception=True)
 
-    tag_code = serializer.validated_data['id']
+    tag_id = serializer.validated_data['tag_id']
 
-    tag = get_object_or_404(Tag, pk=tag_code)
+    tag = get_object_or_404(Tag, pk=tag_id)
     tag.name = ''
     tag.save()
 
     return redirect('user_profile')
+
+
+class RenameTagSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    tag_name = serializers.CharField(max_length=100)
 
 
 def rename_tag(request):
