@@ -317,10 +317,12 @@ def register_scan(request):
             tag.save()
             call_command('update_statistics')
             hours_day = (
-                Statistics.objects.filter(person=tag.owner).last().minutes_day // 60
+                Statistics.objects.filter(person=tag.owner).latest('date').minutes_day
+                // 60
             )
             hours_week = (
-                Statistics.objects.filter(person=tag.owner).last().minutes_week // 60
+                Statistics.objects.filter(person=tag.owner).latest('date').minutes_week
+                // 60
             )
             return JsonResponse(
                 {
@@ -339,10 +341,12 @@ def register_scan(request):
             log.save()
             call_command('update_statistics')
             hours_day = (
-                Statistics.objects.filter(person=tag.owner).last().minutes_day // 60
+                Statistics.objects.filter(person=tag.owner).latest('date').minutes_day
+                // 60
             )
             hours_week = (
-                Statistics.objects.filter(person=tag.owner).last().minutes_week // 60
+                Statistics.objects.filter(person=tag.owner).latest('date').minutes_week
+                // 60
             )
             return JsonResponse(
                 {
