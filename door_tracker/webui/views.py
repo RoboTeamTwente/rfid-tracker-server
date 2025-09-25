@@ -560,8 +560,8 @@ def edit_profile(request):
 
     if (
         not current_membership
-        or current_membership.job != job
-        or current_membership.subteam != subteam
+        or current_membership.job.id != job.id
+        or current_membership.subteam.id != subteam.id
     ):
         Membership.objects.create(
             person=request.user,
