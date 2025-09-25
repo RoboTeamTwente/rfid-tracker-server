@@ -522,6 +522,12 @@ def delete_tag(request):
     tag_id = serializer.validated_data['tag_id']
 
     tag = get_object_or_404(Tag, pk=tag_id)
+
+    if tag.name == 'WebUI':
+        return JsonResponse(
+            {'status': 'error', 'message': 'Cannot delete WebUI tag'}, status=403
+        )
+
     tag.name = ''
     tag.save()
 
@@ -541,6 +547,11 @@ def rename_tag(request):
     tag_name = serializer.validated_data['tag_name']
 
     tag = get_object_or_404(Tag, pk=tag_code)
+
+    if tag.name == 'WebUI':
+        return JsonResponse(
+            {'status': 'error', 'message': 'Cannot edit WebUI tag'}, status=403
+        )
     tag.name = tag_name
     tag.save()
     return redirect('user_profile')
