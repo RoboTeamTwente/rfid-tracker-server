@@ -101,6 +101,8 @@ class Command(BaseCommand):
                 minutes_day_val = self.minutes_for_day(user, single_date)
                 minutes_week_val = 0
                 minutes_month_val = 0
+                minutes_week_val = self.minutes_week_up_to(user, single_date)
+                minutes_month_val = self.minutes_month_up_to(user, single_date)
 
                 stats, created = Statistics.objects.update_or_create(
                     person=user,

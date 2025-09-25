@@ -402,7 +402,7 @@ def sign_up(request):
 
 
 def user_statistics(request):
-    save_statistics(request)
+    call_command('update_statistics')
 
     stats = Statistics.objects.filter(person=request.user).order_by('-date').first()
 
