@@ -567,7 +567,7 @@ def edit_profile(request):
             subteam=subteam,
         )
 
-    messages.success(request, 'Subteam & Job updated')
+    messages.success(request, 'Profile updated')
     return redirect('user_profile')
 
 
