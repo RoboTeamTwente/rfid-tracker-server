@@ -185,7 +185,7 @@ class MembershipDateListFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         if not self.value():
             return queryset
-        today = datetime.now()
+        today = timezone.now()
         if self.value() == 'current':
             first_current = (
                 queryset.filter(starting_from__lte=today)
