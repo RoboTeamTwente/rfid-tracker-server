@@ -543,7 +543,8 @@ def edit_profile(request):
     current_membership = (
         Membership.objects.filter_effective()
         .filter(person=request.user)
-        .latest('starting_from')
+        .order_by('starting_from')
+        .last()
     )
 
     request.user.first_name = first_name
