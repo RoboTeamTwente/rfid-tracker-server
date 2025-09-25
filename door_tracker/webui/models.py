@@ -54,7 +54,7 @@ class Membership(models.Model):
         related_name='members',
     )
     job = models.ForeignKey('Job', blank=True, null=True, on_delete=models.CASCADE)
-    starting_from = models.DateTimeField(default=timezone.now)
+    starting_from = models.DateTimeField(auto_now_add=True)
 
     class MembershipManager(models.Manager):
         def filter_effective(self):
