@@ -63,9 +63,17 @@
       }
     }
 
-    .action, .action__button {
-      display: contents;
+    .action__button {
+      display: inline-block;
+      cursor: pointer;
+      background: none;
+      border: none;
     }
+
+    .action__button:hover i {
+      color: #461561; /* or any color you like */
+    }
+
   </style>
 {% endblock %}
 
