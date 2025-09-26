@@ -3,6 +3,7 @@
 # Welcome
 
 [![docs exist](https://img.shields.io/badge/docs-exist-blue)](https://roboteamtwente.github.io/rfid-tracker-server)
+[![wiki exists](https://img.shields.io/badge/wiki-exists-blue)](https://wiki.roboteamtwente.nl/technical/rfidtracker/main)
 ![GitHub branch check runs](https://img.shields.io/github/check-runs/roboteamtwente/rfid-tracker-server/main)
 
 ## Get started
