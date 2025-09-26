@@ -90,8 +90,8 @@
       <p class="profile__factoid"><b>Name:</b> {{ user.get_full_name }}</p>
       <p class="profile__factoid"><b>Email:</b> {{ user.email }}</p>
       <p class="profile__factoid"><b>Username:</b> {{ user.username }}</p>
-      <p class="profile__factoid"><b>Workload:</b> {{ membership.job.name | default:'Jobless' }} ({{ membership.job.quota | default:'many' }} hours/week)</p>
       <p class="profile__factoid"><b>Subteam:</b> {{ membership.subteam.name | default:'You are alone.' }}</p>
+      <p class="profile__factoid"><b>Workload:</b> {{ membership.job.name | default:'Jobless' }} ({{ membership.job.quota | default:'many' }} hours/week)</p>
     </section>
 
     <section class="card profile__tags">
