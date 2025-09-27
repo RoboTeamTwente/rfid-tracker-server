@@ -68,11 +68,18 @@
       cursor: pointer;
       background: none;
       border: none;
+      transition: background 100ms;
+      padding: var(--gap-tiny);
+      border-radius: var(--radius-small);
+
+      &:hover {
+        background: rgba(0, 0, 0, 10%);
+      }
+      &:active {
+        background: rgba(0, 0, 0, 30%);
+      }
     }
 
-    .action__button:hover i {
-      color: #461561; /* or any color you like */
-    }
 
   </style>
 {% endblock %}
