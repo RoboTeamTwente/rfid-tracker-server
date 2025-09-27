@@ -82,6 +82,27 @@ in
     $(devenv build --refresh-eval-cache outputs.containers."$name".copyTo)/bin/copy-to "$@"
   '';
 
+  scripts.release.exec =
+    let
+      destination = lib.escapeShellArg "docker://${lib.escapeShellArg config.outputs.containers.serve.imageName}";
+    in
+    ''
+      set -eux
+      curr=$(current-version)
+      next=$(next-version)
+      cd "$DEVENV_ROOT/door_tracker"
+      cz bump --yes --files-only
+      pre-commit run --files CHANGELOG.md || :
+      git commit -am "chore(release): bump $curr -> $next"
+      git tag "$next"
+      cd "$DEVENV_ROOT"
+      upload="$(devenv build --refresh-eval-cache outputs.containers.serve.copyTo)/bin/copy-to"
+      "$upload" ${destination}:"$next"
+      "$upload" ${destination}:"$(echo "$next" | cut -d. -f-2)"
+      "$upload" ${destination}:"$(echo "$next" | cut -d. -f-1)"
+      "$upload" ${destination}:latest
+    '';
+
   ## Languages
 
   languages.python = {
