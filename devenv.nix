@@ -91,7 +91,7 @@ in
       cz bump --yes --files-only
       pre-commit run --files CHANGELOG.md || :
       git commit -am "chore(release): bump $curr -> $next"
-      git tag "$next"
+      git tag "v$next"
       cd "$DEVENV_ROOT"
       upload="$(devenv build --refresh-eval-cache outputs.containers.serve.copyTo)/bin/copy-to"
       "$upload" ${destination}:"$next"
