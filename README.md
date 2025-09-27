@@ -108,13 +108,6 @@ If you've fixed the problems but still cannot commit, check that you've
 staged everything. Some pre-commit hooks run code formatters, and you
 need to manually stage their output.
 
-### Devcontainers
-
-On first load, you'll see notifications like "cannot find git
-executable". This is normal. After a while, vscode will restart and
-those notifications should go away. This might take a minute on first
-boot.
-
 ### Direnv
 
 direnv extension fails silently. If you see errors like "dev: command

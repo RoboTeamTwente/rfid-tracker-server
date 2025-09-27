@@ -85,7 +85,7 @@ in
     export PATH="$UV_PROJECT_ENVIRONMENT/bin''${PATH+:}$PATH"
   '';
 
-  ## Devcontainer
+  ## Extra packages
 
   packages = [
     pkgs.curl
