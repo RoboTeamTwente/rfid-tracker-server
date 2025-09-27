@@ -126,13 +126,13 @@
 
   {{ script_data | json_script }}
   <script>
-      // CSRF
+// CSRF
     function getCSRFToken() {
       const el = document.querySelector('[name=csrfmiddlewaretoken]')
       return el ? el.value : ''
     }
 
-      // fuel gauge
+// fuel gauge
     const chartDom = document.getElementById('gauge-chart')
     const chart = echarts.init(chartDom)
 
@@ -140,7 +140,7 @@
       chart.resize()
     })
 
-      // extract values from json_script above
+// extract values from json_script above
     const data = JSON.parse(
       document.currentScript.previousElementSibling.textContent,
     )

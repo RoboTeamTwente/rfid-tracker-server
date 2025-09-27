@@ -63,51 +63,55 @@
 
     <script>
       function showMessage(type, text) {
-        const message = document.createElement('p');
-        message.classList.add( `message--${type}`);
-        message.innerText = text;
-        document.querySelector('.messages').appendChild(message);
+        const message = document.createElement('p')
+        message.classList.add(`message--${type}`)
+        message.innerText = text
+        document.querySelector('.messages').appendChild(message)
       }
 
       function openCheckoutModal() {
-        const modal = document.getElementById('checkoutModal');
-        modal.style.display = 'flex';
+        const modal = document.getElementById('checkoutModal')
+        modal.style.display = 'flex'
       }
 
       function closeCheckoutModal() {
-        const modal = document.getElementById('checkoutModal');
-        modal.style.display = 'none';
-        document.getElementById('checkoutForm').reset();
+        const modal = document.getElementById('checkoutModal')
+        modal.style.display = 'none'
+        document.getElementById('checkoutForm').reset()
       }
 
-      document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const checkoutTime = document.getElementById('checkoutTime').value;
+      document
+        .getElementById('checkoutForm')
+        .addEventListener('submit', async (e) => {
+          e.preventDefault()
+          const checkoutTime = document.getElementById('checkoutTime').value
 
-        try {
-          const response = await fetch("{% url 'auto_checkout' %}", {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRFToken': '{{ csrf_token }}',
-            },
-            body: JSON.stringify({ checkout_time: new Date(checkoutTime).toISOString() }),
-          });
+          try {
+            const response = await fetch("{% url 'auto_checkout' %}", {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}',
+              },
+              body: JSON.stringify({
+                checkout_time: new Date(checkoutTime).toISOString(),
+              }),
+            })
 
-          const data = await response.json();
+            const data = await response.json()
 
-          if (response.ok) {
-            showMessage('success',`Successfully checked out at ${data.date}`);
-            setTimeout(() => {
-              window.location.reload();
-            }, 2000);
-          } else {
-            showMessage('error',data.message || 'An error occurred');
+            if (response.ok) {
+              showMessage('success', `Successfully checked out at ${data.date}`)
+              setTimeout(() => {
+                window.location.reload()
+              }, 2000)
+            } else {
+              showMessage('error', data.message || 'An error occurred')
+            }
+          } catch (error) {
+            showMessage('error', 'Network error: ' + error.message)
           }
-        } catch (error) {
-          showMessage('error','Network error: ' + error.message);
-        }
-      });
+        })
     </script>
   </body>
 </html>
