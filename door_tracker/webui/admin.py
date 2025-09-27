@@ -5,11 +5,12 @@ from datetime import timedelta
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.core.cache import cache
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import JsonResponse
 from django.urls import path, reverse
 from django.utils import timezone
 
 from .models import Job, Log, Membership, Scanner, Statistics, SubTeam, Tag
+from .utils import logs_to_csv
 
 admin.site.site_header = 'RoboTeam'
 TOKEN_LIFETIME = 24 * 360  # How long until the link expires
@@ -224,9 +225,7 @@ class MembershipPersonListFilter(admin.SimpleListFilter):
 
 
 def export_selected_logs(modeladmin, request, queryset):
-    ids = queryset.values_list('pk', flat=True)
-    url = reverse('export', query={'ids': ids})
-    return HttpResponseRedirect(url)
+    return logs_to_csv(queryset)
 
 
 @admin.register(Log)

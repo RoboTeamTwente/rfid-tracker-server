@@ -1,5 +1,3 @@
-import csv
-
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_not_required
@@ -8,19 +6,15 @@ from django.core.cache import cache
 from django.core.management import call_command
 from django.db import IntegrityError
 from django.db.models import Avg, Sum
-from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
+from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import serializers
-from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import (
     api_view,
-    authentication_classes,
-    permission_classes,
 )
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 # Import Custom Files
 from .forms import RegistrationForm
@@ -37,6 +31,7 @@ from .models import (
     TagState,
     is_checked_in,
 )
+from .utils import logs_to_csv
 
 
 def user_status(request):
@@ -598,54 +593,10 @@ def rename_tag(request):
     return redirect('user_profile')
 
 
-class ExportSerializer(serializers.Serializer):
-    ids = serializers.ListField(child=serializers.IntegerField())
-
-
-@api_view(['GET'])
-@authentication_classes([SessionAuthentication])
-@permission_classes([IsAdminUser, IsAuthenticated])
-def export(request):
-    serializer = ExportSerializer(data=request.query_params)
-    serializer.is_valid(raise_exception=True)
-    ids = serializer.validated_data['ids']
-    qs = Log.objects.filter(pk__in=ids)
-    return logs_to_csv(qs)
-
-
 @api_view(['GET'])
 def export_user(request):
     qs = current_user_logs(request)
     return logs_to_csv(qs)
-
-
-def logs_to_csv(logs):
-    response = HttpResponse(content_type='text/csv')
-    writer = csv.writer(response, dialect='excel')
-    writer.writerow(['time', 'type', 'tag', 'owner_first', 'owner_last', 'scanner'])
-    for log in logs:
-        tag_name = '-'
-        tag_owner_first = '-'
-        tag_owner_last = '-'
-        scanner_name = 'WebUI'
-        if log.tag:
-            tag_name = log.tag.name or '-'
-            if log.tag.owner:
-                tag_owner_first = log.tag.owner.first_name
-                tag_owner_last = log.tag.owner.last_name
-        if log.scanner:
-            scanner_name = log.scanner.name
-        writer.writerow(
-            [
-                log.time.strftime('%F %T'),
-                log.type,
-                tag_name,
-                tag_owner_first,
-                tag_owner_last,
-                scanner_name,
-            ]
-        )
-    return response
 
 
 @api_view(['GET'])
