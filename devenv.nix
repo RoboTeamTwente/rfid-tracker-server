@@ -57,28 +57,25 @@ in
 
   scripts.build-container.exec = ''
     set -eu
-    cd "$DEVENV_ROOT"
-    name=$1
-    shift
+    name=$1; shift
     set -x
+    cd "$DEVENV_ROOT"
     $(devenv build --refresh-eval-cache outputs.containers."$name".copyToDockerDaemon)/bin/copy-to-docker-daemon "$@"
   '';
 
   scripts.upload-container.exec = ''
     set -eu
-    cd "$DEVENV_ROOT"
-    name=$1
-    shift
+    name=$1; shift
     set -x
+    cd "$DEVENV_ROOT"
     $(devenv build --refresh-eval-cache outputs.containers."$name".copyToRegistry)/bin/copy-to-registry "$@"
   '';
 
   scripts.upload-container-to.exec = ''
     set -eu
-    cd "$DEVENV_ROOT"
-    name=$1
-    shift
+    name=$1; shift
     set -x
+    cd "$DEVENV_ROOT"
     $(devenv build --refresh-eval-cache outputs.containers."$name".copyTo)/bin/copy-to "$@"
   '';
 
