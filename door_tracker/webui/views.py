@@ -1,6 +1,4 @@
-import binascii
 import csv
-from base64 import b64decode, b64encode
 
 from django.contrib import messages
 from django.contrib.auth import logout
@@ -78,28 +76,6 @@ def logout_view(request):
     logout(request)
     messages.success(request, 'Logged out')
     return redirect('login')
-
-
-class Base64Field(serializers.Field):
-    def to_representation(self, value):
-        return b64encode(value)
-
-    def to_internal_value(self, data):
-        if not isinstance(data, str):
-            self.fail('type_error', input_type=type(data).__name__)
-        try:
-            return b64decode(data)
-        except binascii.Error as e:
-            self.fail('parsing_error', error=e)
-
-    default_error_messages = {
-        'type_error': 'Incorrect type. Expected a string, but got {input_type}',
-        'parsing_error': '{error}',
-    }
-
-
-class ChangeStatusSerializer(serializers.Serializer):
-    tag_code = Base64Field(required=True)
 
 
 def serializer_error(serializer):
