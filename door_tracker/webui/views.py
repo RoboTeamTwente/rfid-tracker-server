@@ -85,14 +85,6 @@ def serializer_error(serializer):
     return msg
 
 
-def current_user_logs(request):
-    return (
-        Log.objects.filter(tag__owner=request.user)
-        .select_related('tag', 'scanner')
-        .order_by('-time')
-    )
-
-
 def minutes_today(request):
     today = timezone.localdate()  # gets the current date in the current timezone
     now = timezone.localtime()
@@ -594,8 +586,12 @@ def rename_tag(request):
 
 
 @api_view(['GET'])
-def export_user(request):
-    qs = current_user_logs(request)
+def export_user_logs(request):
+    qs = (
+        Log.objects.filter(tag__owner=request.user)
+        .select_related('tag', 'scanner')
+        .order_by('-time')
+    )
     return logs_to_csv(qs)
 
 
