@@ -85,6 +85,10 @@ in
     in
     ''
       set -eux
+      # 1. test
+      cd "$DEVENV_ROOT"
+      devenv test
+      # 2. bump
       curr=$(current-version)
       next=$(next-version)
       cd "$DEVENV_ROOT/door_tracker"
@@ -92,6 +96,7 @@ in
       pre-commit run --files CHANGELOG.md || :
       git commit -am "chore(release): bump $curr -> $next"
       git tag "v$next"
+      # 3. upload
       cd "$DEVENV_ROOT"
       "$(devenv build --refresh-eval-cache outputs.containers.serve.copyTo)"/bin/copy-to ${destination}:"$next"
       skopeo --insecure-policy copy ${destination}:"$next" ${destination}:"$(echo "$next" | cut -d. -f-2)"
