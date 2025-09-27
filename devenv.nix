@@ -93,11 +93,10 @@ in
       git commit -am "chore(release): bump $curr -> $next"
       git tag "v$next"
       cd "$DEVENV_ROOT"
-      upload="$(devenv build --refresh-eval-cache outputs.containers.serve.copyTo)/bin/copy-to"
-      "$upload" ${destination}:"$next"
-      "$upload" ${destination}:"$(echo "$next" | cut -d. -f-2)"
-      "$upload" ${destination}:"$(echo "$next" | cut -d. -f-1)"
-      "$upload" ${destination}:latest
+      "$(devenv build --refresh-eval-cache outputs.containers.serve.copyTo)"/bin/copy-to ${destination}:"$next"
+      skopeo --insecure-policy copy ${destination}:"$next" ${destination}:"$(echo "$next" | cut -d. -f-2)"
+      skopeo --insecure-policy copy ${destination}:"$next" ${destination}:"$(echo "$next" | cut -d. -f-1)"
+      skopeo --insecure-policy copy ${destination}:"$next" ${destination}:latest
     '';
 
   ## Languages
