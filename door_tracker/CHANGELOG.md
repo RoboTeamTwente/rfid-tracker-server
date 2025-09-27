@@ -2,6 +2,28 @@
 
 # Changelog
 
+## v1.1.0 (2025-09-27)
+
+### Feat
+
+- **containers**: add sqlite to the container image
+
+### Fix
+
+- **admin**: fix export of large logs
+- **tooling**: make release script follow commitizen's tag schema
+- **tooling**: show `cd` in trace of \*-container scripts
+- **webui**: fix base.html modal z-index
+
+### Refactor
+
+- **views**: inline current_user_logs
+- **views**: remove unused serializers & fields
+
+### Perf
+
+- **tooling**: speed up release script
+
 ## v1.0.0 (2025-09-27)
 
 ### Feat
