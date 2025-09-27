@@ -46,6 +46,11 @@ in
     cz version -p
   '';
 
+  scripts.next-version.exec = ''
+    cd "$DEVENV_ROOT/door_tracker"
+    cz bump --yes --get-next
+  '';
+
   scripts.docker-login.exec = ''
     skopeo login docker.io -u roboteamtwente "$@"
   '';
