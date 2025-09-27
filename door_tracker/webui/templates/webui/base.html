@@ -10,21 +10,21 @@
     {% block head %}{% endblock %}
   </head>
 
-  <body>
-    <header>
-      <a href="{% url 'index' %}" class="logo">
+  <body class="body">
+    <header class="body__header">
+      <a href="{% url 'index' %}" class="body__logo">
         <img src="{% static 'webui/logo.svg' %}" alt="RoboTeam Twente Logo" width="50" height="50">
         RoboTeam Twente
       </a>
-      <span class="user-status">{{user_status}}</span>
-      <div class="user">
+      <span class="body__user-status">{{user_status}}</span>
+      <div class="body__user">
         <span>Welcome, {{user.get_full_name}}</span>
         <a href="{% url 'logout' %}">Log out</a>
       </div>
     </header>
 
 
-    <nav>
+    <nav class="body__navbar">
       <a class="button" href="#" onclick="openCheckoutModal()">Remote Checkout</a> <!-- TODO: this doesn't link anywhere yet -->
       <a class="button" href="{% url 'user_statistics' %}">Statistics</a>
       <a class="button" href="{% url 'user_profile' %}">Profile</a>
@@ -57,14 +57,14 @@
 
     <div class="messages">
       {% for message in messages %}
-        <p{% if message.tags %} class="message--{{ message.tags }}"{% endif %}>{{ message }}</p>
+        <p{% if message.tags %} class="messages__item messages--{{ message.tags }}"{% endif %}>{{ message }}</p>
       {% endfor %}
     </div>
 
     <script>
       function showMessage(type, text) {
         const message = document.createElement('p')
-        message.classList.add(`message--${type}`)
+        message.classList.add('messages__item', `messages--${type}`)
         message.innerText = text
         document.querySelector('.messages').appendChild(message)
       }
