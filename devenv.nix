@@ -53,11 +53,11 @@ in
     	exit 1
     fi
     set -eux
+    old="$(current-version)"
+    cd "$DEVENV_ROOT/door_tracker"
+    cz bump --yes --files-only
     cd "$DEVENV_ROOT"
     devenv test
-    cd "$DEVENV_ROOT/door_tracker"
-    old="$(current-version)"
-    cz bump --yes --files-only
     new="$(current-version)"
     pre-commit run markdownlint --files CHANGELOG.md || :
     git commit -am "chore(release): bump $old -> $new"
