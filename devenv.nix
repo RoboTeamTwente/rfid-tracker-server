@@ -46,22 +46,17 @@ in
     cz version -p
   '';
 
-  scripts.next-version.exec = ''
-    cd "$DEVENV_ROOT/door_tracker"
-    cz bump --yes --get-next
-  '';
-
   scripts.bump-version.exec = ''
     set -eux
     cd "$DEVENV_ROOT"
     devenv test
-    curr=$(current-version)
-    next=$(next-version)
     cd "$DEVENV_ROOT/door_tracker"
+    old="$(current-version)"
     cz bump --yes --files-only
+    new="$(current-version)"
     pre-commit run --files CHANGELOG.md || :
-    git commit -am "chore(release): bump $curr -> $next"
-    git tag "v$next"
+    git commit -am "chore(release): bump $old -> $new"
+    git tag "v$new"
   '';
 
   scripts.docker-login.exec = ''
