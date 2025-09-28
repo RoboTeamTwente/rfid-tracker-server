@@ -51,6 +51,19 @@ in
     cz bump --yes --get-next
   '';
 
+  scripts.bump-version.exec = ''
+    set -eux
+    cd "$DEVENV_ROOT"
+    devenv test
+    curr=$(current-version)
+    next=$(next-version)
+    cd "$DEVENV_ROOT/door_tracker"
+    cz bump --yes --files-only
+    pre-commit run --files CHANGELOG.md || :
+    git commit -am "chore(release): bump $curr -> $next"
+    git tag "v$next"
+  '';
+
   scripts.docker-login.exec = ''
     skopeo login docker.io -u roboteamtwente "$@"
   '';
@@ -85,23 +98,12 @@ in
     in
     ''
       set -eux
-      # 1. test
       cd "$DEVENV_ROOT"
-      devenv test
-      # 2. bump
-      curr=$(current-version)
-      next=$(next-version)
-      cd "$DEVENV_ROOT/door_tracker"
-      cz bump --yes --files-only
-      pre-commit run --files CHANGELOG.md || :
-      git commit -am "chore(release): bump $curr -> $next"
-      git tag "v$next"
-      # 3. upload
-      cd "$DEVENV_ROOT"
-      "$(devenv build --refresh-eval-cache outputs.containers.serve.copyTo)"/bin/copy-to ${destination}:"$next"
-      skopeo --insecure-policy copy ${destination}:"$next" ${destination}:"$(echo "$next" | cut -d. -f-2)"
-      skopeo --insecure-policy copy ${destination}:"$next" ${destination}:"$(echo "$next" | cut -d. -f-1)"
-      skopeo --insecure-policy copy ${destination}:"$next" ${destination}:latest
+      version=$(current-version)
+      "$(devenv build --refresh-eval-cache outputs.containers.serve.copyTo)"/bin/copy-to ${destination}:"$version"
+      skopeo --insecure-policy copy ${destination}:"$version" ${destination}:"$(echo "$version" | cut -d. -f-2)"
+      skopeo --insecure-policy copy ${destination}:"$version" ${destination}:"$(echo "$version" | cut -d. -f-1)"
+      skopeo --insecure-policy copy ${destination}:"$version" ${destination}:latest
     '';
 
   ## Languages
