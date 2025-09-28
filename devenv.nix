@@ -47,6 +47,11 @@ in
   '';
 
   scripts.bump-version.exec = ''
+    if ! git diff --quiet
+    then
+    	echo Dirty worktree, aborting
+    	exit 1
+    fi
     set -eux
     cd "$DEVENV_ROOT"
     devenv test
