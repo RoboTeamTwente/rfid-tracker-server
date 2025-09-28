@@ -92,7 +92,7 @@ in
     $(devenv build --refresh-eval-cache outputs.containers."$name".copyTo)/bin/copy-to "$@"
   '';
 
-  scripts.release.exec =
+  scripts.deliver.exec =
     let
       destination = lib.escapeShellArg "docker://${lib.escapeShellArg config.outputs.containers.serve.imageName}";
     in
@@ -105,6 +105,12 @@ in
       skopeo --insecure-policy copy ${destination}:"$version" ${destination}:"$(echo "$version" | cut -d. -f-1)"
       skopeo --insecure-policy copy ${destination}:"$version" ${destination}:latest
     '';
+
+  scripts.release.exec = ''
+    set -eux
+    bump-version
+    deliver
+  '';
 
   ## Languages
 
