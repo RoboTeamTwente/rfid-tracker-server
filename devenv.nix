@@ -59,7 +59,7 @@ in
     old="$(current-version)"
     cz bump --yes --files-only
     new="$(current-version)"
-    pre-commit run --files CHANGELOG.md || :
+    pre-commit run markdownlint --files CHANGELOG.md || :
     git commit -am "chore(release): bump $old -> $new"
     git tag "v$new"
   '';
