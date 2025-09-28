@@ -2,6 +2,26 @@
 
 # Changelog
 
+## v1.2.0 (2025-09-28)
+
+### Feat
+
+- **tooling**: abort bump-version script when worktree is dirty
+- **tooling**: add test step to release script
+
+### Refactor
+
+- **tooling**: get rid of next-version
+- **tooling**: scripts: s/release/deliver/; release = bump && deliver
+- **tooling**: move version bump out of release into a separate script
+- **webui**: do not nest BEM css selectors
+- **webui**: BEMify base.css
+
+### Perf
+
+- **tooling**: let cz bump fail fast
+- **tooling**: prune unused git hooks in bump-version script
+
 ## v1.1.0 (2025-09-27)
 
 ### Feat
