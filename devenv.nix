@@ -179,6 +179,7 @@ in
       runtimeEnv.DJANGO_STATIC_ROOT = config.outputs.packages.static;
       text = ''
         admin migrate
+        admin init_admin
         daphne -b 0.0.0.0 door_tracker.asgi:application
       '';
     };

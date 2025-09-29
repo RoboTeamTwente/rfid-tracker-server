@@ -7,5 +7,8 @@ services:
       - db:/db
     environment:
       - DATABASE_URL=sqlite:///db/db.sqlite3
+      - ADMIN_USER=admin
+      - ADMIN_PASS=admin
+      - ADMIN_EMAIL=admin@localhost
 volumes:
   db:
