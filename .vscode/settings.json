@@ -1,0 +1,13 @@
+{
+  "conventionalCommits.gitmoji": false,
+  "conventionalCommits.scopes": [
+    "tooling",
+    "webui",
+    "css",
+    "admin",
+    "docs",
+    "model",
+    "api",
+    "containers"
+  ]
+}

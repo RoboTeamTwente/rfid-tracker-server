@@ -8,6 +8,7 @@
     "charliermarsh.ruff",
     "redhat.vscode-yaml",
     "ms-azuretools.vscode-containers",
-    "davidanson.vscode-markdownlint"
+    "davidanson.vscode-markdownlint",
+    "vivaxy.vscode-conventional-commits"
   ]
 }
