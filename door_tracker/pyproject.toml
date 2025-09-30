@@ -12,6 +12,8 @@ dependencies = [
   "django-organizations>=2.5.0",
   "djangorestframework>=3.16.1",
   "dj-database-url>=3.0.1",
+  "google-api-python-client>=2.183.0",
+  "google-auth>=2.41.0",
   "pytz>=2025.2",
   "whitenoise[brotli]>=6.9.0",
 ]
