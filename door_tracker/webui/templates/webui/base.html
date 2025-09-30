@@ -25,10 +25,12 @@
 
 
     <nav class="body__navbar">
-      <a class="button" href="#" onclick="openCheckoutModal()">Remote Checkout</a> <!-- TODO: this doesn't link anywhere yet -->
+      <a class="button" href="{% url 'index' %}">Dashboard</a>
+      <!-- TODO: this doesn't link anywhere yet -->
       <a class="button" href="{% url 'user_statistics' %}">Statistics</a>
       <a class="button" href="{% url 'user_profile' %}">Profile</a>
       <a class="button" href="{% url 'export_user' %}">Export to CSV</a>
+      <a class="button" href="#" onclick="openCheckoutModal()">Remote Checkout</a>
     </nav>
 
     {% block main %}
