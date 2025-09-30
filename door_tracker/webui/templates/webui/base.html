@@ -19,18 +19,18 @@
       <span class="body__user-status">{{user_status}}</span>
       <div class="body__user">
         <span>Welcome, {{user.get_full_name}}</span>
-        <a href="{% url 'logout' %}">Log out</a>
       </div>
     </header>
 
 
     <nav class="body__navbar">
-      <a class="button" href="{% url 'index' %}">Dashboard</a>
+      <a class="button" href="{% url 'index' %}">🔗 Dashboard</a>
       <!-- TODO: this doesn't link anywhere yet -->
-      <a class="button" href="{% url 'user_statistics' %}">Statistics</a>
-      <a class="button" href="{% url 'user_profile' %}">Profile</a>
-      <a class="button" href="{% url 'export_user' %}">Export to CSV</a>
-      <a class="button" href="#" onclick="openCheckoutModal()">Remote Checkout</a>
+      <a class="button" href="{% url 'user_statistics' %}">🔗 Statistics</a>
+      <a class="button" href="{% url 'user_profile' %}">🔗 Profile</a>
+      <a class="button" href="{% url 'export_user' %}">⚙️ Export to CSV</a>
+      <a class="button" href="#" onclick="openCheckoutModal()">⚙️ Remote Checkout</a>
+      <a class="button" href="{% url 'logout' %}">⚙️ Log out</a>
     </nav>
 
     {% block main %}
