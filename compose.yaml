@@ -5,8 +5,10 @@ services:
       - 8001:8000
     volumes:
       - db:/db
+      - ./credentials:/credentials
     environment:
       - DATABASE_URL=sqlite:///db/db.sqlite3
+      - DJANGO_BACKUP_CREDENTIALS_FILE=/credentials/service-account.json
       - ADMIN_USER=admin
       - ADMIN_PASS=admin
       - ADMIN_EMAIL=admin@localhost
