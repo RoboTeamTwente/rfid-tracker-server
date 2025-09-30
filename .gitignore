@@ -23,3 +23,6 @@ door_tracker/db.sqlite3
 
 # doxygen
 doxygen/
+
+# backup credentials
+credentials/
