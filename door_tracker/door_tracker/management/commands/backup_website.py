@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from pathlib import Path
 
 from django.core.management.base import BaseCommand
 from django.db import connection
@@ -18,8 +19,9 @@ class Command(BaseCommand):
         BACKUP_FILENAME = (
             f'db_backup_{datetime.now().strftime("%Y%m%d_%H%M%S")}.sqlite3'
         )
-        SERVICE_ACCOUNT_FILE = os.path.join(
-            os.getcwd(), 'credentials/service-account.json'
+        SERVICE_ACCOUNT_FILE = os.getenv(
+            'DJANGO_BACKUP_CREDENTIALS_FILE',
+            (Path() / 'credentials' / 'service-account.json').absolute(),
         )
 
         SHARED_DRIVE_ID = settings.BACKUP_SHARED_DRIVE_ID
