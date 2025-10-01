@@ -18,22 +18,6 @@ class SubteamMembershipInline(admin.TabularInline):
     model = SubteamMembership
 
 
-@register(Assignment)
-class AssignmentAdmin(admin.ModelAdmin):
-    inlines = [SubteamMembershipInline]
-    list_display = ['starting_from', 'user__username', 'quota__name']
-
-
-@register(Subteam)
-class SubteamAdmin(admin.ModelAdmin):
-    list_display = ['name']
-
-
-@register(Quota)
-class QuotaAdmin(admin.ModelAdmin):
-    list_display = ['name', 'hours']
-
-
 @register(Session)
 class SessionAdmin(admin.ModelAdmin):
     list_display = ['checkin__time', 'checkout__time', 'owner']
@@ -42,6 +26,12 @@ class SessionAdmin(admin.ModelAdmin):
 @register(Log)
 class LogAdmin(admin.ModelAdmin):
     list_display = ['type', 'time', 'tag__name', 'tag__owner__username']
+
+
+@register(Assignment)
+class AssignmentAdmin(admin.ModelAdmin):
+    inlines = [SubteamMembershipInline]
+    list_display = ['starting_from', 'user__username', 'quota__name']
 
 
 @register(ClaimedTag)
@@ -57,3 +47,13 @@ class PendingTagAdmin(admin.ModelAdmin):
 @register(Scanner)
 class ScannerAdmin(admin.ModelAdmin):
     list_display = ['name', 'id']
+
+
+@register(Subteam)
+class SubteamAdmin(admin.ModelAdmin):
+    list_display = ['name']
+
+
+@register(Quota)
+class QuotaAdmin(admin.ModelAdmin):
+    list_display = ['name', 'hours']
