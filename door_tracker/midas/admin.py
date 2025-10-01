@@ -3,8 +3,9 @@ from django.contrib.admin import register
 
 from .models import (
     Assignment,
+    Checkin,
+    Checkout,
     ClaimedTag,
-    Log,
     PendingTag,
     Quota,
     Scanner,
@@ -18,14 +19,24 @@ class SubteamMembershipInline(admin.TabularInline):
     model = SubteamMembership
 
 
+class CheckinInline(admin.StackedInline):
+    model = Checkin
+
+
+class CheckoutInline(admin.StackedInline):
+    model = Checkout
+
+
 @register(Session)
 class SessionAdmin(admin.ModelAdmin):
     list_display = ['checkin__time', 'checkout__time', 'owner']
+    inlines = [CheckinInline, CheckoutInline]
 
-
-@register(Log)
-class LogAdmin(admin.ModelAdmin):
-    list_display = ['type', 'time', 'tag__name', 'tag__owner__username']
+    def get_readonly_fields(self, request, obj=None):
+        default = super().get_readonly_fields(request, obj)
+        if obj is not None:  # when editing
+            default = list(default) + ['owner']
+        return default
 
 
 @register(Assignment)

@@ -5,25 +5,29 @@ from django.db import models
 from django.utils import timezone
 
 
-class Log(models.Model):
+class Checkin(models.Model):
     type = models.CharField()
     time = models.DateTimeField(default=timezone.now)
     tag = models.ForeignKey(
         'ClaimedTag', on_delete=models.SET_NULL, null=True, blank=True
     )
+    session = models.OneToOneField(
+        'Session', on_delete=models.CASCADE, related_name='checkin'
+    )
+
+
+class Checkout(models.Model):
+    type = models.CharField()
+    time = models.DateTimeField(default=timezone.now)
+    tag = models.ForeignKey(
+        'ClaimedTag', on_delete=models.SET_NULL, null=True, blank=True
+    )
+    session = models.OneToOneField(
+        'Session', on_delete=models.CASCADE, related_name='checkout'
+    )
 
 
 class Session(models.Model):
-    checkin = models.OneToOneField(
-        'Log', on_delete=models.CASCADE, related_name='checkin_session'
-    )
-    checkout = models.OneToOneField(
-        'Log',
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        related_name='checkout_session',
-    )
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
