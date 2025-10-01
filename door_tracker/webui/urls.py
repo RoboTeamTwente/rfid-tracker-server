@@ -17,4 +17,5 @@ urlpatterns = [
     path('export_user', views.export_user_logs, name='export_user'),
     path('auto_checkout', views.auto_checkout, name='auto_checkout'),
     path('edit_profile', views.edit_profile, name='edit_profile'),
+    path('register_scan', views.register_scan, name='register_scan'),
 ]
