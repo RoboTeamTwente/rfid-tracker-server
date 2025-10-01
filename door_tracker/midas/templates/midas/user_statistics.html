@@ -1,0 +1,223 @@
+{% extends "webui/base.html" %}
+
+{% block title %}Statistics{% endblock %}
+
+{% block head %}
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  <style>
+    .role-title {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--bg-primary);
+    }
+
+    .dashboard {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      margin-bottom: 30px;
+
+      .dashboard__metrics {
+        width: 20rem;
+
+        .dashboard__metric {
+          display: flex;
+          justify-content: space-between;
+          padding: var(--gap-small) 0;
+          border-bottom: 1px solid #ddd;
+
+          &:first-child{
+            padding-top: 0;
+          }
+
+          &:last-child {
+            padding-bottom: 0;
+            border-bottom: none;
+          }
+
+          .dashboard__value {
+            font-weight: bold;
+            background: var(--fg-primary);
+            color: var(--bg-primary);
+          }
+        }
+      }
+
+      .dashboard__gauge-container {
+        width: 20rem;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .dashboard__gauge {
+          width: 100%;
+          aspect-ratio: 1;
+        }
+
+        .dashboard__quota-info {
+          font-weight: bold;
+          background: var(--fg-primary);
+          color: var(--bg-primary);
+        }
+      }
+    }
+
+
+      /* Responsive design */
+    @media (max-width: 900px) {
+      .dashboard {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .gauge-container {
+        width: 100%;
+        max-width: 400px;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block main %}
+  <main>
+    <h1 class="role-title">{{ user_role }}</h1>
+    <div class="dashboard">
+      <section class="dashboard__metrics card">
+        <div class="dashboard__metric">
+          <span>Today:</span>
+          <span class="dashboard__value">{{ total_hours_day }}</span>
+        </div>
+        <div class="dashboard__metric">
+          <span>This Week:</span>
+          <span class="dashboard__value">{{ total_hours_week }}</span>
+        </div>
+        <div class="dashboard__metric">
+          <span>This Month:</span>
+          <span class="dashboard__value">{{ total_hours_month }}</span>
+        </div>
+        <div class="dashboard__metric">
+          <span>Total:</span>
+          <span class="dashboard__value">{{ total_hours_all }}</span>
+        </div>
+        <div class="dashboard__metric">
+          <span>Average:</span>
+          <span class="dashboard__value">{{ average_hours_week }}</span>
+        </div>
+        <div class="dashboard__metric">
+          <span>Weekly Quota:</span>
+          <span class="dashboard__value">{{ quota_week_met }}</span>
+        </div>
+        <div class="dashboard__metric">
+          <span>Monthly Quota:</span>
+          <span class="dashboard__value">{{ quota_month_met }}</span>
+        </div>
+      </section>
+      <div class="dashboard__gauge-container card">
+        <div id="gauge-chart" class="dashboard__gauge"></div>
+        <div class="dashboard__quota-info">
+          Weekly Quota: {{ total_hours_week }} / {{ quota_hours_week }}
+        </div>
+      </div>
+    </div>
+  </main>
+
+  {{ script_data | json_script }}
+  <script>
+// CSRF
+    function getCSRFToken() {
+      const el = document.querySelector('[name=csrfmiddlewaretoken]')
+      return el ? el.value : ''
+    }
+
+// fuel gauge
+    const chartDom = document.getElementById('gauge-chart')
+    const chart = echarts.init(chartDom)
+
+    window.addEventListener('resize', function () {
+      chart.resize()
+    })
+
+// extract values from json_script above
+    const data = JSON.parse(
+      document.currentScript.previousElementSibling.textContent,
+    )
+    const hoursWorked = data.total_hours_week
+    const quota = data.quota_hours_week
+    const percentage = (hoursWorked / quota) * 100
+
+    const displayPercentage = Math.min(parseFloat(percentage.toFixed(1)), 100)
+
+    let color
+    if (percentage < 50) {
+      color = '#d32f2f'
+    } else if (percentage < 80) {
+      color = '#ed6c02'
+    } else {
+      color = '#2e7d32'
+    }
+
+    chart.setOption({
+      series: [
+        {
+          type: 'gauge',
+          radius: '90%',
+          progress: {
+            show: true,
+            width: 18,
+          },
+          axisLine: {
+            lineStyle: {
+              width: 18,
+              color: [
+                [displayPercentage / 100, color],
+                [1, '#ececec'],
+              ],
+            },
+          },
+          axisTick: {
+            show: false,
+          },
+          splitLine: {
+            length: 15,
+            lineStyle: {
+              width: 2,
+              color: '#999',
+            },
+          },
+          axisLabel: {
+            distance: 25,
+            color: '#999',
+            fontSize: 20,
+          },
+          anchor: {
+            show: true,
+            showAbove: true,
+            size: 25,
+            itemStyle: {
+              borderWidth: 10,
+            },
+          },
+          title: {
+            show: false,
+          },
+          detail: {
+            valueAnimation: true,
+            fontSize: 40,
+            fontWeight: 'bold',
+            formatter: '{value}%',
+            color: color,
+            offsetCenter: [0, '70%'],
+          },
+          data: [
+            {
+              value: displayPercentage,
+            },
+          ],
+        },
+      ],
+    })
+  </script>
+{% endblock %}

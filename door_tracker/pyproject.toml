@@ -25,6 +25,8 @@ dev = ["python-lsp-server[all]>=1.13.1"]
 include = ["*"]
 
 [tool.setuptools.package-data]
+"midas.static.midas" = ["*"]
+"midas.templates.midas" = ["*"]
 "templates.admin" = ["*"]
 "webui.static.webui" = ["*"]
 "webui.templates.webui" = ["*"]

@@ -1,0 +1,220 @@
+{% extends "webui/base.html" %}
+
+{% load rest_framework modal %}
+
+{% block title %}User Profile{% endblock %}
+
+{% block head %}
+  {% if modal_name == 'tag_scan' %}
+    <meta http-equiv="refresh" content="1">
+  {% endif %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
+  <style>
+    .profile {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--gap-default);
+
+      .profile__user {
+        flex: 1 1 260px;
+
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap-small);
+
+        position: relative;
+
+        .profile__edit-profile {
+          position: absolute;
+          top: 0;
+          right: 0;
+          margin: var(--gap-small);
+        }
+
+        .profile__factoid {
+          margin: 0;
+        }
+      }
+
+
+      .profile__tags {
+        flex: 2 1 400px;
+
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap-default);
+
+        table {
+          width: 100%;
+
+          th,
+          td {
+            padding: var(--gap-small) 0;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+          }
+        }
+
+        .profile__tag-actions {
+          display: flex;
+          gap: var(--gap-small);
+
+        }
+      }
+    }
+
+    .action__button {
+      display: inline-block;
+      cursor: pointer;
+      background: none;
+      border: none;
+      transition: background 100ms;
+      padding: var(--gap-tiny);
+      border-radius: var(--radius-small);
+
+      &:hover {
+        background: rgba(0, 0, 0, 10%);
+      }
+      &:active {
+        background: rgba(0, 0, 0, 30%);
+      }
+    }
+
+
+  </style>
+{% endblock %}
+
+{% block main %}
+
+  <main class="profile">
+    <section class="card profile__user">
+      <form method="GET" action="{% url 'user_profile' %}" class="profile__edit-profile">
+        <input type="hidden" name="modal" value="edit_profile">
+        <button class="action__button">
+          <i class="fa fa-pen"></i>
+        </button>
+      </form>
+      <p class="profile__factoid"><b>Name:</b> {{ user.get_full_name }}</p>
+      <p class="profile__factoid"><b>Email:</b> {{ user.email }}</p>
+      <p class="profile__factoid"><b>Username:</b> {{ user.username }}</p>
+      <p class="profile__factoid"><b>Subteam:</b> {{ membership.subteam.name | default:'You are alone.' }}</p>
+      <p class="profile__factoid"><b>Workload:</b> {{ membership.job.name | default:'Jobless' }} ({{ membership.job.quota | default:'many' }} hours/week)</p>
+    </section>
+
+    <section class="card profile__tags">
+      <table>
+        <thead>
+          <tr>
+            <th>Tag ID</th>
+            <th>Tag Name</th>
+            <th>State</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for tag in tags %}
+            {% if tag.name != "WebUI" %}
+              <tr>
+                <td>{{ tag.tag }}</td>
+                <td>{{ tag.name }}</td>
+                <td>{{ tag.get_state.value }}</td>
+                <td>
+                  <div class="profile__tag-actions">
+                    <form method="GET" action="{% url 'user_profile' %}" class="action">
+                      <input type="hidden" name="modal" value="rename_tag">
+                      <input type="hidden" name="tag_code" value="{{ tag.id }}">
+                      <input type="hidden" name="tag_name" value="{{ tag.name }}">
+                      <button class="action__button">
+                        <i class="fa fa-pen"></i>
+                      </button>
+                    </form>
+                    <form method="GET" action="{% url 'user_profile' %}" class="action">
+                      <input type="hidden" name="modal" value="delete_tag_confirm">
+                      <input type="hidden" name="tag_id" value="{{ tag.id }}">
+                      <button class="action__button">
+                        <i class="fa fa-trash"></i>
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <a href="{% url 'user_profile' %}?modal=tag_name" class="button">+ Add a Tag</a>
+    </section>
+
+    {% if modal_name == 'tag_name' %}
+
+      {% modal 'Name your tag:' 'user_profile' %}
+        <input type="hidden" name="action" value="add_tag">
+        <input type="text" name="tag_name" placeholder="Enter tag name" autofocus>
+        <section class="modal__actions">
+          <button class="modal__action modal--primary">Add Tag</button>
+          <a class="modal__action modal--secondary" href="{% url 'user_profile' %}">Cancel</a>
+        </section>
+      {% endmodal %}
+
+    {% elif modal_name == 'tag_scan' %}
+
+      {% modal 'Please scan your tag at the device' 'user_profile' %}
+        <p>Waiting for scan...</p>
+      {% endmodal %}
+
+    {% elif modal_name == 'rename_tag' %}
+
+      {% modal 'Name your tag:' 'rename_tag' %}
+        <input type="hidden" name="id" value="{{ request.GET.tag_code }}">
+        <input type="text" name="tag_name" value="{{ request.GET.tag_name }}" autofocus >
+        <section class="modal__actions">
+          <button class="modal__action modal--primary">Save</button>
+          <a class="modal__action modal--secondary" href="{% url 'user_profile' %}">Cancel</a>
+        </section>
+      {% endmodal %}
+
+    {% elif modal_name == 'delete_tag_confirm' %}
+
+      {% modal 'Delete tag?' 'delete_tag' %}
+        <input type="hidden" name="tag_id" value="{{ request.GET.tag_id }}">
+        <p>Are you sure you want to delete <b>{{ tag_name }}</b>?</p>
+        <section class="modal__actions">
+          <button class="modal__action modal--primary">Delete</button>
+          <a class="modal__action modal--secondary" href="{% url 'user_profile' %}">Cancel</a>
+        </section>
+      {% endmodal %}
+
+    {% elif modal_name == 'edit_profile' %}
+
+      {% modal 'Edit your profile' 'edit_profile' %}
+        <label for="edit_profile/first_name">First name:</label>
+        <input id="edit_profile/first_name" type="text" name="first_name" value="{{ user.first_name }}">
+        <label for="edit_profile/last_name">Last name:</label>
+        <input id="edit_profile/last_name" type="text" name="last_name" value="{{ user.last_name }}">
+        <label for="edit_profile/username">Username:</label>
+        <input id="edit_profile/username" type="text" name="username" value="{{ user.username }}">
+        <label for="edit_profile/subteam">Subteam:</label>
+        <select id="edit_profile/subteam" name="subteam">
+          <option disabled {% if not membership %}selected{% endif %}>-- Pick a subteam --</option>
+          {% for subteam in subteams %}
+            <option value="{{ subteam.id }}" {% if membership and membership.subteam == subteam %}selected{% endif %}>{{ subteam }}</option>
+          {% endfor %}
+        </select>
+        <label for="edit_profile/job">Workload:</label>
+        <select id="edit_profile/job" name="job">
+          <option disabled {% if not membership %}selected{% endif %}>-- Pick a job --</option>
+          {% for job in jobs %}
+            <option value="{{ job.id }}" {% if membership and membership.job == job %}selected{% endif %}>{{ job }}</option>
+          {% endfor %}
+        </select>
+        <section class="modal__actions">
+          <button class="modal__action modal--primary">Save</button>
+          <a class="modal__action modal--secondary" href="{% url 'user_profile' %}">Cancel</a>
+        </section>
+      {% endmodal %}
+
+    {% endif %}
+
+  </main>
+{% endblock %}

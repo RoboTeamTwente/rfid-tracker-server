@@ -57,19 +57,20 @@ LOGGING = {
 # Application definition
 
 INSTALLED_APPS = [
+    'dbbackup',
+    'django_apscheduler',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
     'django.contrib.messages',
-    'whitenoise.runserver_nostatic',  # must be above staticfiles
+    'django.contrib.sessions',
     'django.contrib.staticfiles',
-    'webui.apps.WebuiConfig',
-    'dbbackup',
-    'rest_framework',
-    'django_apscheduler',
     'door_tracker.apps.DoorTrackerConfig',
+    'midas.apps.MidasConfig',
     'pytz',
+    'rest_framework',
+    'webui.apps.WebuiConfig',
+    'whitenoise.runserver_nostatic',  # must be above staticfiles
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,41 @@
+{% extends "webui/base.html" %}
+
+{% block title %}Checked-In Dashboard{% endblock %}
+
+{% block head %}
+  <style>
+    .recent-scans {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      .recent-scans__item {
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+        cursor: pointer;
+        transition: background 0.2s;
+
+        &:hover {
+          background: #f9f9f9;
+        }
+
+        &:last-child {
+          border: none;
+        }
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block main %}
+  <main class="card">
+    <h2 class="card__title">Recent Tag Scans</h2>
+
+    <ul class="recent-scans">
+      {% for log in logs %}
+        <li class="recent-scans__item">{{log.tag}} - {{log.get_type_display}} at {{log.time | date:'Y-m-d H:i'}}</li>
+      {% endfor %}
+    </ul>
+
+  </main>
+{% endblock %}

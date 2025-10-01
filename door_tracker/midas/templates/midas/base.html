@@ -1,0 +1,119 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}RoboTeam Twente RFiD Time Tracker{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'webui/base.css' %}" >
+    {% block head %}{% endblock %}
+  </head>
+
+  <body class="body">
+    <header class="body__header">
+      <a href="{% url 'index' %}" class="body__logo">
+        <img src="{% static 'webui/logo.svg' %}" alt="RoboTeam Twente Logo" width="50" height="50">
+        RoboTeam Twente
+      </a>
+      <span class="body__user-status">{{user_status}}</span>
+      <div class="body__user">
+        <span>Welcome, {{user.get_full_name}}</span>
+      </div>
+    </header>
+
+
+    <nav class="body__navbar">
+      <a class="button" href="{% url 'index' %}">🔗 Dashboard</a>
+      <!-- TODO: this doesn't link anywhere yet -->
+      <a class="button" href="{% url 'user_statistics' %}">🔗 Statistics</a>
+      <a class="button" href="{% url 'user_profile' %}">🔗 Profile</a>
+      <a class="button" href="{% url 'export_user' %}">⚙️ Export to CSV</a>
+      <a class="button" href="#" onclick="openCheckoutModal()">⚙️ Remote Checkout</a>
+      <a class="button" href="{% url 'logout' %}">⚙️ Log out</a>
+    </nav>
+
+    {% block main %}
+      <main class="card">
+        <p>Hello World</p>
+      </main>
+    {% endblock %}
+
+    <div id="checkoutModal" class="modal" style="display:none">
+      <form id="checkoutForm" class="modal__content">
+        <h2 class="modal__title">Remote Checkout</h2>
+        <label for="checkoutTime">Select Checkout Time:</label>
+        <input
+          type="datetime-local"
+          id="checkoutTime"
+          name="checkout_time"
+          required
+          max="{% now 'c' %}"
+        />
+        <div class="modal__actions">
+          <button type="submit" class="modal__action modal--primary">Checkout</button>
+          <button type="button" class="modal__action modal--secondary" onclick="closeCheckoutModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="messages">
+      {% for message in messages %}
+        <p{% if message.tags %} class="messages__item messages--{{ message.tags }}"{% endif %}>{{ message }}</p>
+      {% endfor %}
+    </div>
+
+    <script>
+      function showMessage(type, text) {
+        const message = document.createElement('p')
+        message.classList.add('messages__item', `messages--${type}`)
+        message.innerText = text
+        document.querySelector('.messages').appendChild(message)
+      }
+
+      function openCheckoutModal() {
+        const modal = document.getElementById('checkoutModal')
+        modal.style.display = 'flex'
+      }
+
+      function closeCheckoutModal() {
+        const modal = document.getElementById('checkoutModal')
+        modal.style.display = 'none'
+        document.getElementById('checkoutForm').reset()
+      }
+
+      document
+        .getElementById('checkoutForm')
+        .addEventListener('submit', async (e) => {
+          e.preventDefault()
+          const checkoutTime = document.getElementById('checkoutTime').value
+
+          try {
+            const response = await fetch("{% url 'auto_checkout' %}", {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}',
+              },
+              body: JSON.stringify({
+                checkout_time: new Date(checkoutTime).toISOString(),
+              }),
+            })
+
+            const data = await response.json()
+
+            if (response.ok) {
+              showMessage('success', `Successfully checked out at ${data.date}`)
+              setTimeout(() => {
+                window.location.reload()
+              }, 2000)
+            } else {
+              showMessage('error', data.message || 'An error occurred')
+            }
+          } catch (error) {
+            showMessage('error', 'Network error: ' + error.message)
+          }
+        })
+    </script>
+  </body>
+</html>
