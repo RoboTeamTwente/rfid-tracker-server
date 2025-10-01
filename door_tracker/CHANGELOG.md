@@ -2,6 +2,33 @@
 
 # Changelog
 
+## v2.0.0 (2025-10-01)
+
+### BREAKING CHANGE
+
+- register_scan endpoint requires no slash at the end now
+- docker image autocreates a superuser now.
+
+### Feat
+
+- **tooling**: add example backup env vars to compose.yaml
+- **containers**: mount credentials in the example compose.yaml
+- **tooling**: gitignore the credentials folder
+- **containers**: make backup credentials file location configurable
+- **webui**: add a button to redirect to dashboard
+- **tooling**: add conventional commits to vscode
+- **docker**: autocreate an admin on container startup
+- **commands**: add init_admin
+
+### Fix
+
+- **backups**: add packages required to run `django backup_website`
+
+### Refactor
+
+- **api**: removed a slash at the end of register_scan
+- **css**: move log in button to nav bar
+
 ## v1.2.0 (2025-09-28)
 
 ### Feat
