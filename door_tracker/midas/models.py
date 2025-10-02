@@ -1,34 +1,56 @@
 import secrets
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 
 
-class Checkin(models.Model):
-    type = models.CharField()
+class LogType(models.TextChoices):
+    TAG = 'tag', 'tag scan'
+    REMOTE = 'remote', 'remote'
+
+
+class Log(models.Model):
+    type = models.CharField(choices=LogType)
     time = models.DateTimeField(default=timezone.now)
     tag = models.ForeignKey(
         'ClaimedTag', on_delete=models.SET_NULL, null=True, blank=True
     )
+
+    def clean(self):
+        if self.type != LogType.TAG and self.tag is not None:
+            raise ValidationError(
+                {
+                    'tag': f'Tag must not be set when type field is not "{LogType.TAG.label}"',
+                }
+            )
+
+        if self.session and self.tag and self.session.user.id != self.tag.owner.id:
+            raise ValidationError(
+                {
+                    'tag': f'This tag does not belong to {self.session.user.get_full_name()}'
+                }
+            )
+
+    class Meta:
+        abstract = True
+
+
+class Checkin(Log):
     session = models.OneToOneField(
         'Session', on_delete=models.CASCADE, related_name='checkin'
     )
 
 
-class Checkout(models.Model):
-    type = models.CharField()
-    time = models.DateTimeField(default=timezone.now)
-    tag = models.ForeignKey(
-        'ClaimedTag', on_delete=models.SET_NULL, null=True, blank=True
-    )
+class Checkout(Log):
     session = models.OneToOneField(
         'Session', on_delete=models.CASCADE, related_name='checkout'
     )
 
 
 class Session(models.Model):
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 class ClaimedTag(models.Model):
@@ -36,18 +58,21 @@ class ClaimedTag(models.Model):
     name = models.CharField()
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    class TagManager(models.Manager):
-        def get_authorized(self):
-            return self.filter(owner__isnull=False).exclude(name='')
+    def __str__(self):
+        return f'{self.name} ({self.owner.get_full_name()})'
+
+
+def _generate_scanner_id():
+    """Generate an ID for a new scanner."""
+    return secrets.token_hex(16)
 
 
 class Scanner(models.Model):
-    def generate_scanner_id():
-        """Generate an ID for a new scanner."""
-        return secrets.token_hex(16)
-
-    id = models.CharField(primary_key=True, default=generate_scanner_id)
+    id = models.CharField(primary_key=True, default=_generate_scanner_id)
     name = models.CharField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
 
 
 class PendingTag(models.Model):
@@ -60,17 +85,19 @@ class Quota(models.Model):
     name = models.CharField(null=True, blank=True)
     hours = models.IntegerField()
 
+    def __str__(self):
+        return f'{self.name} ({self.hours} hrs/week)'
+
 
 class Assignment(models.Model):
-    starting_from = models.DateTimeField(default=timezone.now)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     quota = models.ForeignKey('Quota', on_delete=models.CASCADE)
+    subteams = models.ManyToManyField('Subteam')
+    starting_from = models.DateTimeField(default=timezone.now)
 
 
 class Subteam(models.Model):
     name = models.CharField()
 
-
-class SubteamMembership(models.Model):
-    period = models.ForeignKey('Assignment', on_delete=models.CASCADE)
-    subteam_id = models.ForeignKey('Subteam', on_delete=models.CASCADE)
+    def __str__(self):
+        return self.name

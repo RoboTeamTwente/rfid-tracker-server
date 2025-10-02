@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.contrib.admin import register
+from django.urls import resolve
 
 from .models import (
     Assignment,
@@ -11,60 +11,88 @@ from .models import (
     Scanner,
     Session,
     Subteam,
-    SubteamMembership,
 )
 
 
-class SubteamMembershipInline(admin.TabularInline):
-    model = SubteamMembership
+class LogInline(admin.StackedInline):
+    radio_fields = {'type': admin.HORIZONTAL}
+
+    # filters tags by session user
+    # XXX: doesnt work when a new session is created
+    def get_field_queryset(self, db, db_field, request):
+        if db_field.name == 'tag':
+            parent_id = resolve(request.path_info).kwargs.get('object_id')
+            if parent_id:
+                session = self.parent_model.objects.get(pk=parent_id)
+                return ClaimedTag.objects.filter(owner=session.user)
+        return super().get_field_queryset(db, db_field, request)
 
 
-class CheckinInline(admin.StackedInline):
+class CheckinInline(LogInline):
     model = Checkin
 
 
-class CheckoutInline(admin.StackedInline):
+class CheckoutInline(LogInline):
     model = Checkout
 
 
-@register(Session)
+@admin.register(Session)
 class SessionAdmin(admin.ModelAdmin):
-    list_display = ['checkin__time', 'checkout__time', 'owner']
+    list_display = ['checkin__time', 'checkout__time', 'user']
     inlines = [CheckinInline, CheckoutInline]
+    autocomplete_fields = ['user']
 
     def get_readonly_fields(self, request, obj=None):
         default = super().get_readonly_fields(request, obj)
         if obj is not None:  # when editing
-            default = list(default) + ['owner']
+            default = list(default) + ['user']
         return default
 
 
-@register(Assignment)
+@admin.register(Assignment)
 class AssignmentAdmin(admin.ModelAdmin):
-    inlines = [SubteamMembershipInline]
     list_display = ['starting_from', 'user__username', 'quota__name']
+    filter_horizontal = ['subteams']
+    autocomplete_fields = ['user']
 
 
-@register(ClaimedTag)
+@admin.register(ClaimedTag)
 class ClaimedTagAdmin(admin.ModelAdmin):
     list_display = ['name', 'owner__username']
+    search_fields = ['name', 'owner__first_name', 'owner__last_name']
+    autocomplete_fields = ['owner']
+
+    def get_readonly_fields(self, request, obj=None):
+        default = super().get_readonly_fields(request, obj)
+        if obj is not None:  # when editing
+            default = list(default) + ['owner', 'code']
+        return default
+
+    def has_add_permission(self, request):
+        return False
 
 
-@register(PendingTag)
+@admin.register(PendingTag)
 class PendingTagAdmin(admin.ModelAdmin):
     list_display = ['name', 'owner__username', 'scanner__name']
+    autocomplete_fields = ['owner']
 
 
-@register(Scanner)
+@admin.register(Scanner)
 class ScannerAdmin(admin.ModelAdmin):
     list_display = ['name', 'id']
+    readonly_fields = ['id']
 
 
-@register(Subteam)
+@admin.register(Subteam)
 class SubteamAdmin(admin.ModelAdmin):
     list_display = ['name']
+    list_editable = ['name']
+    list_display_links = None
 
 
-@register(Quota)
+@admin.register(Quota)
 class QuotaAdmin(admin.ModelAdmin):
     list_display = ['name', 'hours']
+    list_editable = ['name', 'hours']
+    list_display_links = None

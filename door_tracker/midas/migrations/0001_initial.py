@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
                 (
                     'id',
                     models.CharField(
-                        default=midas.models.Scanner.generate_scanner_id,
+                        default=midas.models._generate_scanner_id,
                         primary_key=True,
                         serialize=False,
                     ),
@@ -88,7 +88,10 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ('type', models.CharField()),
-                ('time', models.DateTimeField(default=django.utils.timezone.now)),
+                (
+                    'time',
+                    models.DateTimeField(default=django.utils.timezone.now),
+                ),
                 (
                     'tag',
                     models.ForeignKey(
@@ -126,7 +129,8 @@ class Migration(migrations.Migration):
                 (
                     'quota',
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to='midas.quota'
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to='midas.quota',
                     ),
                 ),
             ],
@@ -154,7 +158,8 @@ class Migration(migrations.Migration):
                 (
                     'scanner',
                     models.OneToOneField(
-                        on_delete=django.db.models.deletion.CASCADE, to='midas.scanner'
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to='midas.scanner',
                     ),
                 ),
             ],
@@ -220,7 +225,8 @@ class Migration(migrations.Migration):
                 (
                     'subteam_id',
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to='midas.subteam'
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to='midas.subteam',
                     ),
                 ),
             ],
