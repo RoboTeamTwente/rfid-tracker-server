@@ -41,6 +41,7 @@ class SessionAdmin(admin.ModelAdmin):
     list_display = ['checkin__time', 'checkout__time', 'user']
     inlines = [CheckinInline, CheckoutInline]
     autocomplete_fields = ['user']
+    ordering = ['-checkin__time', '-checkout__time']
 
     def get_readonly_fields(self, request, obj=None):
         default = super().get_readonly_fields(request, obj)
@@ -54,13 +55,15 @@ class AssignmentAdmin(admin.ModelAdmin):
     list_display = ['starting_from', 'user__username', 'quota__name']
     filter_horizontal = ['subteams']
     autocomplete_fields = ['user']
+    ordering = ['-starting_from']
 
 
 @admin.register(ClaimedTag)
 class ClaimedTagAdmin(admin.ModelAdmin):
-    list_display = ['name', 'owner__username']
-    search_fields = ['name', 'owner__first_name', 'owner__last_name']
+    list_display = ['name', 'owner__last_name', 'owner__first_name']
+    search_fields = ['name', 'owner__last_name', 'owner__first_name']
     autocomplete_fields = ['owner']
+    ordering = ['owner__last_name', 'owner__first_name', 'name']
 
     def get_readonly_fields(self, request, obj=None):
         default = super().get_readonly_fields(request, obj)
@@ -74,14 +77,25 @@ class ClaimedTagAdmin(admin.ModelAdmin):
 
 @admin.register(PendingTag)
 class PendingTagAdmin(admin.ModelAdmin):
-    list_display = ['name', 'owner__username', 'scanner__name']
+    list_display = [
+        'name',
+        'owner__last_name',
+        'owner__first_name',
+        'scanner__name',
+    ]
     autocomplete_fields = ['owner']
+    ordering = [
+        'owner__last_name',
+        'owner__first_name',
+        'name',
+    ]
 
 
 @admin.register(Scanner)
 class ScannerAdmin(admin.ModelAdmin):
     list_display = ['name', 'id']
     readonly_fields = ['id']
+    ordering = ['name']
 
 
 @admin.register(Subteam)
@@ -89,6 +103,7 @@ class SubteamAdmin(admin.ModelAdmin):
     list_display = ['name']
     list_editable = ['name']
     list_display_links = None
+    ordering = ['name']
 
 
 @admin.register(Quota)
@@ -96,3 +111,4 @@ class QuotaAdmin(admin.ModelAdmin):
     list_display = ['name', 'hours']
     list_editable = ['name', 'hours']
     list_display_links = None
+    ordering = ['name']
