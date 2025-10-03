@@ -7,7 +7,7 @@ urlpatterns = [
     path('api/auth/', include('rest_framework.urls')),
     path('api/checkout', api.checkout, name='checkout'),
     path('api/healthcheck', api.healthcheck, name='healthcheck'),
-    path('api/register_scan', api.register_scan, name='register_scan'),
+    path('api/register_scan', api.register_scan, name='register_scan_new'),
     # path('auto_checkout', views.auto_checkout, name='auto_checkout'),
     # path('delete_tag', views.delete_tag, name='delete_tag'),
     # path('edit_profile', views.edit_profile, name='edit_profile'),
