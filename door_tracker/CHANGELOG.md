@@ -2,6 +2,23 @@
 
 # Changelog
 
+## v2.1.0 (2025-10-03)
+
+### Feat
+
+- **api**: allow register_scan with trailing slash again
+- **admin**: add filters to admin page
+- **model**: add statistics calculation
+- **admin**: sort everything
+
+### Refactor
+
+- **tooling**: add statistics scope for conventional commits
+- **statistics**: move statistics calculations to statistics.py
+- prettify admin page, changes in models
+- **midas**: split log table into checkin and checkout
+- **midas**: add midas app, put new models in it
+
 ## v2.0.0 (2025-10-01)
 
 ### BREAKING CHANGE
