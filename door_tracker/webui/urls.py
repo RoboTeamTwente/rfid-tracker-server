@@ -18,4 +18,5 @@ urlpatterns = [
     path('auto_checkout', views.auto_checkout, name='auto_checkout'),
     path('edit_profile', views.edit_profile, name='edit_profile'),
     path('register_scan', views.register_scan, name='register_scan'),
+    path('register_scan/', views.register_scan, name='register_scan_old'),
 ]
