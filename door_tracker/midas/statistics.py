@@ -15,12 +15,12 @@ from django.utils import timezone
 from midas.models import Session
 
 
-def get_sessions_time(request, start_of_day, end_of_day):
+def get_sessions_time(user, start_of_day, end_of_day):
     # Get all sessions that overlap with the specified range
     sessions = Session.objects.filter(
         Q(checkin__time__lte=end_of_day),
         Q(checkout__time__gte=start_of_day) | Q(checkout__time__isnull=True),
-        user=request.user,
+        user=user,
     )
 
     # Replace null with current time for ongoing sessions
@@ -56,7 +56,7 @@ def get_sessions_time(request, start_of_day, end_of_day):
     return int(total_duration.total_seconds() // 60)
 
 
-def get_minutes_today(request, day):
+def get_minutes_today(user, day):
     # Get start and end of the day
     start_of_day = datetime.combine(
         day, datetime.min.time(), tzinfo=timezone.get_current_timezone()
@@ -65,10 +65,10 @@ def get_minutes_today(request, day):
         day, datetime.max.time(), tzinfo=timezone.get_current_timezone()
     )
 
-    return get_sessions_time(request, start_of_day, end_of_day)
+    return get_sessions_time(user, start_of_day, end_of_day)
 
 
-def get_minutes_this_week(request, day):
+def get_minutes_this_week(user, day):
     # Get start and end of the week (Monday to Sunday)
     start_of_week = day - timezone.timedelta(days=day.weekday())
     start_of_day = datetime.combine(
@@ -81,10 +81,10 @@ def get_minutes_this_week(request, day):
         end_of_week, datetime.max.time(), tzinfo=timezone.get_current_timezone()
     )
 
-    return get_sessions_time(request, start_of_day, end_of_day)
+    return get_sessions_time(user, start_of_day, end_of_day)
 
 
-def get_minutes_this_month(request, day):
+def get_minutes_this_month(user, day):
     # Get start and end of the month
     start_of_month = day.replace(day=1)
     start_of_day = datetime.combine(
@@ -105,13 +105,13 @@ def get_minutes_this_month(request, day):
         tzinfo=timezone.get_current_timezone(),
     )
 
-    return get_sessions_time(request, start_of_day, end_of_day)
+    return get_sessions_time(user, start_of_day, end_of_day)
 
 
-def get_total_minutes(request, day):
+def get_total_minutes(user, day):
     # Get the date of the earliest checkin
     earliest_session = (
-        Session.objects.filter(user=request.user, checkin__isnull=False)
+        Session.objects.filter(user=user, checkin__isnull=False)
         .order_by('checkin__time')
         .first()
     )
@@ -133,13 +133,13 @@ def get_total_minutes(request, day):
         tzinfo=timezone.get_current_timezone(),
     )
 
-    return get_sessions_time(request, start_of_day, end_of_day)
+    return get_sessions_time(user, start_of_day, end_of_day)
 
 
-def get_average_week(request, day, total_minutes):
+def get_average_week(user, day, total_minutes):
     # Get the date of the earliest checkin
     earliest_session = (
-        Session.objects.filter(user=request.user, checkin__isnull=False)
+        Session.objects.filter(user=user, checkin__isnull=False)
         .order_by('checkin__time')
         .first()
     )
