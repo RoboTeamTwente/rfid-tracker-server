@@ -327,6 +327,13 @@ in
     pass_filenames = false;
   };
 
+  git-hooks.hooks.django-test = {
+    enable = true;
+    entry = "django test";
+    always_run = true;
+    pass_filenames = false;
+  };
+
   git-hooks.hooks.prettier = {
     enable = true;
     excludes = [ ''templates/.*\.html$'' ];
