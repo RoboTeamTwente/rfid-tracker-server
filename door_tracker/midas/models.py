@@ -14,9 +14,6 @@ class LogType(models.TextChoices):
 class Log(models.Model):
     type = models.CharField(choices=LogType)
     time = models.DateTimeField(default=timezone.now)
-    tag = models.ForeignKey(
-        'ClaimedTag', on_delete=models.SET_NULL, null=True, blank=True
-    )
 
     def clean(self):
         if self.type != LogType.TAG and self.tag is not None:
@@ -38,25 +35,45 @@ class Log(models.Model):
 
 
 class Checkin(Log):
+    tag = models.ForeignKey(
+        'ClaimedTag',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='checkins',
+    )
     session = models.OneToOneField(
-        'Session', on_delete=models.CASCADE, related_name='checkin'
+        'Session',
+        on_delete=models.CASCADE,
+        related_name='checkin',
     )
 
 
 class Checkout(Log):
+    tag = models.ForeignKey(
+        'ClaimedTag',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='checkouts',
+    )
     session = models.OneToOneField(
-        'Session', on_delete=models.CASCADE, related_name='checkout'
+        'Session',
+        on_delete=models.CASCADE,
+        related_name='checkout',
     )
 
 
 class Session(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sessions')
 
 
 class ClaimedTag(models.Model):
     code = models.CharField(primary_key=True)
     name = models.CharField()
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='claimed_tags'
+    )
 
     def __str__(self):
         return f'{self.name} ({self.owner.get_full_name()})'
@@ -77,8 +94,12 @@ class Scanner(models.Model):
 
 class PendingTag(models.Model):
     name = models.CharField(null=True, blank=True)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    scanner = models.OneToOneField('Scanner', on_delete=models.CASCADE)
+    owner = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='pending_tags'
+    )
+    scanner = models.OneToOneField(
+        'Scanner', on_delete=models.CASCADE, related_name='pending_tag'
+    )
 
 
 class Quota(models.Model):
@@ -90,7 +111,7 @@ class Quota(models.Model):
 
 
 class Assignment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='assignments')
     quota = models.ForeignKey('Quota', on_delete=models.CASCADE)
     subteams = models.ManyToManyField('Subteam')
     starting_from = models.DateTimeField(default=timezone.now)
