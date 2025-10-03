@@ -1,8 +1,13 @@
-from django.urls import path
+from django.urls import include, path
 
-from . import views
+from . import api, views
 
 urlpatterns = [
+    path('api', api.api_root),
+    path('api/auth/', include('rest_framework.urls')),
+    path('api/checkout', api.checkout, name='checkout'),
+    path('api/healthcheck', api.healthcheck, name='healthcheck'),
+    path('api/register_scan', api.register_scan, name='register_scan'),
     # path('auto_checkout', views.auto_checkout, name='auto_checkout'),
     # path('delete_tag', views.delete_tag, name='delete_tag'),
     # path('edit_profile', views.edit_profile, name='edit_profile'),
