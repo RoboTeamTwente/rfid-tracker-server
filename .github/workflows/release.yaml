@@ -1,0 +1,35 @@
+name: Deliver
+
+on:
+  workflow_dispatch: # for debugging
+  push:
+    branches:
+      - gha/deliver # for spamming^W debugging this workflow
+    tags:
+      - v* # for actual releases
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Install devenv
+        run: |
+          echo "$(nix-build '<nixpkgs>' -A devenv)/bin" >> "$GITHUB_PATH"
+
+      - name: Install project dependencies
+        run: |
+          devenv print-dev-env > ~/.env
+
+      - name: Build & upload the container image
+        env:
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          # shellcheck disable=SC1090
+          source ~/.env
+          docker-login -p "$DOCKERHUB_TOKEN"
+          deliver
