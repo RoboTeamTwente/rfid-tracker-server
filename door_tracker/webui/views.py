@@ -259,23 +259,26 @@ def register_scan(request):
         tag = Tag.objects.filter(tag=None).first()
 
     if tag is None:
-        tag = Tag(tag=card_id)
-        tag.save()
-
-    log = Log(scanner=scanner, tag=tag)
+        tag = Tag.objects.create(tag=card_id)
 
     match tag.get_state():
         case TagState.UNAUTHORIZED:
-            log.type = Log.LogEntryType.UNKNOWN
-            log.save()
+            Log.objects.create(
+                type=Log.LogEntryType.UNKNOWN,
+                scanner=scanner,
+                tag=tag,
+            )
             return JsonResponse(
                 {'status': 'error', 'message': 'Card not registered'},
                 status=404,
             )
 
         case TagState.PENDING_REGISTRATION:
-            log.type = Log.LogEntryType.REGISTRATION
-            log.save()
+            Log.objects.create(
+                type=Log.LogEntryType.REGISTRATION,
+                scanner=scanner,
+                tag=tag,
+            )
             tag.tag = card_id
             tag.save()
             call_command('update_statistics')
@@ -298,10 +301,13 @@ def register_scan(request):
 
         case TagState.CLAIMED:
             checkout = is_checked_in(tag.owner)
-            log.type = (
-                Log.LogEntryType.CHECKOUT if checkout else Log.LogEntryType.CHECKIN
+            Log.objects.create(
+                type=(
+                    Log.LogEntryType.CHECKOUT if checkout else Log.LogEntryType.CHECKIN
+                ),
+                scanner=scanner,
+                tag=tag,
             )
-            log.save()
             call_command('update_statistics')
             hours_day = (
                 Statistics.objects.filter(person=tag.owner).latest('date').minutes_day
