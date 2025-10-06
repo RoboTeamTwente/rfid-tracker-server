@@ -11,6 +11,7 @@ from django.db.models import (
 )
 from django.db.models.functions import Coalesce
 from django.utils import timezone
+from pytz import AmbiguousTimeError, NonExistentTimeError
 
 from midas.models import Session
 
@@ -58,28 +59,33 @@ def get_sessions_time(user, start_of_day, end_of_day):
 
 def get_minutes_today(user, day):
     # Get start and end of the day
-    start_of_day = datetime.combine(
-        day, datetime.min.time(), tzinfo=timezone.get_current_timezone()
-    )
-    end_of_day = datetime.combine(
-        day, datetime.max.time(), tzinfo=timezone.get_current_timezone()
-    )
+    start_of_day = safe_make_aware(datetime.combine(day, datetime.min.time()))
+
+    # Using datetime.max will break it durin the time change (DST)
+    # so we use the start of the next day minus 1 microsecond
+    end_of_day = safe_make_aware(
+        datetime.combine(day + timedelta(days=1), datetime.min.time())
+    ) - timedelta(microseconds=1)
 
     return get_sessions_time(user, start_of_day, end_of_day)
 
 
 def get_minutes_this_week(user, day):
     # Get start and end of the week (Monday to Sunday)
-    start_of_week = day - timezone.timedelta(days=day.weekday())
-    start_of_day = datetime.combine(
-        start_of_week,
-        datetime.min.time(),
-        tzinfo=timezone.get_current_timezone(),
+    start_of_week = day - timedelta(days=day.weekday())
+    start_of_day = safe_make_aware(
+        datetime.combine(
+            start_of_week,
+            datetime.min.time(),
+        )
     )
-    end_of_week = start_of_week + timezone.timedelta(days=6)
-    end_of_day = datetime.combine(
-        end_of_week, datetime.max.time(), tzinfo=timezone.get_current_timezone()
-    )
+    end_of_week = start_of_week + timedelta(days=6)
+
+    # Using datetime.max will break it durin the time change (DST)
+    # so we use the start of the next day minus 1 microsecond
+    end_of_day = safe_make_aware(
+        datetime.combine(end_of_week + timedelta(days=1), datetime.min.time()),
+    ) - timedelta(microseconds=1)
 
     return get_sessions_time(user, start_of_day, end_of_day)
 
@@ -87,10 +93,11 @@ def get_minutes_this_week(user, day):
 def get_minutes_this_month(user, day):
     # Get start and end of the month
     start_of_month = day.replace(day=1)
-    start_of_day = datetime.combine(
-        start_of_month,
-        datetime.min.time(),
-        tzinfo=timezone.get_current_timezone(),
+    start_of_day = safe_make_aware(
+        datetime.combine(
+            start_of_month,
+            datetime.min.time(),
+        )
     )
     # Calculate the last day of the month
     if day.month == 12:
@@ -99,11 +106,12 @@ def get_minutes_this_month(user, day):
         )
     else:
         end_of_month = day.replace(month=day.month + 1, day=1) - timedelta(days=1)
-    end_of_day = datetime.combine(
-        end_of_month,
-        datetime.max.time(),
-        tzinfo=timezone.get_current_timezone(),
-    )
+
+    # Using datetime.max will break it durin the time change (DST)
+    # so we use the start of the next day minus 1 microsecond
+    end_of_day = safe_make_aware(
+        datetime.combine(end_of_month + timedelta(days=1), datetime.min.time()),
+    ) - timedelta(microseconds=1)
 
     return get_sessions_time(user, start_of_day, end_of_day)
 
@@ -122,16 +130,15 @@ def get_total_minutes(user, day):
 
     latest_session = day
 
-    start_of_day = datetime.combine(
-        earliest_session.checkin.time.date(),
-        datetime.min.time(),
-        tzinfo=timezone.get_current_timezone(),
+    start_of_day = safe_make_aware(
+        datetime.combine(earliest_session.checkin.time.date(), datetime.min.time())
     )
-    end_of_day = datetime.combine(
-        latest_session,
-        datetime.max.time(),
-        tzinfo=timezone.get_current_timezone(),
-    )
+
+    # Using datetime.max will break it durin the time change (DST)
+    # so we use the start of the next day minus 1 microsecond
+    end_of_day = safe_make_aware(
+        datetime.combine(latest_session + timedelta(days=1), datetime.min.time()),
+    ) - timedelta(microseconds=1)
 
     return get_sessions_time(user, start_of_day, end_of_day)
 
@@ -149,6 +156,7 @@ def get_average_week(user, day, total_minutes):
         return 0  # No checkin yet
 
     first_checkin_date = earliest_session.checkin.time.date()
+
     # Calculate the number of weeks between the first checkin and the given day
     days_difference = (
         day - first_checkin_date
@@ -159,3 +167,16 @@ def get_average_week(user, day, total_minutes):
         return total_minutes  # Avoid division by zero, return total minutes as average
 
     return int(total_minutes // weeks_difference)
+
+
+def safe_make_aware(dt):
+    # Make datetime aware (in django timezone)
+    if dt is None:
+        return None
+    if timezone.is_naive(dt):
+        try:
+            return timezone.make_aware(dt, timezone.get_default_timezone())
+        except (AmbiguousTimeError, NonExistentTimeError):
+            # DST transition edge case: fallback to default behavior
+            return timezone.get_default_timezone().localize(dt)
+    return dt
