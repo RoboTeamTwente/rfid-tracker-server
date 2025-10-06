@@ -117,12 +117,7 @@ def register_scan(request):
     else:
         user = claimed_tag.owner
         today = timezone.now().date()
-        res = RegisterScanResponse(
-            state='register',
-            owner_name=user.get_full_name(),
-            hours_day=get_minutes_today(user, today),
-            hours_week=get_minutes_this_week(user, today),
-        )
+        res = RegisterScanResponse.make('register', user, today)
         serializer = RegisterScanResponseSerializer(res)
         return Response(serializer.data)
 
@@ -147,12 +142,8 @@ def register_scan(request):
         pass
     else:
         today = timezone.now().date()
-        res = RegisterScanResponse(
-            state='checkout',
-            owner_name=claimed_tag.owner.get_full_name(),
-            hours_day=get_minutes_today(request, today),
-            hours_week=get_minutes_this_week(request, today),
-        )
+        res = RegisterScanResponse.make('checkout', user, today)
+
         serializer = RegisterScanResponseSerializer(res)
         return Response(serializer.data)
 
@@ -173,12 +164,7 @@ def register_scan(request):
         pass
     else:
         today = timezone.now().date()
-        res = RegisterScanResponse(
-            state='checkout',
-            owner_name=claimed_tag.owner.get_full_name(),
-            hours_day=get_minutes_today(request, today),
-            hours_week=get_minutes_this_week(request, today),
-        )
+        res = RegisterScanResponse.make('checkin', user, today)
         serializer = RegisterScanResponseSerializer(res)
         return Response(serializer.data)
 
