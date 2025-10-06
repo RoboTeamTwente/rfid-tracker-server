@@ -143,7 +143,8 @@ def get_total_minutes(user, day):
     return get_sessions_time(user, start_of_day, end_of_day)
 
 
-def get_average_week(user, day, total_minutes):
+def get_average_week(user, day):
+    total_minutes = get_total_minutes(user, day)
     # Get the date of the earliest checkin
     earliest_session = (
         Session.objects.filter(user=user, checkin__isnull=False)
