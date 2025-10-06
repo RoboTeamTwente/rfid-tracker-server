@@ -2,6 +2,41 @@
 
 # Changelog
 
+## v2.2.0 (2025-10-06)
+
+### Feat
+
+- **tooling**: enforce conventional commits using commitizen
+- **tooling**: automatically upload releases to dockerhub
+- **webui**: add function for get everyone's statistics in one go
+- **webui**: add htmx instead of hard refresh on user_profile and tweak views user_profile to return HtmlResponse
+- **webui**: make User Profile displays user informtion and add tag functionality
+- **tests**: add tests for midas
+- **tooling**: run tests in pre-commit hook
+- **api**: port API to midas
+- **model**: add related_name to ForeignKeys
+- **webui**: add new user dashboard with new database logic
+
+### Fix
+
+- **tooling**: ignore long lines in CHANGELOG.md
+- **tooling**: remove duplicate ruff config
+- **statistics**: remove leftover debug print lines
+- **statistics**: remove need to pass total minutes as an argument to get the weekly average
+- **webui**: run s/webui/midas in views.py
+- **statistics**: keep it from breaking with the time change (DST)
+- **api**: use RegisterScan.make() to cut down on copypaste
+- **tooling**: update devenv
+- **api**: rename new register_scan to avoid name collisions
+- **webui**: make midas html point to midas' base.html
+
+### Refactor
+
+- **api**: use objects.create() instead of save()
+- **webui**: namespace midas urls
+- **webui**: remove useless order_by() in is_checked_in()
+- **statistics**: accept user directly rather than request
+
 ## v2.1.0 (2025-10-03)
 
 ### Feat
