@@ -1,32 +1,30 @@
 from django.contrib import messages
 from django.contrib.auth import logout
-
-# from django.contrib.auth.decorators import login_not_required
 from django.contrib.auth.views import LoginView
-
-# from django.core.cache import cache
-# from django.core.management import call_command
-# from django.db import IntegrityError
-# from django.db.models import Avg, Sum
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
+from rest_framework import serializers
 
-# from django.utils import timezone
-# from django.views.decorators.csrf import csrf_exempt
-# from rest_framework import serializers
-# from rest_framework.decorators import (
-#     api_view,
-# )
-# # Import Custom Files
-# from .forms import RegistrationForm
-# # Import Custom Files
-# from .forms import RegistrationForm
-# Create your views here.
-from .models import (
-    Session,
-)
+from .models import Assignment, ClaimedTag, PendingTag, Scanner, Session
 
 # from .utils import logs_to_csv
+
+
+# TODO: Refactor for Midas
+class LogIn(LoginView):
+    template_name = 'webui/login.html'
+    next_page = reverse_lazy('index')
+
+    def form_valid(self, form):
+        user_name = form.get_user().get_full_name()
+        messages.success(self.request, f'Welcome, comrade {user_name}')
+        return super().form_valid(form)
+
+
+def logout_view(request):
+    logout(request)
+    messages.success(request, 'Logged out')
+    return redirect('login')
 
 
 def is_checked_in(request):
@@ -62,20 +60,67 @@ def index(request):
     )
 
 
-class LogIn(LoginView):
-    template_name = 'webui/login.html'
-    next_page = reverse_lazy('index')
-
-    def form_valid(self, form):
-        user_name = form.get_user().get_full_name()
-        messages.success(self.request, f'Welcome, comrade {user_name}')
-        return super().form_valid(form)
+class AddTagSerializer(serializers.Serializer):
+    tag_name = serializers.CharField()
 
 
-def logout_view(request):
-    logout(request)
-    messages.success(request, 'Logged out')
-    return redirect('login')
+class ScanTagSerializer(serializers.Serializer):
+    tag = serializers.IntegerField()
+
+
+def user_profile(request):
+    modal_name = request.GET.get('modal')
+    tag_param = request.GET.get('tag')
+
+    # Base data
+    pending_tags = PendingTag.objects.filter(owner=request.user).values('id', 'name')
+    claimed_tags = ClaimedTag.objects.filter(owner=request.user).values('code', 'name')
+    assignment = (
+        Assignment.objects.filter(user=request.user)
+        .select_related('quota')
+        .prefetch_related('subteams')
+        .first()
+    )
+
+    # Add Tag: User just entered a tag name
+    if request.POST.get('action') == 'add_tag':
+        serializer = AddTagSerializer(data=request.POST)
+        serializer.is_valid(raise_exception=True)
+
+        tag_name = serializer.validated_data['tag_name']
+
+        # Create a new PendingTag entry (if one doesn't already exist)
+        pending_tag, created = PendingTag.objects.get_or_create(
+            owner=request.user,
+            name=tag_name,
+            defaults={'scanner': Scanner.objects.order_by('?').first()},
+        )
+
+        # Redirect to "waiting for scan" modal
+        return redirect(
+            reverse_lazy('user_profile') + f'?modal=tag_scan&tag={pending_tag.id}'
+        )
+
+    # Polling modal: check if tag was claimed
+    if modal_name == 'tag_scan' and tag_param:
+        # has this tag been moved to ClaimedTag by the scanner?
+        pending_tag_exists = PendingTag.objects.filter(id=tag_param).exists()
+        if not pending_tag_exists:
+            # pending tag disappeared → must have been claimed
+            return redirect(reverse_lazy('user_profile'))
+
+    # Render profile page normally ---
+    return render(
+        request,
+        'midas/user_profile.html',
+        {
+            'user_status': user_status(request),
+            'assignment': assignment,
+            'modal_name': modal_name,
+            'claimed_tags': list(claimed_tags),
+            'pending_tags': list(pending_tags),
+        },
+    )
 
 
 # @login_not_required
@@ -164,55 +209,6 @@ def logout_view(request):
 
 # class ScanTagSerializer(serializers.Serializer):
 #     tag = serializers.IntegerField()
-
-
-# def user_profile(request):
-#     if request.POST.get('action') == 'add_tag':
-#         serializer = AddTagSerializer(data=request.POST)
-#         serializer.is_valid(raise_exception=True)
-
-#         tag_name = serializer.validated_data['tag_name']
-
-#         tag = Tag(name=tag_name, owner=request.user)
-#         tag.save()
-
-#         return redirect(
-#             reverse_lazy('user_profile', query={'modal': 'tag_scan', 'tag': tag.id})
-#         )
-
-#     if request.GET.get('modal') == 'tag_scan':
-#         serializer = ScanTagSerializer(data=request.GET)
-#         serializer.is_valid(raise_exception=True)
-
-#         tag_code = serializer.validated_data['tag']
-
-#         tag = get_object_or_404(Tag, pk=tag_code)
-
-#         if tag.get_state() == TagState.CLAIMED:
-#             return redirect('user_profile')
-
-#     tags = Tag.objects.get_authorized().filter(owner=request.user)
-#     membership = (
-#         Membership.objects.filter(person=request.user)
-#         .select_related('job', 'subteam')
-#         .order_by('-starting_from')
-#         .first()
-#     )
-
-#     return render(
-#         request,
-#         'webui/user_profile.html',
-#         {
-#             'jobs': Job.objects.all(),
-#             'membership': membership,
-#             'modal_name': request.GET.get('modal'),
-#             'request': request,
-#             'subteams': SubTeam.objects.all(),
-#             'tags': tags,
-#             'user': request.user,
-#             'user_status': user_status(request),
-#         },
-#     )
 
 
 # class EditMembershipSerializer(serializers.Serializer):

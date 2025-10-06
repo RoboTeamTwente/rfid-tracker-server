@@ -37,6 +37,7 @@
       }
 
 
+
       .profile__tags {
         flex: 2 1 400px;
 
@@ -53,6 +54,14 @@
             text-align: left;
             border-bottom: 1px solid #ddd;
           }
+        }
+
+        .profile__tag-state--pending {
+          color: #8a6d3b;
+        }
+
+        .profile__tag-state--claimed {
+          color: #155724;
         }
 
         .profile__tag-actions {
@@ -97,50 +106,72 @@
       <p class="profile__factoid"><b>Name:</b> {{ user.get_full_name }}</p>
       <p class="profile__factoid"><b>Email:</b> {{ user.email }}</p>
       <p class="profile__factoid"><b>Username:</b> {{ user.username }}</p>
-      <p class="profile__factoid"><b>Subteam:</b> {{ membership.subteam.name | default:'You are alone.' }}</p>
-      <p class="profile__factoid"><b>Workload:</b> {{ membership.job.name | default:'Jobless' }} ({{ membership.job.quota | default:'many' }} hours/week)</p>
+      <p class="profile__factoid"><b>Subteams:</b> {{assignment.get_subteams}}</p>
+      <p class="profile__factoid"><b>Workload:</b> {{ assignment.quota.name | default:'Jobless' }} ({{ assignment.quota.hours | default:'many' }} hours/week)</p>
     </section>
 
     <section class="card profile__tags">
       <table>
         <thead>
           <tr>
-            <th>Tag ID</th>
             <th>Tag Name</th>
             <th>State</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          {% for tag in tags %}
-            {% if tag.name != "WebUI" %}
-              <tr>
-                <td>{{ tag.tag }}</td>
-                <td>{{ tag.name }}</td>
-                <td>{{ tag.get_state.value }}</td>
-                <td>
-                  <div class="profile__tag-actions">
-                    <form method="GET" action="{% url 'user_profile' %}" class="action">
-                      <input type="hidden" name="modal" value="rename_tag">
-                      <input type="hidden" name="tag_code" value="{{ tag.id }}">
-                      <input type="hidden" name="tag_name" value="{{ tag.name }}">
-                      <button class="action__button">
-                        <i class="fa fa-pen"></i>
-                      </button>
-                    </form>
-                    <form method="GET" action="{% url 'user_profile' %}" class="action">
-                      <input type="hidden" name="modal" value="delete_tag_confirm">
-                      <input type="hidden" name="tag_id" value="{{ tag.id }}">
-                      <button class="action__button">
-                        <i class="fa fa-trash"></i>
-                      </button>
-                    </form>
-                  </div>
-                </td>
-              </tr>
-            {% endif %}
+          {% for pending_tag in pending_tags %}
+            <tr>
+              <td>{{ pending_tag.name }}</td>
+              <td class="profile__tag-state profile__tag-state--pending">pending</td>
+              <td>
+                <div class="profile__tag-actions">
+                  <!-- maybe a cancel or edit button -->
+                  <form method="GET" action="{% url 'user_profile' %}" class="action">
+                    <input type="hidden" name="modal" value="delete_pending_tag_confirm">
+                    <input type="hidden" name="tag_id" value="{{ pending_tag.id }}">
+                    <button class="action__button">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="3">No pending tags</td></tr>
+          {% endfor %}
+
+          {# Claimed tags next #}
+          {% for claimed_tag in claimed_tags %}
+            <tr>
+              <td>{{ claimed_tag.name }}</td>
+              <td class="profile__tag-state profile__tag-state--claimed">claimed</td>
+              <td>
+                <div class="profile__tag-actions">
+                  <form method="GET" action="{% url 'user_profile' %}" class="action">
+                    <input type="hidden" name="modal" value="delete_tag_confirm">
+                    <input type="hidden" name="tag_id" value="{{ claimed_tag.code }}">
+                    <button class="action__button">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </form>
+                  <form method="GET" action="{% url 'user_profile' %}" class="action">
+                    <input type="hidden" name="modal" value="rename_tag">
+                    <input type="hidden" name="tag_code" value="{{ claimed_tag.code }}">
+                    <input type="hidden" name="tag_name" value="{{ claimed_tag.name }}">
+                    <button class="action__button">
+                      <i class="fa fa-pen"></i>
+                    </button>
+                  </form>
+
+                </div>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="3">No claimed tags</td></tr>
           {% endfor %}
         </tbody>
+
       </table>
 
       <a href="{% url 'user_profile' %}?modal=tag_name" class="button">+ Add a Tag</a>
