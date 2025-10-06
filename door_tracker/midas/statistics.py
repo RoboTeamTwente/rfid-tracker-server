@@ -125,7 +125,6 @@ def get_total_minutes(user, day):
     )
 
     if earliest_session is None or not hasattr(earliest_session, 'checkin'):
-        print('No checkin yet')
         return 0  # No checkin yet
 
     latest_session = day
@@ -153,7 +152,6 @@ def get_average_week(user, day):
     )
 
     if earliest_session is None or not hasattr(earliest_session, 'checkin'):
-        print('No checkin yet')
         return 0  # No checkin yet
 
     first_checkin_date = earliest_session.checkin.time.date()
