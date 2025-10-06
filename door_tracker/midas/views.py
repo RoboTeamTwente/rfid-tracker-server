@@ -1,14 +1,42 @@
 from django.contrib import messages
 from django.contrib.auth import logout
+
+# from django.core.cache import cache
+# from django.core.management import call_command
+# from django.db import IntegrityError
+# from django.db.models import Avg, Sum
+from django.contrib.auth.models import User
+
+# from django.contrib.auth.decorators import login_not_required
 from django.contrib.auth.views import LoginView
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
-from rest_framework import serializers
-
-from .models import Assignment, ClaimedTag, PendingTag, Scanner, Session
 
 # from .utils import logs_to_csv
+from django.utils import timezone
+from rest_framework import serializers
+
+from . import statistics
+
+# from django.utils import timezone
+# from django.views.decorators.csrf import csrf_exempt
+# from rest_framework import serializers
+# from rest_framework.decorators import (
+#     api_view,
+# )
+# # Import Custom Files
+# from .forms import RegistrationForm
+# # Import Custom Files
+# from .forms import RegistrationForm
+# Create your views here.
+from .models import (
+    Assignment,
+    ClaimedTag,
+    PendingTag,
+    Scanner,
+    Session,
+)
 
 
 # TODO: Refactor for Midas
@@ -124,6 +152,35 @@ def user_profile(request):
             'pending_tags': list(pending_tags),
         },
     )
+
+
+def get_all_statistics(request):
+    today_date = timezone.now().date()
+    all_stats = []
+
+    # Loop through all users and get their statistics
+    for user in User.objects.all():
+        # Get current assignment
+        assignment = (
+            Assignment.objects.filter(user=user, starting_from__lte=today_date)
+            .order_by('-starting_from')
+            .first()
+        )  # returns None if no assignment
+        subteams = assignment.get_subteams() if assignment else 'No subteam'
+        quota = assignment.quota.hours if assignment else 'No quota'
+        user_stats = {
+            'name': user.first_name + ' ' + user.last_name,
+            'subteam': subteams,
+            'quota': quota,
+            'minutes_today': statistics.get_minutes_today(user, today_date),
+            'minutes_this_week': statistics.get_minutes_this_week(user, today_date),
+            'minutes_this_month': statistics.get_minutes_this_month(user, today_date),
+            'total_minutes': statistics.get_total_minutes(user, today_date),
+            'average_week': statistics.get_average_week(user, today_date),
+        }
+        all_stats.append(user_stats)
+
+    return all_stats
 
 
 # @login_not_required
