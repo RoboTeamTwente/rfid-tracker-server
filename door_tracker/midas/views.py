@@ -1,35 +1,14 @@
 from django.contrib import messages
 from django.contrib.auth import logout
-
-# from django.core.cache import cache
-# from django.core.management import call_command
-# from django.db import IntegrityError
-# from django.db.models import Avg, Sum
 from django.contrib.auth.models import User
-
-# from django.contrib.auth.decorators import login_not_required
 from django.contrib.auth.views import LoginView
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
-
-# from .utils import logs_to_csv
 from django.utils import timezone
 from rest_framework import serializers
 
 from . import statistics
-
-# from django.utils import timezone
-# from django.views.decorators.csrf import csrf_exempt
-# from rest_framework import serializers
-# from rest_framework.decorators import (
-#     api_view,
-# )
-# # Import Custom Files
-# from .forms import RegistrationForm
-# # Import Custom Files
-# from .forms import RegistrationForm
-# Create your views here.
 from .models import (
     Assignment,
     ClaimedTag,
