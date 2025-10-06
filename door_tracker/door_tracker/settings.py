@@ -64,13 +64,13 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.messages',
     'django.contrib.sessions',
+    'whitenoise.runserver_nostatic',  # must be above staticfiles
     'django.contrib.staticfiles',
     'door_tracker.apps.DoorTrackerConfig',
     'midas.apps.MidasConfig',
     'pytz',
     'rest_framework',
     'webui.apps.WebuiConfig',
-    'whitenoise.runserver_nostatic',  # must be above staticfiles
 ]
 
 MIDDLEWARE = [
