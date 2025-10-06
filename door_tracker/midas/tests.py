@@ -40,12 +40,13 @@ class RegisterScanTests(TestCase):
         pending_tag = PendingTag.objects.filter(scanner=scanner).first()
         self.assertIsNone(pending_tag)
 
-        # check in with the shiny new tag
-        res = register_scan()
-        self.assertEqual(res.state, 'checkin')
-        self.assertEqual(res.owner_name, user.get_full_name())
+        for _ in range(10):
+            # check in with the shiny new tag
+            res = register_scan()
+            self.assertEqual(res.state, 'checkin')
+            self.assertEqual(res.owner_name, user.get_full_name())
 
-        # and immediately check out
-        res = register_scan()
-        self.assertEqual(res.state, 'checkout')
-        self.assertEqual(res.owner_name, user.get_full_name())
+            # and immediately check out
+            res = register_scan()
+            self.assertEqual(res.state, 'checkout')
+            self.assertEqual(res.owner_name, user.get_full_name())
