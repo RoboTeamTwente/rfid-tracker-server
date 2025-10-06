@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.views import LoginView
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from rest_framework import serializers
@@ -98,7 +99,9 @@ def user_profile(request):
 
         # Redirect to "waiting for scan" modal
         return redirect(
-            reverse_lazy('user_profile') + f'?modal=tag_scan&tag={pending_tag.id}'
+            reverse_lazy(
+                'user_profile', query={'modal': 'tag_scan', 'tag': pending_tag.id}
+            )
         )
 
     # Polling modal: check if tag was claimed
@@ -107,7 +110,7 @@ def user_profile(request):
         pending_tag_exists = PendingTag.objects.filter(id=tag_param).exists()
         if not pending_tag_exists:
             # pending tag disappeared → must have been claimed
-            return redirect(reverse_lazy('user_profile'))
+            return HttpResponse(headers={'HX-Redirect': reverse_lazy('user_profile')})
 
     # Render profile page normally ---
     return render(

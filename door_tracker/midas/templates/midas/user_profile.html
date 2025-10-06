@@ -5,9 +5,6 @@
 {% block title %}User Profile{% endblock %}
 
 {% block head %}
-  {% if modal_name == 'tag_scan' %}
-    <meta http-equiv="refresh" content="1">
-  {% endif %}
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
   <style>
     .profile {
@@ -191,7 +188,13 @@
     {% elif modal_name == 'tag_scan' %}
 
       {% modal 'Please scan your tag at the device' 'user_profile' %}
-        <p>Waiting for scan...</p>
+        <div
+          id="scan-waiter"
+          hx-get="{% url 'user_profile' %}?modal=tag_scan&tag={{ request.GET.tag }}"
+          hx-trigger="every 1s"
+          hx-swap=none
+        >
+          <p>Waiting for scan...</p>
       {% endmodal %}
 
     {% elif modal_name == 'rename_tag' %}
