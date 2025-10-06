@@ -63,10 +63,12 @@ class RegisterScanResponse:
 
     @classmethod
     def make(self, state, user, date):
-        self.state = state
-        self.owner_name = user.get_full_name()
-        self.hours_day = get_minutes_today(user, date) // 60
-        self.hours_week = get_minutes_this_week(user, date) // 60
+        return RegisterScanResponse(
+            state=state,
+            owner_name=user.get_full_name(),
+            hours_day=get_minutes_today(user, date) // 60,
+            hours_week=get_minutes_this_week(user, date) // 60,
+        )
 
 
 class RegisterScanRequestSerializer(Serializer):
@@ -141,6 +143,7 @@ def register_scan(request):
     except (ClaimedTag.DoesNotExist, Session.DoesNotExist):
         pass
     else:
+        user = claimed_tag.owner
         today = timezone.now().date()
         res = RegisterScanResponse.make('checkout', user, today)
 
@@ -163,6 +166,7 @@ def register_scan(request):
     except ClaimedTag.DoesNotExist:
         pass
     else:
+        user = claimed_tag.owner
         today = timezone.now().date()
         res = RegisterScanResponse.make('checkin', user, today)
         serializer = RegisterScanResponseSerializer(res)
