@@ -12,7 +12,7 @@ from .models import Assignment, ClaimedTag, PendingTag, Scanner, Session
 
 # TODO: Refactor for Midas
 class LogIn(LoginView):
-    template_name = 'webui/login.html'
+    template_name = 'midas/login.html'
     next_page = reverse_lazy('index')
 
     def form_valid(self, form):
@@ -139,7 +139,7 @@ def user_profile(request):
 #     else:
 #         form = RegistrationForm()
 
-#     return render(request, 'webui/sign_up.html', {'form': form})
+#     return render(request, 'midas/sign_up.html', {'form': form})
 
 
 # def user_statistics(request):
@@ -178,7 +178,7 @@ def user_profile(request):
 
 #     return render(
 #         request,
-#         'webui/user_statistics.html',
+#         'midas/user_statistics.html',
 #         {
 #             # user info
 #             'user_name': request.user.get_full_name(),
