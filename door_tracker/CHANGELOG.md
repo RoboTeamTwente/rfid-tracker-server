@@ -2,6 +2,13 @@
 
 # Changelog
 
+## v2.2.1 (2025-10-06)
+
+### Fix
+
+- **tooling**: update magic-nix-cache-action
+- **tooling**: move whitenoise app higher than staticfiles
+
 ## v2.2.0 (2025-10-06)
 
 ### Feat
