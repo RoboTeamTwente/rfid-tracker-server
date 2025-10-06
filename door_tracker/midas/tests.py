@@ -17,7 +17,7 @@ class RegisterScanTests(TestCase):
 
         def register_scan():
             response = self.client.post(
-                reverse('register_scan_new'),
+                reverse('midas:register_scan'),
                 {'device_id': scanner.id, 'tag_id': tag_code},
             )
             json_response = response.json()

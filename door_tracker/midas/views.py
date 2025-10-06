@@ -21,7 +21,7 @@ from .models import (
 # TODO: Refactor for Midas
 class LogIn(LoginView):
     template_name = 'midas/login.html'
-    next_page = reverse_lazy('index')
+    next_page = reverse_lazy('midas:index')
 
     def form_valid(self, form):
         user_name = form.get_user().get_full_name()
@@ -32,7 +32,7 @@ class LogIn(LoginView):
 def logout_view(request):
     logout(request)
     messages.success(request, 'Logged out')
-    return redirect('login')
+    return redirect('midas:login')
 
 
 def is_checked_in(request):
@@ -107,7 +107,8 @@ def user_profile(request):
         # Redirect to "waiting for scan" modal
         return redirect(
             reverse_lazy(
-                'user_profile', query={'modal': 'tag_scan', 'tag': pending_tag.id}
+                'midas:user_profile',
+                query={'modal': 'tag_scan', 'tag': pending_tag.id},
             )
         )
 
@@ -117,7 +118,9 @@ def user_profile(request):
         pending_tag_exists = PendingTag.objects.filter(id=tag_param).exists()
         if not pending_tag_exists:
             # pending tag disappeared → must have been claimed
-            return HttpResponse(headers={'HX-Redirect': reverse_lazy('user_profile')})
+            return HttpResponse(
+                headers={'HX-Redirect': reverse_lazy('midas:user_profile')}
+            )
 
     # Render profile page normally ---
     return render(
@@ -174,7 +177,7 @@ def get_all_statistics(request):
 #         form = RegistrationForm(request.POST)
 #         if form.is_valid():
 #             form.save()
-#             return redirect('login')  # replace with your login URL
+#             return redirect('midas:login')  # replace with your login URL
 #     else:
 #         form = RegistrationForm()
 
@@ -262,7 +265,7 @@ def get_all_statistics(request):
 #     serializer = EditMembershipSerializer(data=request.POST)
 #     if not serializer.is_valid():
 #         messages.error(request, 'Please fill all fields')
-#         return redirect('user_profile')
+#         return redirect('midas:user_profile')
 
 #     first_name = serializer.validated_data['first_name']
 #     last_name = serializer.validated_data['last_name']
@@ -287,7 +290,7 @@ def get_all_statistics(request):
 #         request.user.save()
 #     except IntegrityError:
 #         messages.error(request, f'Username {username} is already taken!')
-#         return redirect('user_profile')
+#         return redirect('midas:user_profile')
 
 #     if (
 #         not current_membership
@@ -303,7 +306,7 @@ def get_all_statistics(request):
 #         )
 
 #     messages.success(request, 'Profile updated')
-#     return redirect('user_profile')
+#     return redirect('midas:user_profile')
 
 
 # class DeleteTagSerializer(serializers.Serializer):
@@ -327,7 +330,7 @@ def get_all_statistics(request):
 #     tag.name = ''
 #     tag.save()
 
-#     return redirect('user_profile')
+#     return redirect('midas:user_profile')
 
 
 # class RenameTagSerializer(serializers.Serializer):
@@ -350,7 +353,7 @@ def get_all_statistics(request):
 #         )
 #     tag.name = tag_name
 #     tag.save()
-#     return redirect('user_profile')
+#     return redirect('midas:user_profile')
 
 
 # @api_view(['GET'])

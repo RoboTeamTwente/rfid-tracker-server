@@ -13,7 +13,7 @@
 
   <body class="body">
     <header class="body__header">
-      <a href="{% url 'index' %}" class="body__logo">
+      <a href="{% url 'midas:index' %}" class="body__logo">
         <img src="{% static 'webui/logo.svg' %}" alt="RoboTeam Twente Logo" width="50" height="50">
         RoboTeam Twente
       </a>
@@ -25,13 +25,13 @@
 
 
     <nav class="body__navbar">
-      <a class="button" href="{% url 'index' %}">🔗 Dashboard</a>
+      <a class="button" href="{% url 'midas:index' %}">🔗 Dashboard</a>
       <!-- TODO: this doesn't link anywhere yet -->
-      <a class="button" href="{% url 'user_statistics' %}">🔗 Statistics</a>
-      <a class="button" href="{% url 'user_profile' %}">🔗 Profile</a>
-      <a class="button" href="{% url 'export_user' %}">⚙️ Export to CSV</a>
+      <a class="button" href="{% url 'midas:user_statistics' %}">🔗 Statistics</a>
+      <a class="button" href="{% url 'midas:user_profile' %}">🔗 Profile</a>
+      <a class="button" href="{% url 'midas:export_user' %}">⚙️ Export to CSV</a>
       <a class="button" href="#" onclick="openCheckoutModal()">⚙️ Remote Checkout</a>
-      <a class="button" href="{% url 'logout' %}">⚙️ Log out</a>
+      <a class="button" href="{% url 'midas:logout' %}">⚙️ Log out</a>
     </nav>
 
     {% block main %}
@@ -85,7 +85,7 @@
         e.preventDefault()
 
         try {
-          const response = await fetch("{% url 'checkout' %}", {
+          const response = await fetch("{% url 'midas:checkout' %}", {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

@@ -94,7 +94,7 @@
 
   <main class="profile">
     <section class="card profile__user">
-      <form method="GET" action="{% url 'user_profile' %}" class="profile__edit-profile">
+      <form method="GET" action="{% url 'midas:user_profile' %}" class="profile__edit-profile">
         <input type="hidden" name="modal" value="edit_profile">
         <button class="action__button">
           <i class="fa fa-pen"></i>
@@ -124,7 +124,7 @@
               <td>
                 <div class="profile__tag-actions">
                   <!-- maybe a cancel or edit button -->
-                  <form method="GET" action="{% url 'user_profile' %}" class="action">
+                  <form method="GET" action="{% url 'midas:user_profile' %}" class="action">
                     <input type="hidden" name="modal" value="delete_pending_tag_confirm">
                     <input type="hidden" name="tag_id" value="{{ pending_tag.id }}">
                     <button class="action__button">
@@ -145,14 +145,14 @@
               <td class="profile__tag-state profile__tag-state--claimed">claimed</td>
               <td>
                 <div class="profile__tag-actions">
-                  <form method="GET" action="{% url 'user_profile' %}" class="action">
+                  <form method="GET" action="{% url 'midas:user_profile' %}" class="action">
                     <input type="hidden" name="modal" value="delete_tag_confirm">
                     <input type="hidden" name="tag_id" value="{{ claimed_tag.code }}">
                     <button class="action__button">
                       <i class="fa fa-trash"></i>
                     </button>
                   </form>
-                  <form method="GET" action="{% url 'user_profile' %}" class="action">
+                  <form method="GET" action="{% url 'midas:user_profile' %}" class="action">
                     <input type="hidden" name="modal" value="rename_tag">
                     <input type="hidden" name="tag_code" value="{{ claimed_tag.code }}">
                     <input type="hidden" name="tag_name" value="{{ claimed_tag.name }}">
@@ -171,7 +171,7 @@
 
       </table>
 
-      <a href="{% url 'user_profile' %}?modal=tag_name" class="button">+ Add a Tag</a>
+      <a href="{% url 'midas:user_profile' %}?modal=tag_name" class="button">+ Add a Tag</a>
     </section>
 
     {% if modal_name == 'tag_name' %}
@@ -181,7 +181,7 @@
         <input type="text" name="tag_name" placeholder="Enter tag name" autofocus>
         <section class="modal__actions">
           <button class="modal__action modal--primary">Add Tag</button>
-          <a class="modal__action modal--secondary" href="{% url 'user_profile' %}">Cancel</a>
+          <a class="modal__action modal--secondary" href="{% url 'midas:user_profile' %}">Cancel</a>
         </section>
       {% endmodal %}
 
@@ -204,7 +204,7 @@
         <input type="text" name="tag_name" value="{{ request.GET.tag_name }}" autofocus >
         <section class="modal__actions">
           <button class="modal__action modal--primary">Save</button>
-          <a class="modal__action modal--secondary" href="{% url 'user_profile' %}">Cancel</a>
+          <a class="modal__action modal--secondary" href="{% url 'midas:user_profile' %}">Cancel</a>
         </section>
       {% endmodal %}
 
@@ -215,7 +215,7 @@
         <p>Are you sure you want to delete <b>{{ tag_name }}</b>?</p>
         <section class="modal__actions">
           <button class="modal__action modal--primary">Delete</button>
-          <a class="modal__action modal--secondary" href="{% url 'user_profile' %}">Cancel</a>
+          <a class="modal__action modal--secondary" href="{% url 'midas:user_profile' %}">Cancel</a>
         </section>
       {% endmodal %}
 
@@ -244,7 +244,7 @@
         </select>
         <section class="modal__actions">
           <button class="modal__action modal--primary">Save</button>
-          <a class="modal__action modal--secondary" href="{% url 'user_profile' %}">Cancel</a>
+          <a class="modal__action modal--secondary" href="{% url 'midas:user_profile' %}">Cancel</a>
         </section>
       {% endmodal %}
 
