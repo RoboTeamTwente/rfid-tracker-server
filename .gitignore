@@ -18,7 +18,6 @@ door_tracker/db.sqlite3
 # misc specific files
 /docs/schema.png
 /docs/schema.svg
-/ruff.toml
 /.vscode/tasks.json
 
 # doxygen

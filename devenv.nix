@@ -217,17 +217,6 @@ in
 
   ## Config files
 
-  files."ruff.toml".toml = {
-    line-length = 80;
-    format = {
-      docstring-code-format = true;
-      quote-style = "single";
-    };
-    lint.pycodestyle = {
-      max-line-length = 100;
-    };
-  };
-
   files.".vscode/tasks.json".json = {
     # See https://go.microsoft.com/fwlink/?LinkId=733558
     # for the documentation about the tasks.json format
