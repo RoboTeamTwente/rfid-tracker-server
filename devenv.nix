@@ -52,16 +52,31 @@ in
     	echo Dirty worktree, aborting
     	exit 1
     fi
+    if ! git rev-parse --abbrev-ref @ | grep -qx main
+    then
+    	echo Not on main branch, aborting
+    	exit 1
+    fi
+    git fetch
+    if test "$(git rev-list --count refs/heads/main..refs/remotes/origin/main)" != 0
+    then
+    	echo main branch out of sync, aborting
+    	exit 1
+    fi
+    cleanup() {
+    	# remove temporary changelog file if it exists
+    	test -f "''${changelog-}" && rm "''${changelog-}"
+    }
+    trap cleanup EXIT
     set -eux
-    old="$(current-version)"
-    cd "$DEVENV_ROOT/door_tracker"
-    cz bump --yes --files-only
     cd "$DEVENV_ROOT"
     devenv test
-    new="$(current-version)"
-    pre-commit run markdownlint --files CHANGELOG.md || :
-    git commit -am "chore(release): bump $old -> $new"
-    git tag "v$new"
+    cd "$DEVENV_ROOT/door_tracker"
+    changelog="$(mktemp)"
+    tag="v$(cz bump --get-next)"
+    cz bump --yes --retry --changelog-to-stdout --git-output-to-stderr > "$changelog"
+    git push origin main "$tag"
+    gh release create "$tag" --notes-file "$changelog"
   '';
 
   scripts.docker-login.exec = ''
