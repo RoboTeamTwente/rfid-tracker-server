@@ -30,11 +30,7 @@ from .models import (
 
 
 def is_checked_in(request):
-    return (
-        Session.objects.filter(user=request.user, checkout__isnull=True)
-        .order_by('-checkin__time')
-        .exists()
-    )
+    return Session.objects.filter(user=request.user, checkout__isnull=True).exists()
 
 
 def user_status(request):
