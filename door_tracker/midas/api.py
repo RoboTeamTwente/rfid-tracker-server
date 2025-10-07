@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from django.db import transaction
 from django.utils import timezone
 from rest_framework.decorators import api_view
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.serializers import (
@@ -11,6 +12,7 @@ from rest_framework.serializers import (
     IntegerField,
     Serializer,
 )
+from rest_framework.settings import api_settings
 
 from .models import (
     Checkin,
@@ -73,7 +75,17 @@ class RegisterScanResponse:
 
 class RegisterScanRequestSerializer(Serializer):
     device_id = CharField()
-    tag_id = CharField()
+    tag_id = CharField(required=False)
+    card_id = CharField(required=False, source='tag_id')
+
+    def validate(self, attrs):
+        if 'tag_id' not in attrs and 'card_id' not in attrs:
+            raise ValidationError(
+                {
+                    api_settings.NON_FIELD_ERRORS_KEY: 'Required field missing: one of tag_id, card_id'
+                }
+            )
+        return super().validate(attrs)
 
     def create(self, validated_data):
         return RegisterScanRequest(**validated_data)
