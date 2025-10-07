@@ -31,10 +31,3 @@ include = ["*"]
 "templates.admin" = ["*"]
 "webui.static.webui" = ["*"]
 "webui.templates.webui" = ["*"]
-
-[tool.commitizen]
-name = "cz_conventional_commits"
-tag_format = "v$version"
-version_scheme = "semver2"
-version_provider = "uv"
-update_changelog_on_bump = true

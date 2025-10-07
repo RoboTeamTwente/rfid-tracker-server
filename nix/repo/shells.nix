@@ -13,6 +13,7 @@ nixpkgs.lib.mapAttrs (_: mkShell) {
       std.devshellProfiles.default
     ];
     packages = [
+      nixpkgs.cocogitto
       nixpkgs.curl
       nixpkgs.doxygen
       nixpkgs.git
