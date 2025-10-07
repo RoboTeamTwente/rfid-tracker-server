@@ -2,6 +2,16 @@
 
 # Changelog
 
+## v2.2.2 (2025-10-07)
+
+### Fix
+
+- **tooling**: bump-version: cd to repo root before running checks
+
+### Perf
+
+- **tooling**: reduce amount of docker image layers
+
 ## v2.2.1 (2025-10-06)
 
 ### Fix
