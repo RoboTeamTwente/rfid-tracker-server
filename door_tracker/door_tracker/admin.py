@@ -11,7 +11,7 @@ TOKEN_LIFETIME = 24 * 360  # How long until the link expires
 def generate_register_link(request):
     token = secrets.token_urlsafe(16)
     cache.set(f'register_token_{token}', True, timeout=TOKEN_LIFETIME)
-    relative_link = reverse('sign_up', query={'token': token})
+    relative_link = reverse('midas:sign_up', query={'token': token})
     link = request.build_absolute_uri(relative_link)
     return JsonResponse({'link': link})
 

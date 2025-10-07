@@ -1,14 +1,17 @@
 from django.contrib import messages
 from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_not_required
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
-from django.http import HttpResponse
+from django.core.cache import cache
+from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from rest_framework import serializers
 
 from . import statistics
+from .forms import RegistrationForm
 from .models import Assignment, ClaimedTag, PendingTag, Quota, Scanner, Session, Subteam
 
 # from .utils import logs_to_csv
@@ -29,6 +32,25 @@ def logout_view(request):
     logout(request)
     messages.success(request, 'Logged out')
     return redirect('midas:login')
+
+
+@login_not_required
+def sign_up(request):
+    token = request.GET.get('token')
+
+    # Check if token exists in cache
+    if not token or not cache.get(f'register_token_{token}'):
+        return HttpResponseForbidden('Invalid or expired registration link.')
+
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('midas:login')  # replace with your login URL
+    else:
+        form = RegistrationForm()
+
+    return render(request, 'midas/sign_up.html', {'form': form})
 
 
 def is_checked_in(request):
@@ -246,25 +268,6 @@ def delete_tag(request):
     tag.delete()
     messages.success(request, 'Tag deleted.')
     return redirect('midas:user_profile')
-
-
-# @login_not_required
-# def sign_up(request):
-#     token = request.GET.get('token')
-
-#     # Check if token exists in cache
-#     if not token or not cache.get(f'register_token_{token}'):
-#         return HttpResponseForbidden('Invalid or expired registration link.')
-
-#     if request.method == 'POST':
-#         form = RegistrationForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('midas:login')  # replace with your login URL
-#     else:
-#         form = RegistrationForm()
-
-#     return render(request, 'midas/sign_up.html', {'form': form})
 
 
 # def user_statistics(request):
