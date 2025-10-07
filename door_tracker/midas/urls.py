@@ -31,7 +31,4 @@ urlpatterns = [
     path('', views.index, name='index'),
     # old
     path('export_user', old_views.export_user_logs, name='export_user'),
-    path('fuel_guage', old_views.fuel_guage, name='fuel_guage'),
-    path('healthcheck', old_views.healthcheck, name='healthcheck'),
-    path('user_tags', old_views.user_tags, name='user_tags'),
 ]
