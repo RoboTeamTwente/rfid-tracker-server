@@ -1,12 +1,7 @@
 # admin.py
-import secrets
-from datetime import timedelta
 
 from django.contrib import admin
 from django.contrib.auth.models import User
-from django.core.cache import cache
-from django.http import JsonResponse
-from django.urls import path, reverse
 from django.utils import timezone
 
 from .models import Job, Log, Membership, Scanner, Statistics, SubTeam, Tag
@@ -288,40 +283,3 @@ class StatisticsAdmin(admin.ModelAdmin):
 class ScannerAdmin(admin.ModelAdmin):
     list_display = ('name', 'id')
     readonly_fields = ('id',)
-
-
-# this ungodly hack disables alphabetical sorting of models
-# https://forum.djangoproject.com/t/reordering-list-of-models-in-django-admin/5300/9
-
-
-def get_app_list(self, request, app_label=None):
-    return list(self._build_app_dict(request, app_label).values())
-
-
-def generate_register_link(request):
-    token = secrets.token_urlsafe(16)
-    cache.set(f'register_token_{token}', True, timeout=TOKEN_LIFETIME)
-    link = request.build_absolute_uri(reverse('sign_up', query={'token': token}))
-    expires_at = (timezone.now() + timedelta(seconds=TOKEN_LIFETIME)).isoformat()
-    return JsonResponse({'link': link, 'expires_at': expires_at})
-
-
-# admin.py (at the bottom)
-def get_urls(original_get_urls):
-    def custom_get_urls(self):
-        urls = original_get_urls(self)
-        custom_urls = [
-            path(
-                'generate-register-link/',
-                self.admin_view(generate_register_link),
-                name='generate_register_link',
-            ),
-        ]
-        return custom_urls + urls
-
-    return custom_get_urls
-
-
-admin.AdminSite.get_app_list = get_app_list
-
-admin.AdminSite.get_urls = get_urls(admin.AdminSite.get_urls)

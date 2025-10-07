@@ -59,7 +59,7 @@ LOGGING = {
 INSTALLED_APPS = [
     'dbbackup',
     'django_apscheduler',
-    'django.contrib.admin',
+    'door_tracker.apps.DoorTrackerAdminConfig',  # replaces django.contrib.admin
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.messages',

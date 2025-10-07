@@ -71,31 +71,19 @@
 
 {% block extrabody %}
   <script>
-    let linkExpiration = null
-
     document
       .getElementById('generate-link-btn')
       .addEventListener('click', function () {
-        fetch("{% url 'admin:generate_register_link' %}")
+        fetch("{% url 'admin:make-registration-link' %}")
           .then((response) => response.json())
           .then((data) => {
             const div = document.getElementById('register-link')
             div.innerHTML = `<a href="${data.link}" target="_blank">${data.link}</a>`
-            linkExpiration = new Date(data.expires_at)
           })
           .catch((err) => {
             console.error(err)
             alert('Failed to generate link.')
           })
       })
-
-// Optional: check every 10 seconds if link expired
-    setInterval(() => {
-      if (linkExpiration && new Date() > linkExpiration) {
-        const div = document.getElementById('register-link')
-        div.innerHTML = '' // hide the link
-        linkExpiration = null
-      }
-    }, 10000)
   </script>
 {% endblock %}
