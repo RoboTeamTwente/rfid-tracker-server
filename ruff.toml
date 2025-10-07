@@ -1,0 +1,5 @@
+[lint]
+extend-select = ["I"]
+
+[format]
+quote-style = 'single'

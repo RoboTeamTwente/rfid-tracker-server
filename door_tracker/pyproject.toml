@@ -32,12 +32,6 @@ include = ["*"]
 "webui.static.webui" = ["*"]
 "webui.templates.webui" = ["*"]
 
-[tool.ruff.lint]
-extend-select = ["I"]
-
-[tool.ruff.format]
-quote-style = 'single'
-
 [tool.commitizen]
 name = "cz_conventional_commits"
 tag_format = "v$version"
