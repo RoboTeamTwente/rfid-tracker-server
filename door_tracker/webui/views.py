@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
+from drf_spectacular.utils import extend_schema
 from rest_framework import serializers
 from rest_framework.decorators import (
     api_view,
@@ -234,6 +235,7 @@ class RegisterScanSerializer(serializers.Serializer):
 
 
 @csrf_exempt
+@extend_schema(exclude=True)
 @api_view(['POST'])
 def register_scan(request):
     serializer = RegisterScanSerializer(data=request.data)
@@ -331,6 +333,7 @@ class HealthcheckSerializer(serializers.Serializer):
     scanner_id = serializers.CharField()
 
 
+@extend_schema(exclude=True)
 @api_view(['POST'])
 def healthcheck(request):
     serializer = HealthcheckSerializer(data=request.data)
@@ -591,6 +594,7 @@ def rename_tag(request):
     return redirect('user_profile')
 
 
+@extend_schema(exclude=True)
 @api_view(['GET'])
 def export_user_logs(request):
     qs = (
@@ -601,6 +605,7 @@ def export_user_logs(request):
     return logs_to_csv(qs)
 
 
+@extend_schema(exclude=True)
 @api_view(['GET'])
 def check_registration(request, db_id):
     tag = Tag.objects.filter(id=db_id, owner=request.user).first()
@@ -618,6 +623,7 @@ def check_registration(request, db_id):
     )
 
 
+@extend_schema(exclude=True)
 @api_view(['GET'])
 def user_tags(request):
     tags = Tag.objects.filter(owner=request.user).all()
@@ -676,6 +682,7 @@ class AutoCheckoutSerializer(serializers.Serializer):
     checkout_time = serializers.DateTimeField(required=True)
 
 
+@extend_schema(exclude=True)
 @api_view(['POST'])
 def auto_checkout(request):
     serializer = AutoCheckoutSerializer(data=request.data)

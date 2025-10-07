@@ -1,14 +1,21 @@
 from dataclasses import dataclass
 
 from django.db import transaction
+from django.db.models import TextChoices
 from django.utils import timezone
+from drf_spectacular.utils import (
+    OpenApiExample,
+    extend_schema,
+    extend_schema_serializer,
+)
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
-from rest_framework.reverse import reverse
 from rest_framework.serializers import (
     CharField,
+    ChoiceField,
     DateTimeField,
+    HiddenField,
     IntegerField,
     Serializer,
 )
@@ -41,13 +48,26 @@ def serializer_error(serializer):
     )
 
 
-@api_view(['GET'])
-def api_root(request, format=None):
-    return Response(
-        {
-            'register_scan': reverse('register_scan', request=request, format=format),
-        }
-    )
+@dataclass
+class APIResponse:
+    status: str
+    message: str
+
+    @classmethod
+    def success(cls, message=None):
+        return APIResponse(status='ok', message=message)
+
+    @classmethod
+    def error(cls, message=None):
+        return APIResponse(status='error', message=message)
+
+
+class APIResponseSerializer(Serializer):
+    status = CharField()
+    message = CharField(required=False)
+
+    def create(self, validated_data):
+        return APIResponse(**validated_data)
 
 
 @dataclass
@@ -56,9 +76,15 @@ class RegisterScanRequest:
     tag_id: str
 
 
+class RegisterScanState(TextChoices):
+    REGISTER = 'register', 'Tag registered'
+    CHECKIN = 'checkin', 'User checked in'
+    CHECKOUT = 'checkout', 'User checked out'
+
+
 @dataclass
 class RegisterScanResponse:
-    state: str
+    state: RegisterScanState
     owner_name: str
     hours_day: int
     hours_week: int
@@ -73,10 +99,22 @@ class RegisterScanResponse:
         )
 
 
+@extend_schema_serializer(
+    deprecate_fields=['card_id'],
+    examples=[
+        OpenApiExample(
+            'example',
+            value={
+                'device_id': '44bb652ea2a696e1b2a7ce412f24a46d',
+                'tag_id': 'DEADBEEF',
+            },
+        ),
+    ],
+)
 class RegisterScanRequestSerializer(Serializer):
-    device_id = CharField()
-    tag_id = CharField(required=False)
-    card_id = CharField(required=False, source='tag_id')
+    device_id = CharField(label='Scanner ID')
+    tag_id = CharField(required=False, label='Tag ID')
+    card_id = CharField(required=False, source='tag_id', label='Tag ID')
 
     def validate(self, attrs):
         if 'tag_id' not in attrs and 'card_id' not in attrs:
@@ -91,8 +129,39 @@ class RegisterScanRequestSerializer(Serializer):
         return RegisterScanRequest(**validated_data)
 
 
+@extend_schema_serializer(
+    examples=[
+        OpenApiExample(
+            'Registration',
+            value={
+                'state': 'register',
+                'owner_name': 'John Doe',
+                'hours_day': 42,
+                'hours_week': 420,
+            },
+        ),
+        OpenApiExample(
+            'Check-in',
+            value={
+                'state': 'checkin',
+                'owner_name': 'John Doe',
+                'hours_day': 42,
+                'hours_week': 420,
+            },
+        ),
+        OpenApiExample(
+            'Check-out',
+            value={
+                'state': 'checkout',
+                'owner_name': 'John Doe',
+                'hours_day': 42,
+                'hours_week': 420,
+            },
+        ),
+    ],
+)
 class RegisterScanResponseSerializer(Serializer):
-    state = CharField()
+    state = ChoiceField(choices=RegisterScanState.choices)
     owner_name = CharField()
     hours_day = IntegerField()
     hours_week = IntegerField()
@@ -101,8 +170,23 @@ class RegisterScanResponseSerializer(Serializer):
         return RegisterScanResponse(**validated_data)
 
 
+@extend_schema(
+    operation_id='register_scan',
+    auth=[],
+    request=RegisterScanRequestSerializer,
+    responses={
+        200: RegisterScanResponseSerializer,
+        403: APIResponseSerializer,
+        404: APIResponseSerializer,
+    },
+)
 @api_view(['POST'])
 def register_scan(request):
+    """Register tag scan
+
+    This endpoint is called by the scanner every time it scans a tag.
+    """
+
     serializer = RegisterScanRequestSerializer(data=request.data)
     if not serializer.is_valid():
         return serializer_error(serializer)
@@ -111,10 +195,9 @@ def register_scan(request):
 
     scanner = Scanner.objects.filter(pk=args.device_id).first()
     if not scanner:
-        return Response(
-            {'status': 'error', 'message': 'Scanner not authorized'},
-            status=403,
-        )
+        res = APIResponse.error('Scanner not authorized')
+        s = APIResponseSerializer(res)
+        return Response(s.data, status=403)
 
     # try to register a pending tag
 
@@ -131,7 +214,7 @@ def register_scan(request):
     else:
         user = claimed_tag.owner
         today = timezone.now().date()
-        res = RegisterScanResponse.make('register', user, today)
+        res = RegisterScanResponse.make(RegisterScanState.REGISTER, user, today)
         serializer = RegisterScanResponseSerializer(res)
         return Response(serializer.data)
 
@@ -157,7 +240,7 @@ def register_scan(request):
     else:
         user = claimed_tag.owner
         today = timezone.now().date()
-        res = RegisterScanResponse.make('checkout', user, today)
+        res = RegisterScanResponse.make(RegisterScanState.CHECKOUT, user, today)
 
         serializer = RegisterScanResponseSerializer(res)
         return Response(serializer.data)
@@ -180,14 +263,15 @@ def register_scan(request):
     else:
         user = claimed_tag.owner
         today = timezone.now().date()
-        res = RegisterScanResponse.make('checkin', user, today)
+        res = RegisterScanResponse.make(RegisterScanState.CHECKIN, user, today)
         serializer = RegisterScanResponseSerializer(res)
         return Response(serializer.data)
 
-    return Response(
-        {'status': 'error', 'message': 'Card not registered'},
-        status=404,
-    )
+    # nothing worked, return a generic error
+
+    res = APIResponse.error('Card not registered')
+    s = APIResponseSerializer(res)
+    return Response(s.data, status=404)
 
 
 class HealthcheckRequestSerializer(Serializer):
@@ -197,43 +281,82 @@ class HealthcheckRequestSerializer(Serializer):
         return validated_data['scanner_id']
 
 
+@extend_schema(
+    operation_id='healthcheck',
+    auth=[],
+    request=HealthcheckRequestSerializer,
+    responses={
+        200: APIResponseSerializer,
+        403: APIResponseSerializer,
+    },
+)
 @api_view(['POST'])
 def healthcheck(request):
+    """Mark the scanner as alive
+
+    This endpoint is called by the scanner every 30 seconds. If the
+    scanner does not do it in 5 minutes, it is declared dead.
+
+    TODO: actually check this
+    """
     serializer = HealthcheckRequestSerializer(data=request.data)
     if not serializer.is_valid():
         return serializer_error(serializer)
 
     if not Scanner.objects.filter(pk=serializer.save()).exists():
-        return Response(
-            {'status': 'error', 'message': 'Scanner not registered'},
-            status=403,
-        )
+        res = APIResponse.error('Scanner not registered')
+        s = APIResponseSerializer(res)
+        return Response(s.data, status=403)
 
-    return Response({'status': 'ok'})
+    res = APIResponse.success()
+    s = APIResponseSerializer(res)
+    return Response(s.data)
 
 
-class CheckoutSerializer(Serializer):
+@dataclass
+class CheckoutResponse:
+    time: timezone.datetime
+
+
+class CheckoutRequestSerializer(Serializer):
     time = DateTimeField()
 
     def create(self, validated_data):
         return validated_data['time']
 
 
+class CheckoutResponseSerializer(Serializer):
+    status = HiddenField(default='ok')
+    date = DateTimeField()
+
+    def create(self, validated_data):
+        return CheckoutResponse(**validated_data)
+
+
+@extend_schema(
+    operation_id='checkout',
+    request=CheckoutRequestSerializer,
+    responses={
+        201: CheckoutResponseSerializer,
+        400: APIResponseSerializer,
+        404: APIResponseSerializer,
+    },
+)
 @api_view(['POST'])
 def checkout(request):
-    serializer = CheckoutSerializer(data=request.data)
+    """Check out remotely
+
+    This endpoint is called from frontend to check a user out remotely.
+    """
+    serializer = CheckoutRequestSerializer(data=request.data)
     if not serializer.is_valid():
         return serializer_error(serializer)
     checkout_time = serializer.save()
 
     if checkout_time > timezone.now():
-        return Response(
-            {
-                'status': 'error',
-                'message': 'Cannot checkout in the future',
-            },
-            status=400,
-        )
+        res = APIResponse.error('Cannot checkout in the future')
+        s = APIResponseSerializer(res)
+        return Response(s.data, status=400)
 
     try:
         with transaction.atomic():
@@ -248,18 +371,10 @@ def checkout(request):
                 session=session,
             )
     except Session.DoesNotExist:
-        return Response(
-            {
-                'status': 'error',
-                'message': 'There are no matching sessions',
-            },
-            status=404,
-        )
+        res = APIResponse.error('There are no matching sessions')
+        s = APIResponseSerializer(res)
+        return Response(s.data, status=404)
     else:
-        return Response(
-            {
-                'status': 'ok',
-                'date': checkout.time.isoformat(),
-            },
-            status=201,
-        )
+        res = CheckoutResponse(time=checkout.time)
+        s = CheckoutResponseSerializer(res)
+        return Response(s.data, status=201)
