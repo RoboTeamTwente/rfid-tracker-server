@@ -2,6 +2,16 @@
 
 # Changelog
 
+## v2.2.3 (2025-10-07)
+
+### Refactor
+
+- **api**: register_scan: allow both tag_id and card_id
+
+### Perf
+
+- **tooling**: do not cache deliver workflow
+
 ## v2.2.2 (2025-10-07)
 
 ### Fix
