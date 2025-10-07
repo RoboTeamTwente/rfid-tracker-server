@@ -9,11 +9,11 @@
   <style>
     .profile {
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
       gap: var(--gap-default);
 
       .profile__user {
-        flex: 1 1 260px;
+        flex: 1 1 1;
 
         display: flex;
         flex-direction: column;
@@ -36,20 +36,23 @@
 
 
       .profile__tags {
-        flex: 2 1 400px;
-
+        flex: 2 1 auto;
         display: flex;
         flex-direction: column;
         gap: var(--gap-default);
+        width: 100%; /* ensure the whole section uses all space */
 
         table {
           width: 100%;
+          border-collapse: collapse; /* makes borders cleaner */
+          table-layout: fixed;
 
           th,
           td {
             padding: var(--gap-small) 0;
             text-align: left;
             border-bottom: 1px solid #ddd;
+            width: auto;
           }
         }
 
@@ -85,7 +88,6 @@
         background: rgba(0, 0, 0, 30%);
       }
     }
-
 
   </style>
 {% endblock %}
@@ -190,7 +192,7 @@
       {% modal 'Please scan your tag at the device' 'midas:user_profile' %}
         <div
           id="scan-waiter"
-          hx-get="{% url 'user_profile' %}?modal=tag_scan&tag={{ request.GET.tag }}"
+          hx-get="{% url 'midas:user_profile' %}?modal=tag_scan&tag={{ request.GET.tag }}"
           hx-trigger="every 1s"
           hx-swap=none
         >
@@ -229,20 +231,23 @@
         <label for="edit_profile/username">Username:</label>
         <input id="edit_profile/username" type="text" name="username" value="{{ user.username }}">
         <label for="edit_profile/subteam">Subteam:</label>
-        <select id="edit_profile/subteam" name="subteam">
-          <option disabled {% if not membership %}selected{% endif %}>-- Pick a subteam --</option>
+        <select id="edit_profile/subteams" name="subteams" multiple>
           {% for subteam in subteams %}
-            <option value="{{ subteam.id }}" {% if membership and membership.subteam == subteam %}selected{% endif %}>{{ subteam }}</option>
+            <option value="{{ subteam.id }}"
+                    {% if subteam in assignment.subteams.all %}selected{% endif %}
+            >{{ subteam.name }}</option>
           {% endfor %}
         </select>
-        <label for="edit_profile/job">Workload:</label>
-        <select id="edit_profile/job" name="job">
-          <option disabled {% if not membership %}selected{% endif %}>-- Pick a job --</option>
-          {% for job in jobs %}
-            <option value="{{ job.id }}" {% if membership and membership.job == job %}selected{% endif %}>{{ job }}</option>
+        <label for="edit_profile/quota">Workload:</label>
+        <select id="edit_profile/quota" name="quota">
+          <option disabled selected>-- Pick a Quota --</option>
+          {% for quota in quotas %}
+            <option value="{{ quota.id }}"
+                    {% if quota == assignment.quota %}selected{% endif %}
+            >{{ quota.name }}</option>
           {% endfor %}
         </select>
-        <section class="modal__actions">
+        <section class="modal__actions"><option value="{{ quota.id }}">{{ quota.name }}</option>
           <button class="modal__action modal--primary">Save</button>
           <a class="modal__action modal--secondary" href="{% url 'midas:user_profile' %}">Cancel</a>
         </section>

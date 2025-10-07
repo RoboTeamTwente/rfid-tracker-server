@@ -20,13 +20,13 @@ urlpatterns = [
     ),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     # views
+    path('edit_profile', views.edit_profile, name='edit_profile'),
     path('login', views.LogIn.as_view(), name='login'),
     path('logout', views.logout_view, name='logout'),
     path('user_profile', views.user_profile, name='user_profile'),
     path('', views.index, name='index'),
     # old
     path('delete_tag', old_views.delete_tag, name='delete_tag'),
-    path('edit_profile', old_views.edit_profile, name='edit_profile'),
     path('export_user', old_views.export_user_logs, name='export_user'),
     path('fuel_guage', old_views.fuel_guage, name='fuel_guage'),
     path('healthcheck', old_views.healthcheck, name='healthcheck'),

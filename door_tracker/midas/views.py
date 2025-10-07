@@ -9,13 +9,9 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from . import statistics
-from .models import (
-    Assignment,
-    ClaimedTag,
-    PendingTag,
-    Scanner,
-    Session,
-)
+from .models import Assignment, ClaimedTag, PendingTag, Quota, Scanner, Session, Subteam
+
+# from .utils import logs_to_csv
 
 
 # TODO: Refactor for Midas
@@ -90,6 +86,10 @@ def user_profile(request):
         .first()
     )
 
+    # Needed for Edit Profile
+    subteams = Subteam.objects.all()
+    quotas = Quota.objects.all()
+
     # Add Tag: User just entered a tag name
     if request.POST.get('action') == 'add_tag':
         serializer = AddTagSerializer(data=request.POST)
@@ -129,6 +129,8 @@ def user_profile(request):
         {
             'user_status': user_status(request),
             'assignment': assignment,
+            'subteams': subteams,
+            'quotas': quotas,
             'modal_name': modal_name,
             'claimed_tags': list(claimed_tags),
             'pending_tags': list(pending_tags),
@@ -163,6 +165,48 @@ def get_all_statistics(request):
         all_stats.append(user_stats)
 
     return all_stats
+
+
+class EditMembershipSerializer(serializers.Serializer):
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+    username = serializers.CharField()
+    subteams = serializers.ListField(child=serializers.IntegerField(), required=False)
+    quota = serializers.IntegerField(required=False)
+
+
+def edit_profile(request):
+    serializer = EditMembershipSerializer(data=request.POST)
+    if not serializer.is_valid():
+        print(serializer.errors)
+        messages.error(request, 'Please fill all fields correctly.')
+        return redirect('midas:user_profile')
+
+    data = serializer.validated_data
+    user = request.user
+    user.first_name = data['first_name']
+    user.last_name = data['last_name']
+    user.username = data['username']
+    user.save()
+
+    assignment = (
+        Assignment.objects.filter(user=user)
+        .select_related('quota')
+        .prefetch_related('subteams')
+        .first()
+    )
+    if assignment:
+        subteam_ids = request.POST.getlist('subteams')
+        quota_id = request.POST.get('quota')
+
+        if subteam_ids:
+            assignment.subteams.set(subteam_ids)
+        if quota_id:
+            assignment.quota_id = quota_id
+        assignment.save()
+
+    messages.success(request, 'Profile updated successfully!')
+    return redirect('midas:user_profile')
 
 
 # @login_not_required
@@ -251,63 +295,6 @@ def get_all_statistics(request):
 
 # class ScanTagSerializer(serializers.Serializer):
 #     tag = serializers.IntegerField()
-
-
-# class EditMembershipSerializer(serializers.Serializer):
-#     first_name = serializers.CharField()
-#     last_name = serializers.CharField()
-#     username = serializers.CharField()
-#     job = serializers.IntegerField()
-#     subteam = serializers.IntegerField()
-
-
-# def edit_profile(request):
-#     serializer = EditMembershipSerializer(data=request.POST)
-#     if not serializer.is_valid():
-#         messages.error(request, 'Please fill all fields')
-#         return redirect('midas:user_profile')
-
-#     first_name = serializer.validated_data['first_name']
-#     last_name = serializer.validated_data['last_name']
-#     username = serializer.validated_data['username']
-#     job_id = serializer.validated_data['job']
-#     subteam_id = serializer.validated_data['subteam']
-
-#     job = get_object_or_404(Job, pk=job_id)
-#     subteam = get_object_or_404(SubTeam, pk=subteam_id)
-
-#     current_membership = (
-#         Membership.objects.filter_effective()
-#         .filter(person=request.user)
-#         .order_by('starting_from')
-#         .last()
-#     )
-
-#     request.user.first_name = first_name
-#     request.user.last_name = last_name
-#     request.user.username = username
-#     try:
-#         request.user.save()
-#     except IntegrityError:
-#         messages.error(request, f'Username {username} is already taken!')
-#         return redirect('midas:user_profile')
-
-#     if (
-#         not current_membership
-#         or not current_membership.job
-#         or not current_membership.subteam
-#         or current_membership.job.id != job.id
-#         or current_membership.subteam.id != subteam.id
-#     ):
-#         Membership.objects.create(
-#             person=request.user,
-#             job=job,
-#             subteam=subteam,
-#         )
-
-#     messages.success(request, 'Profile updated')
-#     return redirect('midas:user_profile')
-
 
 # class DeleteTagSerializer(serializers.Serializer):
 #     tag_id = serializers.IntegerField()
