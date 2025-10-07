@@ -80,7 +80,8 @@ def user_profile(request):
     pending_tags = PendingTag.objects.filter(owner=request.user).values('id', 'name')
     claimed_tags = ClaimedTag.objects.filter(owner=request.user).values('code', 'name')
     assignment = (
-        Assignment.objects.filter(user=request.user)
+        Assignment.objects.filter_current()
+        .filter(user=request.user)
         .select_related('quota')
         .prefetch_related('subteams')
         .first()
@@ -146,7 +147,8 @@ def get_all_statistics(request):
     for user in User.objects.all():
         # Get current assignment
         assignment = (
-            Assignment.objects.filter(user=user, starting_from__lte=today_date)
+            Assignment.objects.filter_current()
+            .filter(user=user)
             .order_by('-starting_from')
             .first()
         )  # returns None if no assignment
@@ -190,7 +192,8 @@ def edit_profile(request):
     user.save()
 
     assignment = (
-        Assignment.objects.filter(user=user)
+        Assignment.objects.filter_current()
+        .filter(user=user)
         .select_related('quota')
         .prefetch_related('subteams')
         .first()

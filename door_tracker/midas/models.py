@@ -3,6 +3,8 @@ import secrets
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import OuterRef, Subquery
+from django.db.models.aggregates import Max
 from django.utils import timezone
 
 
@@ -118,6 +120,23 @@ class Assignment(models.Model):
 
     def get_subteams(self):
         return ', '.join([subteam.name for subteam in self.subteams.all()])
+
+    class AssignmentManager(models.Manager):
+        def filter_current(self):
+            qs = self.all()
+            return qs.filter(
+                starting_from=Subquery(
+                    qs.filter(
+                        user=OuterRef('user'),
+                        starting_from__lte=timezone.now(),
+                    )
+                    .values('user')
+                    .annotate(starting_from=Max('starting_from'))
+                    .values('starting_from')
+                ),
+            )
+
+    objects = AssignmentManager()
 
 
 class Subteam(models.Model):
