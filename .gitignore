@@ -1,12 +1,17 @@
-# Devenv
-.devenv*
-devenv.local.nix
+# std
+.bin
+.cache
+.config
+.data
+result
+.run
+std
 
 # direnv
 .direnv
 
-# pre-commit
-.pre-commit-config.yaml
+# lefthook
+lefthook-local.yaml
 
 # python
 __pycache__
@@ -16,13 +21,15 @@ __pycache__
 door_tracker/db.sqlite3
 door_tracker/db.sqlite3-journal
 
-# misc specific files
-/docs/schema.png
-/docs/schema.svg
-/.vscode/tasks.json
-
 # doxygen
 doxygen/
 
-# backup credentials
-credentials/
+
+# nixago: ignore-linked-files
+/lefthook.yml
+/treefmt.toml
+
+# misc specific files
+/docs/schema.png
+/docs/schema.svg
+/door_tracker/credentials/

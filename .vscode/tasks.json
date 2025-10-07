@@ -1,0 +1,17 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run the dev server",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "type": "shell",
+      "command": "just dev",
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    }
+  ]
+}

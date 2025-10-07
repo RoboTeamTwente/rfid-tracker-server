@@ -21,19 +21,13 @@ jobs:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
       - uses: DeterminateSystems/nix-installer-action@786fff0690178f1234e4e1fe9b536e94f5433196 # v20
 
-      - name: Install devenv
-        run: |
-          echo "$(nix-build '<nixpkgs>' -A devenv)/bin" >> "$GITHUB_PATH"
-
-      - name: Install project dependencies
-        run: |
-          devenv print-dev-env > ~/.env
+      - name: Install dependencies
+        run: nix develop -c uv sync --locked --no-progress
 
       - name: Build & upload the container image
         env:
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        shell: nix develop -c bash -eux {0}
         run: |
-          # shellcheck disable=SC1090
-          source ~/.env
-          docker-login -p "$DOCKERHUB_TOKEN"
-          deliver
+          docker login -u roboteamtwente -p "$DOCKERHUB_TOKEN"
+          just deliver
