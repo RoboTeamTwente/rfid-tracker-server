@@ -5,7 +5,6 @@ from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from django.db.models import Avg, F, Sum
 from django.utils import timezone
-
 from webui.models import Log, Statistics
 
 

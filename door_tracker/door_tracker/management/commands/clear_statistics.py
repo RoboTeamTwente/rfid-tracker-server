@@ -1,7 +1,6 @@
 # file: webui/management/commands/clear_statistics.py
 
 from django.core.management.base import BaseCommand
-
 from webui.models import Statistics
 
 
