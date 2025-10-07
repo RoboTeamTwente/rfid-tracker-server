@@ -103,7 +103,7 @@ class PendingTag(models.Model):
 
 
 class Quota(models.Model):
-    name = models.CharField(null=True, blank=True)
+    name = models.CharField()
     hours = models.IntegerField()
 
     def __str__(self):
