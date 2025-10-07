@@ -152,7 +152,7 @@ def get_all_statistics(request):
             .order_by('-starting_from')
             .first()
         )  # returns None if no assignment
-        subteams = assignment.get_subteams() if assignment else 'No subteam'
+        subteams = assignment.subteam_names() if assignment else 'No subteam'
         quota = assignment.quota.hours if assignment else 'No quota'
         user_stats = {
             'name': user.first_name + ' ' + user.last_name,

@@ -213,7 +213,7 @@ class AssignmentAdmin(admin.ModelAdmin):
         'user__last_name',
         'user__first_name',
         'quota__name',
-        'get_subteams',
+        'subteam_names',
     ]
     search_fields = ['user__last_name', 'user__first_name']
     list_filter = [

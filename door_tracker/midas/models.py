@@ -118,7 +118,7 @@ class Assignment(models.Model):
     subteams = models.ManyToManyField('Subteam')
     starting_from = models.DateTimeField(default=timezone.now)
 
-    def get_subteams(self):
+    def subteam_names(self):
         return ', '.join([subteam.name for subteam in self.subteams.all()])
 
     class AssignmentManager(models.Manager):
