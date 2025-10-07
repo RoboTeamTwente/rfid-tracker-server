@@ -176,7 +176,7 @@
 
     {% if modal_name == 'tag_name' %}
 
-      {% modal 'Name your tag:' 'user_profile' %}
+      {% modal 'Name your tag:' 'midas:user_profile' %}
         <input type="hidden" name="action" value="add_tag">
         <input type="text" name="tag_name" placeholder="Enter tag name" autofocus>
         <section class="modal__actions">
@@ -187,7 +187,7 @@
 
     {% elif modal_name == 'tag_scan' %}
 
-      {% modal 'Please scan your tag at the device' 'user_profile' %}
+      {% modal 'Please scan your tag at the device' 'midas:user_profile' %}
         <div
           id="scan-waiter"
           hx-get="{% url 'user_profile' %}?modal=tag_scan&tag={{ request.GET.tag }}"
@@ -199,7 +199,7 @@
 
     {% elif modal_name == 'rename_tag' %}
 
-      {% modal 'Name your tag:' 'rename_tag' %}
+      {% modal 'Name your tag:' 'midas:rename_tag' %}
         <input type="hidden" name="id" value="{{ request.GET.tag_code }}">
         <input type="text" name="tag_name" value="{{ request.GET.tag_name }}" autofocus >
         <section class="modal__actions">
@@ -210,7 +210,7 @@
 
     {% elif modal_name == 'delete_tag_confirm' %}
 
-      {% modal 'Delete tag?' 'delete_tag' %}
+      {% modal 'Delete tag?' 'midas:delete_tag' %}
         <input type="hidden" name="tag_id" value="{{ request.GET.tag_id }}">
         <p>Are you sure you want to delete <b>{{ tag_name }}</b>?</p>
         <section class="modal__actions">
@@ -221,7 +221,7 @@
 
     {% elif modal_name == 'edit_profile' %}
 
-      {% modal 'Edit your profile' 'edit_profile' %}
+      {% modal 'Edit your profile' 'midas:edit_profile' %}
         <label for="edit_profile/first_name">First name:</label>
         <input id="edit_profile/first_name" type="text" name="first_name" value="{{ user.first_name }}">
         <label for="edit_profile/last_name">Last name:</label>
