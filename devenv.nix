@@ -216,7 +216,7 @@ in
     serve = inputs.nix2container.packages.${pkgs.system}.nix2container.buildImage {
       name = "roboteamtwente/rfid-tracker-serve";
       tag = "latest";
-      maxLayers = 125;
+      maxLayers = 16; # max 125
       copyToRoot = [
         config.outputs.packages.admin
         config.outputs.packages.init
