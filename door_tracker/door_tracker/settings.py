@@ -67,6 +67,8 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',  # must be above staticfiles
     'django.contrib.staticfiles',
     'door_tracker.apps.DoorTrackerConfig',
+    'drf_spectacular',
+    'drf_spectacular_sidecar',
     'midas.apps.MidasConfig',
     'pytz',
     'rest_framework',
@@ -141,6 +143,17 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Django REST Framework
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'RFiD Tracker Server API',
+    'DESCRIPTION': "API endpoints provided by the server, for RFiD scanner's perusal",
+    'REDOC_DIST': 'SIDECAR',
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/

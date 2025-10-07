@@ -1,4 +1,8 @@
 from django.urls import include, path
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+)
 
 from webui import views as old_views
 
@@ -6,11 +10,18 @@ from . import api, views
 
 app_name = 'midas'
 urlpatterns = [
-    path('api', api.api_root),
+    # API
+    path('api/', api.api_root),
     path('api/auth/', include('rest_framework.urls')),
     path('api/checkout', api.checkout, name='checkout'),
     path('api/healthcheck', api.healthcheck, name='healthcheck'),
     path('api/register_scan', api.register_scan, name='register_scan'),
+    path(
+        'api/schema/ui/',
+        SpectacularRedocView.as_view(url_name='midas:schema'),
+    ),
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    # views
     path('login', views.LogIn.as_view(), name='login'),
     path('logout', views.logout_view, name='logout'),
     path('user_profile', views.user_profile, name='user_profile'),
