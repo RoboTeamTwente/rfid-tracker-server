@@ -147,7 +147,7 @@
               <td class="profile__tag-state profile__tag-state--claimed">claimed</td>
               <td>
                 <div class="profile__tag-actions">
-                  <<form method="GET" action="{% url 'midas:user_profile' %}" class="action">
+                  <form method="GET" action="{% url 'midas:user_profile' %}" class="action">
                     <input type="hidden" name="modal" value="delete_tag_confirm">
                     <input type="hidden" name="code"  value="{{ claimed_tag.code }}">
                     <input type="hidden" name="name"  value="{{ claimed_tag.name }}">
