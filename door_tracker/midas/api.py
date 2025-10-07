@@ -227,7 +227,7 @@ def register_scan(request):
             )
             current_session = Session.objects.get(
                 user=claimed_tag.owner,
-                checkin__time__date=timezone.now().date(),
+                checkin__time__date=timezone.now(),
                 checkout__isnull=True,
             )
             Checkout.objects.create(
@@ -362,7 +362,7 @@ def checkout(request):
         with transaction.atomic():
             session = Session.objects.get(
                 user=request.user,
-                checkin__time__date=checkout_time.date(),
+                checkin__time__date=checkout_time,
                 checkout__isnull=True,
             )
             checkout = Checkout.objects.create(
