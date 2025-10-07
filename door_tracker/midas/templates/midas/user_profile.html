@@ -125,7 +125,7 @@
               <td class="profile__tag-state profile__tag-state--pending">pending</td>
               <td>
                 <div class="profile__tag-actions">
-                  <!-- maybe a cancel or edit button -->
+                    <!-- maybe a cancel or edit button -->
                   <form method="GET" action="{% url 'midas:user_profile' %}" class="action">
                     <input type="hidden" name="modal" value="delete_pending_tag_confirm">
                     <input type="hidden" name="tag_id" value="{{ pending_tag.id }}">
@@ -140,16 +140,17 @@
             <tr><td colspan="3">No pending tags</td></tr>
           {% endfor %}
 
-          {# Claimed tags next #}
+            {# Claimed tags next #}
           {% for claimed_tag in claimed_tags %}
             <tr>
               <td>{{ claimed_tag.name }}</td>
               <td class="profile__tag-state profile__tag-state--claimed">claimed</td>
               <td>
                 <div class="profile__tag-actions">
-                  <form method="GET" action="{% url 'midas:user_profile' %}" class="action">
+                  <<form method="GET" action="{% url 'midas:user_profile' %}" class="action">
                     <input type="hidden" name="modal" value="delete_tag_confirm">
-                    <input type="hidden" name="tag_id" value="{{ claimed_tag.code }}">
+                    <input type="hidden" name="code"  value="{{ claimed_tag.code }}">
+                    <input type="hidden" name="name"  value="{{ claimed_tag.name }}">
                     <button class="action__button">
                       <i class="fa fa-trash"></i>
                     </button>
@@ -202,8 +203,8 @@
     {% elif modal_name == 'rename_tag' %}
 
       {% modal 'Name your tag:' 'midas:rename_tag' %}
-        <input type="hidden" name="id" value="{{ request.GET.tag_code }}">
-        <input type="text" name="tag_name" value="{{ request.GET.tag_name }}" autofocus >
+        <input type="hidden" name="code" value="{{ request.GET.tag_code }}">
+        <input type="text"   name="new_tag_name" value="{{ request.GET.tag_name }}" autofocus>
         <section class="modal__actions">
           <button class="modal__action modal--primary">Save</button>
           <a class="modal__action modal--secondary" href="{% url 'midas:user_profile' %}">Cancel</a>
@@ -211,10 +212,9 @@
       {% endmodal %}
 
     {% elif modal_name == 'delete_tag_confirm' %}
-
       {% modal 'Delete tag?' 'midas:delete_tag' %}
-        <input type="hidden" name="tag_id" value="{{ request.GET.tag_id }}">
-        <p>Are you sure you want to delete <b>{{ tag_name }}</b>?</p>
+        <input type="hidden" name="code" value="{{ request.GET.code }}">
+        <p>Are you sure you want to delete <b>{{ request.GET.name }}</b>?</p>
         <section class="modal__actions">
           <button class="modal__action modal--primary">Delete</button>
           <a class="modal__action modal--secondary" href="{% url 'midas:user_profile' %}">Cancel</a>

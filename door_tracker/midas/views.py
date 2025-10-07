@@ -3,7 +3,7 @@ from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
 from django.http import HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from rest_framework import serializers
@@ -209,6 +209,42 @@ def edit_profile(request):
     return redirect('midas:user_profile')
 
 
+class RenameTagSerializer(serializers.Serializer):
+    code = serializers.CharField(max_length=100)  # NOT IntegerField
+    new_tag_name = serializers.CharField(max_length=100)
+
+
+def rename_tag(request):
+    serializer = RenameTagSerializer(data=request.POST)
+    serializer.is_valid(raise_exception=True)
+
+    code = serializer.validated_data['code']
+    new_tag_name = serializer.validated_data['new_tag_name']
+
+    tag = get_object_or_404(ClaimedTag, owner=request.user, code=code)
+    tag.name = new_tag_name
+    tag.save()
+
+    return redirect('midas:user_profile')
+
+
+class DeleteTagSerializer(serializers.Serializer):
+    code = serializers.CharField(max_length=100)
+
+
+def delete_tag(request):
+    serializer = DeleteTagSerializer(data=request.POST)
+    serializer.is_valid(raise_exception=True)
+
+    code = serializer.validated_data['code']
+
+    tag = get_object_or_404(ClaimedTag, owner=request.user, code=code)
+
+    tag.delete()
+    messages.success(request, 'Tag deleted.')
+    return redirect('midas:user_profile')
+
+
 # @login_not_required
 # def sign_up(request):
 #     token = request.GET.get('token')
@@ -295,52 +331,6 @@ def edit_profile(request):
 
 # class ScanTagSerializer(serializers.Serializer):
 #     tag = serializers.IntegerField()
-
-# class DeleteTagSerializer(serializers.Serializer):
-#     tag_id = serializers.IntegerField()
-
-
-# def delete_tag(request):
-#     serializer = DeleteTagSerializer(data=request.POST)
-#     serializer.is_valid(raise_exception=True)
-
-#     tag_id = serializer.validated_data['tag_id']
-
-#     tag = get_object_or_404(Tag, pk=tag_id)
-
-#     if tag.name == 'WebUI':
-#         return JsonResponse(
-#             {'status': 'error', 'message': 'Cannot delete WebUI tag'},
-#             status=403,
-#         )
-
-#     tag.name = ''
-#     tag.save()
-
-#     return redirect('midas:user_profile')
-
-
-# class RenameTagSerializer(serializers.Serializer):
-#     id = serializers.IntegerField()
-#     tag_name = serializers.CharField(max_length=100)
-
-
-# def rename_tag(request):
-#     serializer = RenameTagSerializer(data=request.POST)
-#     serializer.is_valid(raise_exception=True)
-
-#     tag_code = serializer.validated_data['id']
-#     tag_name = serializer.validated_data['tag_name']
-
-#     tag = get_object_or_404(Tag, pk=tag_code)
-
-#     if tag.name == 'WebUI':
-#         return JsonResponse(
-#             {'status': 'error', 'message': 'Cannot edit WebUI tag'}, status=403
-#         )
-#     tag.name = tag_name
-#     tag.save()
-#     return redirect('midas:user_profile')
 
 
 # @api_view(['GET'])
