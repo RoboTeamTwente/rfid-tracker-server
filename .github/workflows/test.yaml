@@ -12,7 +12,7 @@ on:
   workflow_dispatch: # also for debugging
 
 jobs:
-  test:
+  test-fast:
     runs-on: ubuntu-latest
 
     steps:
@@ -34,3 +34,18 @@ jobs:
         working-directory: door_tracker
         run: |
           ./manage.py test --noinput
+
+  test-thorough:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - uses: DeterminateSystems/nix-installer-action@786fff0690178f1234e4e1fe9b536e94f5433196 # v20
+      - uses: DeterminateSystems/magic-nix-cache-action@565684385bcd71bad329742eefe8d12f2e765b39 # v13
+
+      - name: Install devenv
+        run: |
+          echo "$(nix-build '<nixpkgs>' -A devenv)/bin" >> "$GITHUB_PATH"
+
+      - name: Run all tests
+        run: devenv test
