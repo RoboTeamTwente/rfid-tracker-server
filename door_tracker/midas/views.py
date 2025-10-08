@@ -162,15 +162,38 @@ def user_profile(request):
 
 
 def get_all_statistics(request):
-    today_date = timezone.now().date()
+    date = timezone.now().date()
     all_stats = []
 
+    # Extract filters from request (GET params or POST data)
+    user_id = request.GET.get('user')
+    subteam_name = request.GET.get('subteam')
+    quota_name = request.GET.get('quota')
+    date = request.GET.get('date')
+
+    users = User.objects.all()
+
+    # Apply filters if provided
+    if user_id:
+        users = users.filter(id=user_id)
+    if subteam_name:
+        users = users.filter(assignments__subteams__name=subteam_name)
+    if quota_name:
+        users = users.filter(assignments__quota__name=quota_name)
+    users = users.distinct()
+    if date:
+        try:
+            date = timezone.datetime.strptime(date, '%d-%m-%Y').date()
+        except ValueError:
+            return HttpResponse('Invalid date format. Use DD-MM-YYYY.', status=400)
+    else:
+        date = timezone.now().date()
+
     # Loop through all users and get their statistics
-    for user in User.objects.all():
+    for user in users:
         # Get current assignment
         assignment = (
-            Assignment.objects.filter_current()
-            .filter(user=user)
+            Assignment.objects.filter(user=user, starting_from__lte=date)
             .order_by('-starting_from')
             .first()
         )  # returns None if no assignment
@@ -180,11 +203,12 @@ def get_all_statistics(request):
             'name': user.first_name + ' ' + user.last_name,
             'subteam': subteams,
             'quota': quota,
-            'minutes_today': statistics.get_minutes_today(user, today_date),
-            'minutes_this_week': statistics.get_minutes_this_week(user, today_date),
-            'minutes_this_month': statistics.get_minutes_this_month(user, today_date),
-            'total_minutes': statistics.get_total_minutes(user, today_date),
-            'average_week': statistics.get_average_week(user, today_date),
+            'date': date,
+            'minutes_today': statistics.get_minutes_today(user, date),
+            'minutes_this_week': statistics.get_minutes_this_week(user, date),
+            'minutes_this_month': statistics.get_minutes_this_month(user, date),
+            'total_minutes': statistics.get_total_minutes(user, date),
+            'average_week': statistics.get_average_week(user, date),
         }
         all_stats.append(user_stats)
 
