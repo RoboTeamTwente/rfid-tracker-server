@@ -2,4 +2,4 @@
 extend-select = ["I"]
 
 [format]
-quote-style = 'single'
+quote-style = "single"
