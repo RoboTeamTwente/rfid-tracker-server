@@ -170,8 +170,11 @@ def get_all_statistics(request):
     subteam_name = request.GET.get('subteam')
     quota_name = request.GET.get('quota')
     date = request.GET.get('date')
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
 
     users = User.objects.all()
+    dates = []
 
     # Apply filters if provided
     if user_id:
@@ -181,36 +184,50 @@ def get_all_statistics(request):
     if quota_name:
         users = users.filter(assignments__quota__name=quota_name)
     users = users.distinct()
+
+    # Handle date filters
     if date:
         try:
             date = timezone.datetime.strptime(date, '%d-%m-%Y').date()
+            dates = [date]
+        except ValueError:
+            return HttpResponse('Invalid date format. Use DD-MM-YYYY.', status=400)
+    elif start_date and end_date:
+        try:
+            start_date = timezone.datetime.strptime(start_date, '%d-%m-%Y').date()
+            end_date = timezone.datetime.strptime(end_date, '%d-%m-%Y').date()
+            if start_date > end_date:
+                return HttpResponse('Start date must be before end date.', status=400)
+            delta = (end_date - start_date).days
+            dates = [start_date + timezone.timedelta(days=i) for i in range(delta + 1)]
         except ValueError:
             return HttpResponse('Invalid date format. Use DD-MM-YYYY.', status=400)
     else:
-        date = timezone.now().date()
+        dates = {timezone.now().date()}
 
     # Loop through all users and get their statistics
-    for user in users:
-        # Get current assignment
-        assignment = (
-            Assignment.objects.filter(user=user, starting_from__lte=date)
-            .order_by('-starting_from')
-            .first()
-        )  # returns None if no assignment
-        subteams = assignment.subteam_names() if assignment else 'No subteam'
-        quota = assignment.quota.hours if assignment else 'No quota'
-        user_stats = {
-            'name': user.first_name + ' ' + user.last_name,
-            'subteam': subteams,
-            'quota': quota,
-            'date': date,
-            'minutes_today': statistics.get_minutes_today(user, date),
-            'minutes_this_week': statistics.get_minutes_this_week(user, date),
-            'minutes_this_month': statistics.get_minutes_this_month(user, date),
-            'total_minutes': statistics.get_total_minutes(user, date),
-            'average_week': statistics.get_average_week(user, date),
-        }
-        all_stats.append(user_stats)
+    for date in dates:
+        for user in users:
+            # Get current assignment
+            assignment = (
+                Assignment.objects.filter(user=user, starting_from__lte=date)
+                .order_by('-starting_from')
+                .first()
+            )  # returns None if no assignment
+            subteams = assignment.subteam_names() if assignment else 'No subteam'
+            quota = assignment.quota.hours if assignment else 'No quota'
+            user_stats = {
+                'name': user.first_name + ' ' + user.last_name,
+                'subteam': subteams,
+                'quota': quota,
+                'date': date,
+                'minutes_today': statistics.get_minutes_today(user, date),
+                'minutes_this_week': statistics.get_minutes_this_week(user, date),
+                'minutes_this_month': statistics.get_minutes_this_month(user, date),
+                'total_minutes': statistics.get_total_minutes(user, date),
+                'average_week': statistics.get_average_week(user, date),
+            }
+            all_stats.append(user_stats)
 
     return all_stats
 
