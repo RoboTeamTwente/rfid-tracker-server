@@ -1,3 +1,5 @@
+from datetime import datetime, time, timedelta
+
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_not_required
@@ -13,8 +15,122 @@ from rest_framework import serializers
 from . import statistics
 from .forms import RegistrationForm
 from .models import Assignment, ClaimedTag, PendingTag, Quota, Scanner, Session, Subteam
+from .statistics import (
+    get_average_week,
+    get_minutes_this_month,
+    get_minutes_this_week,
+    get_minutes_today,
+    get_quota_durations_time_period,
+    get_total_minutes,
+)
+
+# from django.views.decorators.csrf import csrf_exempt
+# from rest_framework import serializers
+# from rest_framework.decorators import (
+#     api_view,
+# )
+# # Import Custom Files
+# from .forms import RegistrationForm
+# # Import Custom Files
+# from .forms import RegistrationForm
+# Create your views here.
 
 # from .utils import logs_to_csv
+
+
+def user_statistics(request):
+    current_day = timezone.make_aware(datetime.combine(timezone.now().date(), time.min))
+
+    latest_assignment = (
+        Assignment.objects.filter(user=request.user, starting_from__lte=current_day)
+        .order_by('-starting_from')
+        .first()
+    )
+
+    subteam_name = (
+        latest_assignment.get_subteams()
+        if latest_assignment
+        else 'You are alone Comrade'
+    )
+
+    total_hours_day = get_minutes_today(request.user, current_day)
+
+    total_hours_week = get_minutes_this_week(request.user, current_day)
+
+    total_hours_month = get_minutes_this_month(request.user, current_day)
+
+    total_hours_all = get_total_minutes(request.user, current_day)
+
+    average_hours_week = get_average_week(request.user, current_day)
+
+    start_of_week = current_day - timedelta(days=current_day.weekday())
+    end_of_week = start_of_week + timedelta(days=6)
+
+    weekly_quota = get_quota_durations_time_period(
+        request.user, start_of_week, end_of_week
+    )
+
+    weekly_hours_total = 0
+
+    for i in weekly_quota:
+        weekly_hours_total += (i['duration_days'] / 7.0) * (i['quota'].hours)
+
+    start_of_month = current_day.replace(day=1)
+    if current_day.month == 12:
+        end_of_month = current_day.replace(
+            year=current_day.year + 1, month=1, day=1
+        ) - timedelta(days=1)
+    else:
+        end_of_month = current_day.replace(
+            month=current_day.month + 1, day=1
+        ) - timedelta(days=1)
+
+    monthly_quota = get_quota_durations_time_period(
+        request.user, start_of_month, end_of_month
+    )
+
+    monthly_hours_total = 0
+
+    days_in_month = (end_of_month - start_of_month).days + 1
+    for i in monthly_quota:
+        monthly_hours_total += (i['duration_days'] / days_in_month) * (i['quota'].hours)
+
+    quota_week_met = (total_hours_week / 60) >= weekly_hours_total
+    quota_month_met = (total_hours_month / 60) >= monthly_hours_total
+
+    def format_time(minutes):
+        hours = minutes // 60
+        minutes = minutes % 60
+        s = f'{hours}h'
+        if minutes:
+            s += f' {minutes}m'
+        return s
+
+    return render(
+        request,
+        'midas/user_statistics.html',
+        {
+            # user info
+            'user_name': request.user.get_full_name(),
+            'user_role': subteam_name,
+            'user_status': user_status(request),
+            # totals
+            'total_hours_day': format_time(total_hours_day),
+            'total_hours_week': format_time(total_hours_week),
+            'total_hours_month': format_time(total_hours_month),
+            'total_hours_all': format_time(total_hours_all),
+            'average_hours_week': format_time(average_hours_week),
+            'quota_hours_week': format_time(weekly_hours_total * 60),
+            # quotas
+            'quota_week_met': 'MET' if quota_week_met else 'UNMET',
+            'quota_month_met': 'MET' if quota_month_met else 'UNMET',
+            # js values (for echarts)
+            'script_data': {
+                'total_hours_week': total_hours_week,
+                'quota_hours_week': weekly_hours_total * 60,
+            },
+        },
+    )
 
 
 # TODO: Refactor for Midas

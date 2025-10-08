@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 
 from django.db.models import (
     Case,
@@ -13,7 +13,9 @@ from django.db.models.functions import Coalesce
 from django.utils import timezone
 from pytz import AmbiguousTimeError, NonExistentTimeError
 
-from midas.models import Session
+from midas.models import Assignment, Session
+
+# TODO: Get quota for that time period
 
 
 def get_sessions_time(user, start_of_day, end_of_day):
@@ -55,6 +57,49 @@ def get_sessions_time(user, start_of_day, end_of_day):
         return 0
 
     return int(total_duration.total_seconds() // 60)
+
+
+def get_quota_durations_time_period(user, start_day, end_day):
+    start_day = timezone.make_aware(datetime.combine(start_day, time.min))
+    end_day = timezone.make_aware(datetime.combine(end_day, time.max))
+
+    assignments = list(
+        Assignment.objects.filter(user=user, starting_from__lte=end_day).order_by(
+            'starting_from'
+        )
+    )
+
+    previous_assignments = [a for a in assignments if a.starting_from < start_day]
+    current_assignments = [a for a in assignments if a.starting_from >= start_day]
+
+    if previous_assignments:
+        previous_assignment = previous_assignments[-1]
+        assignments = [previous_assignment] + current_assignments
+    else:
+        assignments = current_assignments
+
+    quota_durations = []
+
+    for i, assignment in enumerate(assignments):
+        if i < len(assignments) - 1:
+            end_date = assignments[i + 1].starting_from
+            if i == 0:
+                duration_days = (end_date - start_day).days
+            else:
+                duration_days = (end_date - assignment.starting_from).days
+        else:
+            end_date = end_day
+            duration_days = (end_date - assignment.starting_from).days
+
+        quota_durations.append(
+            {'quota': assignment.quota, 'duration_days': duration_days}
+        )
+
+    return quota_durations
+
+
+# def get_quotas_for_assignments(request, start_day, end_day):
+#     aa = get_assignments_time_period(request, start_day, end_day)
 
 
 def get_minutes_today(user, day):

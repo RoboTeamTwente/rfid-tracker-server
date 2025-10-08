@@ -27,11 +27,11 @@ urlpatterns = [
     path('rename_tag', views.rename_tag, name='rename_tag'),
     path('sign_up', views.sign_up, name='sign_up'),
     path('user_profile', views.user_profile, name='user_profile'),
+    path('user_statistics', views.user_statistics, name='user_statistics'),
     path('', views.index, name='index'),
     # old
     path('export_user', old_views.export_user_logs, name='export_user'),
     path('fuel_guage', old_views.fuel_guage, name='fuel_guage'),
     path('healthcheck', old_views.healthcheck, name='healthcheck'),
-    path('user_statistics', old_views.user_statistics, name='user_statistics'),
     path('user_tags', old_views.user_tags, name='user_tags'),
 ]
