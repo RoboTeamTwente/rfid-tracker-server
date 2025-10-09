@@ -241,9 +241,6 @@ class ClaimedTagAdmin(admin.ModelAdmin):
             default = list(default) + ['owner', 'code']
         return default
 
-    def has_add_permission(self, request):
-        return False
-
 
 @admin.register(PendingTag)
 class PendingTagAdmin(admin.ModelAdmin):
