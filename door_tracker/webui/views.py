@@ -3,7 +3,7 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_not_required
 from django.contrib.auth.views import LoginView
 from django.core.cache import cache
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.db.models import Avg, Sum
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -254,73 +254,148 @@ def register_scan(request):
             {'status': 'error', 'message': 'Scanner not authorized'}, status=403
         )
 
-    tag = Tag.objects.select_related('owner').filter(tag=card_id).first()
+    def get_statistics(user):
+        try:
+            return Statistics.objects.filter(person=user).latest('date')
+        except Statistics.DoesNotExist:
+            return Statistics(
+                person=user,
+                date=timezone.now(),
+                minutes_day=0,
+                minutes_week=0,
+                minutes_month=0,
+                average_week=0,
+                total_minutes=0,
+            )
 
-    if tag is None:
-        tag = Tag.objects.filter(tag=None).first()
-
-    if tag is None:
-        tag = Tag.objects.create(tag=card_id)
+    # try to restore a tag
 
     try:
-        stats = Statistics.objects.filter(person=tag.owner).latest('date')
-    except Statistics.DoesNotExist:
-        stats = Statistics(
-            person=tag.owner,
-            date=timezone.now(),
-            minutes_day=0,
-            minutes_week=0,
-            minutes_month=0,
-            average_week=0,
-            total_minutes=0,
-        )
-
-    match tag.get_state():
-        case TagState.UNAUTHORIZED:
-            Log.objects.create(
-                type=Log.LogEntryType.UNKNOWN,
-                scanner=scanner,
-                tag=tag,
-            )
-            return JsonResponse(
-                {'status': 'error', 'message': 'Card not registered'},
-                status=404,
-            )
-
-        case TagState.PENDING_REGISTRATION:
+        with transaction.atomic():
+            tag = Tag.objects.get(tag=card_id, name='')
+            new_tag = Tag.objects.filter(tag__isnull=True, owner=tag.owner).first()
+            if not new_tag:
+                raise Tag.DoesNotExist()
+            tag.name = new_tag.name
+            new_tag.delete()
+            tag.save(force_update=True)
             Log.objects.create(
                 type=Log.LogEntryType.REGISTRATION,
                 scanner=scanner,
                 tag=tag,
             )
-            tag.tag = card_id
-            tag.save()
-            return JsonResponse(
-                {
-                    'state': 'register',
-                    'owner_name': tag.owner_name(),
-                    'hours_day': stats.minutes_day // 60,
-                    'hours_week': stats.minutes_week // 60,
-                }
-            )
+    except Tag.DoesNotExist:
+        pass
+    else:
+        stats = get_statistics(tag.owner)
+        return JsonResponse(
+            {
+                'state': 'register',
+                'owner_name': tag.owner_name(),
+                'hours_day': stats.minutes_day // 60,
+                'hours_week': stats.minutes_week // 60,
+            }
+        )
 
-        case TagState.CLAIMED:
-            checkout = is_checked_in(tag.owner)
+    # try to register an unauthorized tag
+
+    try:
+        with transaction.atomic():
+            tag = Tag.objects.get(tag=card_id, name='', owner__isnull=True)
+            new_tag = Tag.objects.filter(tag__isnull=True).first()
+            if not new_tag:
+                raise Tag.DoesNotExist()
+            tag.name = new_tag.name
+            tag.owner = new_tag.owner
+            new_tag.delete()
+            tag.save(force_update=True)
             Log.objects.create(
-                type=(
-                    Log.LogEntryType.CHECKOUT if checkout else Log.LogEntryType.CHECKIN
-                ),
+                type=Log.LogEntryType.REGISTRATION,
                 scanner=scanner,
                 tag=tag,
             )
-            return JsonResponse(
-                {
-                    'state': 'checkout' if checkout else 'checkin',
-                    'owner_name': tag.owner_name(),
-                    'hours_day': stats.minutes_day // 60,
-                    'hours_week': stats.minutes_week // 60,
-                }
+    except Tag.DoesNotExist:
+        pass
+    else:
+        stats = get_statistics(tag.owner)
+        return JsonResponse(
+            {
+                'state': 'register',
+                'owner_name': tag.owner_name(),
+                'hours_day': stats.minutes_day // 60,
+                'hours_week': stats.minutes_week // 60,
+            }
+        )
+
+    # try to register a pending tag
+
+    try:
+        with transaction.atomic():
+            if Tag.objects.filter(tag=card_id).exists():
+                raise Tag.MultipleObjectsReturned()
+            tag = Tag.objects.get_pending()
+            if not tag:
+                raise Tag.DoesNotExist()
+            tag.tag = card_id
+            tag.save(force_update=True)
+            Log.objects.create(
+                type=Log.LogEntryType.REGISTRATION,
+                scanner=scanner,
+                tag=tag,
             )
+    except (Tag.DoesNotExist, Tag.MultipleObjectsReturned):
+        pass
+    else:
+        stats = get_statistics(tag.owner)
+        return JsonResponse(
+            {
+                'state': 'register',
+                'owner_name': tag.owner_name(),
+                'hours_day': stats.minutes_day // 60,
+                'hours_week': stats.minutes_week // 60,
+            }
+        )
+
+    # try to check-out/in
+
+    try:
+        with transaction.atomic():
+            tag = Tag.objects.get_authorized().get(tag=card_id)
+            checkout = is_checked_in(tag.owner)
+            Log.objects.create(
+                type=Log.LogEntryType.CHECKOUT
+                if checkout
+                else Log.LogEntryType.CHECKIN,
+                scanner=scanner,
+                tag=tag,
+            )
+    except Tag.DoesNotExist:
+        pass
+    else:
+        stats = get_statistics(tag.owner)
+        return JsonResponse(
+            {
+                'state': 'checkout' if checkout else 'checkin',
+                'owner_name': tag.owner_name(),
+                'hours_day': stats.minutes_day // 60,
+                'hours_week': stats.minutes_week // 60,
+            }
+        )
+
+    # give up
+
+    with transaction.atomic():
+        (tag, _) = Tag.objects.update_or_create(tag=card_id)
+        Log.objects.create(
+            type=Log.LogEntryType.UNKNOWN,
+            scanner=scanner,
+            tag=tag,
+        )
+
+    return JsonResponse(
+        {'status': 'error', 'message': 'Card not registered'},
+        status=404,
+    )
 
 
 class HealthcheckSerializer(serializers.Serializer):
