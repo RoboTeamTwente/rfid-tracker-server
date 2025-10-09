@@ -20,6 +20,10 @@ let
     operable = cell.operables.serve;
     debug = true;
     uid = "0"; # who cares about security, right?
+    labels = {
+      inherit version;
+      commit = inputs.self.shortRev or inputs.self.dirtyShortRev;
+    };
   };
 
 in
