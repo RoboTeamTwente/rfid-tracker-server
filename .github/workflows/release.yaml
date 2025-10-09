@@ -8,6 +8,11 @@ on:
     tags:
       - v* # for actual releases
 
+# abort previous releases for the same tag
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   release:
     runs-on: ubuntu-latest
