@@ -591,12 +591,17 @@ def rename_tag(request):
 
     tag = get_object_or_404(Tag, pk=tag_code)
 
-    if tag.name == 'WebUI':
-        return JsonResponse(
-            {'status': 'error', 'message': 'Cannot edit WebUI tag'}, status=403
+    try:
+        tag.name = tag_name
+        tag.save(force_update=True)
+    except IntegrityError:
+        messages.error(request, 'This name is already taken')
+        return redirect(
+            reverse_lazy(
+                'user_profile', query={'modal': 'rename_tag', 'tag_name': tag_name}
+            )
         )
-    tag.name = tag_name
-    tag.save()
+
     return redirect('user_profile')
 
 
