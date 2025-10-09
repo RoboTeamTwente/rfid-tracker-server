@@ -12,8 +12,6 @@
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js" integrity="sha384-ZBXiYtYQ6hJ2Y0ZNoYuI+Nq5MqWBr+chMrS/RkXpNzQCApHEhOt2aY8EJgqwHLkJ" crossorigin="anonymous"></script>  </head>
 
 
-
-
   <body class="body">
     <header class="body__header">
       <a href="{% url 'midas:index' %}" class="body__logo">
@@ -30,32 +28,30 @@
       <nav class="sidebar">
         <h3 class="sidebar__section">USER PAGES</h3>
         <a class="sidebar__button" href="{% url 'midas:user_profile' %}">Profile</a>
-        <a class="sidebar__button" href="{% url 'midas:index' %}">Logs</a>
+        <a class="sidebar__button" href="{% url 'midas:index' %}">Sessions</a>
         <a class="sidebar__button" href="{% url 'midas:user_statistics' %}">Statistics</a>
 
         <h3 class="sidebar__section">ADMIN PAGES</h3>
         <a class="sidebar__button" href="{% url 'midas:index' %}">Team Overview</a>
-        <a class="sidebar__button" href="{% url 'midas:index' %}">Admin Dashboard</a>
+        <a class="sidebar__button" href="{% url 'admin:index' %}">Admin Dashboard</a>
 
         <h3 class="sidebar__section">ACTIONS</h3>
-        <a class="sidebar__button" href="{% url 'midas:index' %}">Export Sessions</a>
+        <a class="sidebar__button" href="{% url 'midas:export_user' %}">Export Sessions</a>
         <a class="sidebar__button" href="#" onclick="openCheckoutModal()">Remote Checkout</a>
         <a class="sidebar__button" href="{% url 'midas:logout' %}">Log Out</a>
       </nav>
 
 
-      {% block main %}
-        <main class="card">
-          <p>Hello World</p>
-        </main>
-      {% endblock %}
+      <main class="content-wrapper">
+        {% block main %}
+          <section class="card">
+            <h1 class="role-title">{{ user_role }}</h1>
+            <!-- your dashboard or content here -->
+          </section>
+        {% endblock %}
+      </main>
 
     </div>
-
-
-
-
-
 
     <div id="checkoutModal" class="modal" style="display:none">
       <form id="checkoutForm" class="modal__content">

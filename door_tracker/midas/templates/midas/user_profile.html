@@ -7,6 +7,14 @@
 {% block head %}
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
   <style>
+    .page-title {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--bg-primary);
+      /* margin-top: 1.5rem;
+      margin-bottom: 1.5rem; */
+    }
     .profile {
       display: flex;
       flex-direction: column;
@@ -44,17 +52,30 @@
 
         table {
           width: 100%;
-          border-collapse: collapse; /* makes borders cleaner */
-          table-layout: fixed;
-
-          th,
-          td {
-            padding: var(--gap-small) 0;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-            width: auto;
-          }
+          border-collapse: collapse;
+          table-layout: fixed; /* let browser auto-adjust column widths */
         }
+
+        th,
+        td {
+          padding: var(--gap-small) 1rem;
+          text-align: left;
+          border-bottom: 1px solid #ddd;
+        }
+
+        th:first-child,
+        td:first-child,
+        th:nth-child(2),
+        td:nth-child(2) {
+          width: 1rem; /* Tag Name takes most space */
+        }
+
+        th:last-child,
+        td:last-child {
+          width: 10%;/* Action column with icons */
+          text-align: center; /* center icons horizontally */
+        }
+
 
         .profile__tag-state--pending {
           color: #8a6d3b;
@@ -93,7 +114,7 @@
 {% endblock %}
 
 {% block main %}
-
+  <h1 class="page-title">Profile</h1>
   <main class="profile">
     <section class="card profile__user">
       <form method="GET" action="{% url 'midas:user_profile' %}" class="profile__edit-profile">

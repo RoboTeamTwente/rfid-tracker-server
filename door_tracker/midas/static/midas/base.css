@@ -301,8 +301,9 @@ body {
 }
 
 .sidebar__button:hover {
-  background: #d0b3ff;
-  color: black;
+  background: hsl(274, 27%, 48%);
+
+  color: rgba(255, 255, 255, 0.9);
 }
 
 /* Main content shifts right */
@@ -325,7 +326,7 @@ body {
   background: #f1f1f1; /* keep your sidebar color */
   border-right: 2px solid #ccc; /* optional subtle divider */
   margin: 0; /* ensure no gap */
-  padding-right: 0; /* aligns better with card */
+  padding-right: 1rem; /* aligns better with card */
 }
 
 /* Content area should start immediately next to sidebar */
@@ -339,7 +340,29 @@ body {
   padding: 1.5rem;
 }
 
-/* Add spacing inside only when needed */
+/* Center the main content horizontally & vertically */
 .content-wrapper {
-  padding: 1.5rem;
+  display: flex;
+  justify-content: center; /* horizontal centering */
+  align-items: center; /* vertical centering */
+  width: 100%;
+  height: 100%;
+  padding: 0.5rem;
+  flex-direction: column;
+}
+
+/* Make sure layout fills the screen */
+.body__layout {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: calc(100vh - 60px); /* adjust for header height */
+}
+
+/* Optional: limit card width so it doesn’t stretch too wide */
+.card {
+  max-width: 60rem;
+  width: 100%;
+  margin: 0 auto;
+  border-radius: var(--radius-default);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
