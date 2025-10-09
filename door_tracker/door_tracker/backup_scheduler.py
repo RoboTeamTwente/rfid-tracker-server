@@ -14,6 +14,11 @@ def backup_website_job():
     call_command('backup_website')
 
 
+def update_statistics_job():
+    logger.info('Updating statistics…')
+    call_command('update_statistics')
+
+
 def start():
     # Only start in the main process (avoid autoreloader double-start)
     if os.environ.get('RUN_MAIN') != 'true':
@@ -22,13 +27,20 @@ def start():
     scheduler = BackgroundScheduler()
     scheduler.add_jobstore(DjangoJobStore(), 'default')
 
-    # For testing: every minute
     scheduler.add_job(
         backup_website_job,
         trigger='cron',
         hour='23',
         minute='59',
         id='backup_website_job',
+        replace_existing=True,
+    )
+
+    scheduler.add_job(
+        update_statistics_job,
+        trigger='cron',
+        minute='*',
+        id='update_statistics_job',
         replace_existing=True,
     )
 

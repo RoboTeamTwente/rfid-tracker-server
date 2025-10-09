@@ -3,7 +3,6 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_not_required
 from django.contrib.auth.views import LoginView
 from django.core.cache import cache
-from django.core.management import call_command
 from django.db import IntegrityError
 from django.db.models import Avg, Sum
 from django.http import HttpResponseForbidden, JsonResponse
@@ -263,6 +262,19 @@ def register_scan(request):
     if tag is None:
         tag = Tag.objects.create(tag=card_id)
 
+    try:
+        stats = Statistics.objects.filter(person=tag.owner).latest('date')
+    except Statistics.DoesNotExist:
+        stats = Statistics(
+            person=tag.owner,
+            date=timezone.now(),
+            minutes_day=0,
+            minutes_week=0,
+            minutes_month=0,
+            average_week=0,
+            total_minutes=0,
+        )
+
     match tag.get_state():
         case TagState.UNAUTHORIZED:
             Log.objects.create(
@@ -283,21 +295,12 @@ def register_scan(request):
             )
             tag.tag = card_id
             tag.save()
-            call_command('update_statistics')
-            hours_day = (
-                Statistics.objects.filter(person=tag.owner).latest('date').minutes_day
-                // 60
-            )
-            hours_week = (
-                Statistics.objects.filter(person=tag.owner).latest('date').minutes_week
-                // 60
-            )
             return JsonResponse(
                 {
                     'state': 'register',
                     'owner_name': tag.owner_name(),
-                    'hours_day': hours_day,
-                    'hours_week': hours_week,
+                    'hours_day': stats.minutes_day // 60,
+                    'hours_week': stats.minutes_week // 60,
                 }
             )
 
@@ -310,21 +313,12 @@ def register_scan(request):
                 scanner=scanner,
                 tag=tag,
             )
-            call_command('update_statistics')
-            hours_day = (
-                Statistics.objects.filter(person=tag.owner).latest('date').minutes_day
-                // 60
-            )
-            hours_week = (
-                Statistics.objects.filter(person=tag.owner).latest('date').minutes_week
-                // 60
-            )
             return JsonResponse(
                 {
                     'state': 'checkout' if checkout else 'checkin',
                     'owner_name': tag.owner_name(),
-                    'hours_day': hours_day,  # TODO
-                    'hours_week': hours_week,  # TODO
+                    'hours_day': stats.minutes_day // 60,
+                    'hours_week': stats.minutes_week // 60,
                 }
             )
 
@@ -374,9 +368,18 @@ def sign_up(request):
 
 
 def user_statistics(request):
-    call_command('update_statistics')
-
-    stats = Statistics.objects.filter(person=request.user).order_by('-date').first()
+    try:
+        stats = Statistics.objects.filter(person=request.user).latest('date')
+    except Statistics.DoesNotExist:
+        stats = Statistics(
+            person=request.user,
+            date=timezone.now(),
+            minutes_day=0,
+            minutes_week=0,
+            minutes_month=0,
+            average_week=0,
+            total_minutes=0,
+        )
 
     membership = (
         Membership.objects.filter_effective()
@@ -656,7 +659,20 @@ def fuel_guage(request):
                 status=400,
             )
         member_quota = membership.job.quota
-        stats = Statistics.objects.filter(person=request.user).order_by('-date').first()
+
+        try:
+            stats = Statistics.objects.filter(person=request.user).latest('date')
+        except Statistics.DoesNotExist:
+            stats = Statistics(
+                person=request.user,
+                date=timezone.now(),
+                minutes_day=0,
+                minutes_week=0,
+                minutes_month=0,
+                average_week=0,
+                total_minutes=0,
+            )
+
         hours_week = stats.minutes_week / 60
 
         percentage = (hours_week / member_quota) * 100
