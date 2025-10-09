@@ -33,6 +33,10 @@ migrate: (django 'migrate')
 # Run tests
 test: (django 'test')
 
+# Release a new version
+release:
+    cog bump --auto
+
 # Build & upload the container image
 deliver:
     std //repo/containers/prod-patch:publish
