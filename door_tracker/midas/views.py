@@ -48,7 +48,7 @@ def user_statistics(request):
     )
 
     subteam_name = (
-        latest_assignment.get_subteams()
+        latest_assignment.subteam_names()
         if latest_assignment
         else 'You are alone Comrade'
     )

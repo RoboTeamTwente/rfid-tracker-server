@@ -61,7 +61,9 @@ def get_sessions_time(user, start_of_day, end_of_day):
 
 def get_quota_durations_time_period(user, start_day, end_day):
     start_day = timezone.make_aware(datetime.combine(start_day, time.min))
-    end_day = timezone.make_aware(datetime.combine(end_day, time.max))
+    end_day = timezone.make_aware(
+        datetime.combine(end_day + timedelta(days=1), time.max)
+    )
 
     assignments = list(
         Assignment.objects.filter(user=user, starting_from__lte=end_day).order_by(
@@ -81,15 +83,14 @@ def get_quota_durations_time_period(user, start_day, end_day):
     quota_durations = []
 
     for i, assignment in enumerate(assignments):
+        period_start = max(assignment.starting_from, start_day)
+
         if i < len(assignments) - 1:
-            end_date = assignments[i + 1].starting_from
-            if i == 0:
-                duration_days = (end_date - start_day).days
-            else:
-                duration_days = (end_date - assignment.starting_from).days
+            period_end = assignments[i + 1].starting_from
         else:
-            end_date = end_day
-            duration_days = (end_date - assignment.starting_from).days
+            period_end = end_day
+
+        duration_days = (period_end - period_start).days
 
         quota_durations.append(
             {'quota': assignment.quota, 'duration_days': duration_days}
@@ -199,7 +200,7 @@ def get_average_week(user, day):
     if earliest_session is None or not hasattr(earliest_session, 'checkin'):
         return 0  # No checkin yet
 
-    first_checkin_date = earliest_session.checkin.time.date()
+    first_checkin_date = earliest_session.checkin.time
 
     # Calculate the number of weeks between the first checkin and the given day
     days_difference = (
