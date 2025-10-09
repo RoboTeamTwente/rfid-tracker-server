@@ -213,7 +213,7 @@ def register_scan(request):
         pass
     else:
         user = claimed_tag.owner
-        today = timezone.now().date()
+        today = timezone.now()
         res = RegisterScanResponse.make(RegisterScanState.REGISTER, user, today)
         serializer = RegisterScanResponseSerializer(res)
         return Response(serializer.data)
@@ -239,7 +239,7 @@ def register_scan(request):
         pass
     else:
         user = claimed_tag.owner
-        today = timezone.now().date()
+        today = timezone.now()
         res = RegisterScanResponse.make(RegisterScanState.CHECKOUT, user, today)
 
         serializer = RegisterScanResponseSerializer(res)
@@ -262,7 +262,7 @@ def register_scan(request):
         pass
     else:
         user = claimed_tag.owner
-        today = timezone.now().date()
+        today = timezone.now()
         res = RegisterScanResponse.make(RegisterScanState.CHECKIN, user, today)
         serializer = RegisterScanResponseSerializer(res)
         return Response(serializer.data)
