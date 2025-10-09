@@ -442,7 +442,7 @@ class AddTagSerializer(serializers.Serializer):
 
 
 class ScanTagSerializer(serializers.Serializer):
-    tag = serializers.IntegerField()
+    tag = serializers.CharField()
 
 
 def user_profile(request):
@@ -452,20 +452,23 @@ def user_profile(request):
 
         tag_name = serializer.validated_data['tag_name']
 
-        tag = Tag(name=tag_name, owner=request.user)
-        tag.save()
+        try:
+            tag = Tag.objects.create(name=tag_name, owner=request.user)
+        except IntegrityError:
+            messages.error(request, 'This name is already taken')
+            return redirect(reverse_lazy('user_profile', query={'modal': 'tag_name'}))
 
         return redirect(
-            reverse_lazy('user_profile', query={'modal': 'tag_scan', 'tag': tag.id})
+            reverse_lazy('user_profile', query={'modal': 'tag_scan', 'tag': tag.name})
         )
 
     if request.GET.get('modal') == 'tag_scan':
         serializer = ScanTagSerializer(data=request.GET)
         serializer.is_valid(raise_exception=True)
 
-        tag_code = serializer.validated_data['tag']
+        tag_name = serializer.validated_data['tag']
 
-        tag = get_object_or_404(Tag, pk=tag_code)
+        tag = get_object_or_404(Tag, owner=request.user, name=tag_name)
 
         if tag.get_state() == TagState.CLAIMED:
             return redirect('user_profile')
