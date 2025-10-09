@@ -11,6 +11,9 @@
     <!-- Adding Htmx -->
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js" integrity="sha384-ZBXiYtYQ6hJ2Y0ZNoYuI+Nq5MqWBr+chMrS/RkXpNzQCApHEhOt2aY8EJgqwHLkJ" crossorigin="anonymous"></script>  </head>
 
+
+
+
   <body class="body">
     <header class="body__header">
       <a href="{% url 'midas:index' %}" class="body__logo">
@@ -23,22 +26,36 @@
       </div>
     </header>
 
+    <div class="body__layout">
+      <nav class="sidebar">
+        <h3 class="sidebar__section">USER PAGES</h3>
+        <a class="sidebar__button" href="{% url 'midas:user_profile' %}">Profile</a>
+        <a class="sidebar__button" href="{% url 'midas:index' %}">Logs</a>
+        <a class="sidebar__button" href="{% url 'midas:user_statistics' %}">Statistics</a>
 
-    <nav class="body__navbar">
-      <a class="button" href="{% url 'midas:index' %}">🔗 Dashboard</a>
-      <!-- TODO: this doesn't link anywhere yet -->
-      <a class="button" href="{% url 'midas:user_statistics' %}">🔗 Statistics</a>
-      <a class="button" href="{% url 'midas:user_profile' %}">🔗 Profile</a>
-      <a class="button" href="{% url 'midas:export_user' %}">⚙️ Export to CSV</a>
-      <a class="button" href="#" onclick="openCheckoutModal()">⚙️ Remote Checkout</a>
-      <a class="button" href="{% url 'midas:logout' %}">⚙️ Log out</a>
-    </nav>
+        <h3 class="sidebar__section">ADMIN PAGES</h3>
+        <a class="sidebar__button" href="{% url 'midas:index' %}">Team Overview</a>
+        <a class="sidebar__button" href="{% url 'midas:index' %}">Admin Dashboard</a>
 
-    {% block main %}
-      <main class="card">
-        <p>Hello World</p>
-      </main>
-    {% endblock %}
+        <h3 class="sidebar__section">ACTIONS</h3>
+        <a class="sidebar__button" href="{% url 'midas:index' %}">Export Sessions</a>
+        <a class="sidebar__button" href="#" onclick="openCheckoutModal()">Remote Checkout</a>
+        <a class="sidebar__button" href="{% url 'midas:logout' %}">Log Out</a>
+      </nav>
+
+
+      {% block main %}
+        <main class="card">
+          <p>Hello World</p>
+        </main>
+      {% endblock %}
+
+    </div>
+
+
+
+
+
 
     <div id="checkoutModal" class="modal" style="display:none">
       <form id="checkoutForm" class="modal__content">
