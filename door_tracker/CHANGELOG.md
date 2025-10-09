@@ -2,6 +2,39 @@
 
 # Changelog
 
+## v2.4.0 (2025-10-09)
+
+### Feat
+
+- **statistics**: add datetime helper functions
+- **webui**: make user_statistics page work
+- **webui**: allow date ranges instead of just a single date in get all statistics for the admin overview
+- **webui**: add filters to get all statistics for admin overview page
+- **webui**: port signup page to midas
+- **models**: add Assignment.objects.filter_effective()
+- **webui**: add rename and delete tag on user profile page functionality
+- **webui**: add new edit profile functionality
+
+### Fix
+
+- **tooling**: automatically abort duplicate releases
+- **api**: don't use .date()
+- **api**: don't use .date()
+- **statistics**: Fix monthly and weekly quota calculation in statistics and other minor bugs
+- **models**: make Quota.name non-optional
+- **webui**: point midas modals to midas
+
+### Refactor
+
+- **admin**: allow creating claimed tags from admin page (for debugging only)
+- **css**: add side navigation bar (work in progress).
+- **admin**: move global admin config from webui to door_tracker
+- **webui**: remove an extra arrow from uer profile icons
+
+### Perf
+
+- **statistics**: run update_statistics in background
+
 ## v2.3.0 (2025-10-07)
 
 ### Feat
