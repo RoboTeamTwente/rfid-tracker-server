@@ -304,18 +304,18 @@ def get_all_statistics(request):
     # Handle date filters
     if date:
         try:
-            date = timezone.datetime.strptime(date, '%d-%m-%Y').date()
+            date = datetime.strptime(date, '%d-%m-%Y').date()
             dates = [date]
         except ValueError:
             return HttpResponse('Invalid date format. Use DD-MM-YYYY.', status=400)
     elif start_date and end_date:
         try:
-            start_date = timezone.datetime.strptime(start_date, '%d-%m-%Y').date()
-            end_date = timezone.datetime.strptime(end_date, '%d-%m-%Y').date()
+            start_date = datetime.strptime(start_date, '%d-%m-%Y').date()
+            end_date = datetime.strptime(end_date, '%d-%m-%Y').date()
             if start_date > end_date:
                 return HttpResponse('Start date must be before end date.', status=400)
             delta = (end_date - start_date).days
-            dates = [start_date + timezone.timedelta(days=i) for i in range(delta + 1)]
+            dates = [start_date + timedelta(days=i) for i in range(delta + 1)]
         except ValueError:
             return HttpResponse('Invalid date format. Use DD-MM-YYYY.', status=400)
     else:

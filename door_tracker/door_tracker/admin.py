@@ -29,4 +29,4 @@ class DoorTrackerAdminSite(admin.AdminSite):
     # stolen from AdminSite implementation, but without the sorting part
     # https://forum.djangoproject.com/t/reordering-list-of-models-in-django-admin/5300/9
     def get_app_list(self, request, app_label=None):
-        return self._build_app_dict(request, app_label).values()
+        return list(self._build_app_dict(request, app_label).values())

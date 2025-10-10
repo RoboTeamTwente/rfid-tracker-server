@@ -1,14 +1,14 @@
 {
   "recommendations": [
-    "mkhl.direnv",
-    "tamasfe.even-better-toml",
-    "jnoortheen.nix-ide",
     "42crunch.vscode-openapi",
-    "ms-python.python",
     "charliermarsh.ruff",
-    "redhat.vscode-yaml",
-    "ms-azuretools.vscode-containers",
     "davidanson.vscode-markdownlint",
+    "jnoortheen.nix-ide",
+    "mkhl.direnv",
+    "ms-azuretools.vscode-containers",
+    "ms-python.python",
+    "redhat.vscode-yaml",
+    "tamasfe.even-better-toml",
     "vivaxy.vscode-conventional-commits"
   ]
 }

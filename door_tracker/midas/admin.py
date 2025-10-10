@@ -23,7 +23,7 @@ class SessionSubteamListFilter(admin.SimpleListFilter):
     parameter_name = 'subteam'
 
     def lookups(self, request, model_admin):
-        return [(s.id, s) for s in Subteam.objects.all()]
+        return [(s.id, str(s)) for s in Subteam.objects.all()]
 
     def queryset(self, request, queryset):
         if not self.value():
@@ -72,7 +72,7 @@ class AssignmentSubteamListFilter(admin.SimpleListFilter):
     parameter_name = 'subteam'
 
     def lookups(self, request, model_admin):
-        return [(s.id, s) for s in Subteam.objects.all()]
+        return [(s.id, str(s)) for s in Subteam.objects.all()]
 
     def queryset(self, request, queryset):
         if not self.value():

@@ -8,7 +8,7 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
-from door_tracker import settings
+from door_tracker.settings import BACKUP_FOLDER_NAME, BACKUP_SHARED_DRIVE_ID
 
 
 class Command(BaseCommand):
@@ -23,9 +23,6 @@ class Command(BaseCommand):
             'DJANGO_BACKUP_CREDENTIALS_FILE',
             (Path() / 'credentials' / 'service-account.json').absolute(),
         )
-
-        SHARED_DRIVE_ID = settings.BACKUP_SHARED_DRIVE_ID
-        FOLDER_NAME = settings.BACKUP_FOLDER_NAME
 
         # ---------- STEP 1: Copy DB ----------
         with connection.cursor() as cursor:
@@ -42,9 +39,9 @@ class Command(BaseCommand):
         results = (
             service.files()
             .list(
-                q=f"name='{FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder'",
+                q=f"name='{BACKUP_FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder'",
                 corpora='drive',
-                driveId=SHARED_DRIVE_ID,
+                driveId=BACKUP_SHARED_DRIVE_ID,
                 includeItemsFromAllDrives=True,
                 supportsAllDrives=True,
                 fields='files(id, name)',
@@ -56,11 +53,13 @@ class Command(BaseCommand):
 
         # If folder not found, create it
         if not folders:
-            self.stdout.write(f"Folder '{FOLDER_NAME}' not found. Creating it...")
+            self.stdout.write(
+                f"Folder '{BACKUP_FOLDER_NAME}' not found. Creating it..."
+            )
             folder_metadata = {
-                'name': FOLDER_NAME,
+                'name': BACKUP_FOLDER_NAME,
                 'mimeType': 'application/vnd.google-apps.folder',
-                'parents': [SHARED_DRIVE_ID],
+                'parents': [BACKUP_SHARED_DRIVE_ID],
             }
             folder = (
                 service.files()
@@ -68,10 +67,14 @@ class Command(BaseCommand):
                 .execute()
             )
             folder_id = folder['id']
-            self.stdout.write(f"Created folder '{FOLDER_NAME}' with ID {folder_id}")
+            self.stdout.write(
+                f"Created folder '{BACKUP_FOLDER_NAME}' with ID {folder_id}"
+            )
         else:
             folder_id = folders[0]['id']
-            self.stdout.write(f"Found folder '{FOLDER_NAME}' with ID {folder_id}")
+            self.stdout.write(
+                f"Found folder '{BACKUP_FOLDER_NAME}' with ID {folder_id}"
+            )
 
         # ---------- STEP 4: Upload backup ----------
         file_metadata = {'name': BACKUP_FILENAME, 'parents': [folder_id]}

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 from django.db import transaction
 from django.db.models import TextChoices
@@ -51,7 +52,7 @@ def serializer_error(serializer):
 @dataclass
 class APIResponse:
     status: str
-    message: str
+    message: str | None
 
     @classmethod
     def success(cls, message=None):
@@ -90,7 +91,7 @@ class RegisterScanResponse:
     hours_week: int
 
     @classmethod
-    def make(self, state, user, date):
+    def make(cls, state, user, date):
         return RegisterScanResponse(
             state=state,
             owner_name=user.get_full_name(),
@@ -315,7 +316,7 @@ def healthcheck(request):
 
 @dataclass
 class CheckoutResponse:
-    time: timezone.datetime
+    time: datetime
 
 
 class CheckoutRequestSerializer(Serializer):

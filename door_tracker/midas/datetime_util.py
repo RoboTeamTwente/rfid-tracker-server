@@ -32,6 +32,5 @@ def to_start_of_month(dt: datetime):
 def to_end_of_month(dt: datetime):
     """Return end of the same month."""
     dt = to_start_of_month(dt)
-    dt.month += 1
-    dt.day -= 1
+    dt = dt.replace(month=dt.month + 1, day=dt.day - 1)
     return to_end_of_day(dt)

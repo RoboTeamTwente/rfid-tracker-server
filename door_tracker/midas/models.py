@@ -91,7 +91,7 @@ class Scanner(models.Model):
     name = models.CharField(null=True, blank=True)
 
     def __str__(self):
-        return self.name
+        return self.name or '-'
 
 
 class PendingTag(models.Model):
