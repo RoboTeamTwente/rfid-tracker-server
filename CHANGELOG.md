@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v2.5.3 - 2025-10-10
+#### Bug Fixes
+- **(statistics)** fix error of getting assignment starting day before start_day - (a98fc9a) - Narendra Setty
+- **(webui)** do not crash when user has no assignments - (0f45d12) - jarkad
+
+- - -
+
 ## v2.5.2 - 2025-10-10
 #### Bug Fixes
 - **(webui)** correct assignment selection logic on user_statistics - (6adebf9) - jarkad
