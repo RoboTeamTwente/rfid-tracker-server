@@ -100,7 +100,7 @@ class PendingTag(models.Model):
         User, on_delete=models.CASCADE, related_name='pending_tags'
     )
     scanner = models.OneToOneField(
-        'Scanner', on_delete=models.CASCADE, related_name='pending_tag'
+        'Scanner', on_delete=models.RESTRICT, related_name='pending_tag'
     )
 
 
@@ -114,7 +114,7 @@ class Quota(models.Model):
 
 class Assignment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='assignments')
-    quota = models.ForeignKey('Quota', on_delete=models.CASCADE)
+    quota = models.ForeignKey('Quota', on_delete=models.RESTRICT)
     subteams = models.ManyToManyField('Subteam')
     starting_from = models.DateTimeField(default=timezone.now)
 

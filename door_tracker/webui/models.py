@@ -20,14 +20,14 @@ class Log(models.Model):
         'Scanner',
         blank=True,
         null=True,
-        on_delete=models.CASCADE,
+        on_delete=models.RESTRICT,
         related_name='logs',
     )
     tag = models.ForeignKey(
         'Tag',
         blank=True,
         null=True,
-        on_delete=models.CASCADE,
+        on_delete=models.RESTRICT,
         related_name='logs',
     )
     time = models.DateTimeField(default=timezone.now)
@@ -49,10 +49,10 @@ class Membership(models.Model):
         'SubTeam',
         blank=True,
         null=True,
-        on_delete=models.CASCADE,
+        on_delete=models.RESTRICT,
         related_name='members',
     )
-    job = models.ForeignKey('Job', blank=True, null=True, on_delete=models.CASCADE)
+    job = models.ForeignKey('Job', blank=True, null=True, on_delete=models.RESTRICT)
     starting_from = models.DateTimeField(default=timezone.now)
 
     class MembershipManager(models.Manager):
