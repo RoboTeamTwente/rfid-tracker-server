@@ -2,6 +2,35 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v2.5.0 - 2025-10-10
+#### Bug Fixes
+- **(api)** correct priority of actions on register_scan - (e532a5c) - jarkad
+- **(api)** show proper error message when renaming a tag - (e9506b1) - jarkad
+- **(api)** make checkout work in midas - (a9bddcc) - jarkad
+- **(model)** make edit_profile modal create a new Assignment instead of modifying the existing one - (622ca8f) - jarkad
+- **(tooling)** gitignore sqlite wal - (c926bd0) - jarkad
+- **(tooling)** tell vscode to not type random commands in the terminal - (98182ba) - jarkad
+- **(webui)** add tags by name, not by ID - (086f002) - jarkad
+- **(webui)** remove unused endpoints from midas - (087a3fc) - jarkad
+#### Features
+- **(model)** add a script to migrate data from webui to midas - (bff4fa8) - jarkad
+- **(tooling)** add `just release` - (38572e0) - jarkad
+- **(tooling)** label container images with source commit & version - (0c7c13b) - jarkad
+- **(tooling)** skip docs deploy on the debug branch - (0b12f43) - jarkad
+- **(webui)** add side nav bar logic for both desktop and mobile view. - (93f1909) - andrei
+- **(webui)** add complete side navigation bar with css tweaks for all pages - (07b9f31) - andrei
+#### Miscellaneous Chores
+- **(deps)** update dependency astral-sh/uv to v0.9.1 - (256c7ac) - renovate-roboteamtwente[bot]
+#### Refactoring
+- **(tooling)** regenerate CHANGELOG.md with cocogitto - (35f2fd0) - jarkad
+- **(tooling)** replace commitizen with cocogitto - (e3e93bf) - jarkad
+- **(tooling)** use std instead of devenv - (083d51d) - jarkad
+- **(webui)** user midas logo in midas - (0e089a0) - jarkad
+#### Style
+- clean various code smells - (08fbc16) - jarkad
+
+- - -
+
 
 ## v2.4.0 - 2025-10-09
 #### Bug Fixes
