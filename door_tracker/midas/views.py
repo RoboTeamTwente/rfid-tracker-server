@@ -43,7 +43,9 @@ from .statistics import (
 def user_statistics(request):
     current_day = timezone.make_aware(datetime.combine(timezone.now().date(), time.min))
 
-    latest_assignment = Assignment.objects.filter_current().get(user=request.user)
+    latest_assignment = (
+        Assignment.objects.filter_current().filter(user=request.user).first()
+    )
 
     subteam_name = (
         latest_assignment.subteam_names()
@@ -220,7 +222,7 @@ def user_profile(request):
         .filter(user=request.user)
         .select_related('quota')
         .prefetch_related('subteams')
-        .get()
+        .first()
     )
 
     # Needed for Edit Profile
