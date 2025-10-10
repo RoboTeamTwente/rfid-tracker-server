@@ -1,4 +1,6 @@
+from dataclasses import dataclass
 from datetime import datetime, time, timedelta
+from typing import Optional
 
 from django.contrib import messages
 from django.contrib.auth import logout
@@ -348,44 +350,43 @@ def get_all_statistics(request):
     return all_stats
 
 
-class EditMembershipSerializer(serializers.Serializer):
+@dataclass
+class EditMembershipRequest:
+    first_name: str
+    last_name: str
+    username: str
+    subteams: Optional[list[int]]
+    quota: Optional[int]
+
+
+class EditMembershipRequestSerializer(serializers.Serializer):
     first_name = serializers.CharField()
     last_name = serializers.CharField()
     username = serializers.CharField()
     subteams = serializers.ListField(child=serializers.IntegerField(), required=False)
     quota = serializers.IntegerField(required=False)
 
+    def create(self, validated_data):
+        return EditMembershipRequest(**validated_data)
+
 
 def edit_profile(request):
-    serializer = EditMembershipSerializer(data=request.POST)
+    serializer = EditMembershipRequestSerializer(data=request.POST)
     if not serializer.is_valid():
-        print(serializer.errors)
-        messages.error(request, 'Please fill all fields correctly.')
+        messages.error(request, 'First name, last name, and username must not be null')
         return redirect('midas:user_profile')
 
-    data = serializer.validated_data
-    user = request.user
-    user.first_name = data['first_name']
-    user.last_name = data['last_name']
-    user.username = data['username']
-    user.save()
+    req = serializer.save()
 
-    assignment = (
-        Assignment.objects.filter_current()
-        .filter(user=user)
-        .select_related('quota')
-        .prefetch_related('subteams')
-        .first()
-    )
-    if assignment:
-        subteam_ids = request.POST.getlist('subteams')
-        quota_id = request.POST.get('quota')
+    request.user.first_name = req.first_name
+    request.user.last_name = req.last_name
+    request.user.username = req.username
+    request.user.save()
 
-        if subteam_ids:
-            assignment.subteams.set(subteam_ids)
-        if quota_id:
-            assignment.quota_id = quota_id
-        assignment.save()
+    quota = get_object_or_404(Quota, pk=req.quota)
+    assignment = Assignment.objects.create(user=request.user, quota=quota)
+    if req.subteams:
+        assignment.subteams.set(req.subteams)
 
     messages.success(request, 'Profile updated successfully!')
     return redirect('midas:user_profile')
