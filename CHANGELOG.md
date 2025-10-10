@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v2.5.1 - 2025-10-10
+#### Bug Fixes
+- **(model)** migrate scanners as well - (5bde5bb) - jarkad
+#### Build system
+- **(tooling)** add a task for generating the github release - (c93f71f) - jarkad
+
+- - -
+
 ## v2.5.0 - 2025-10-10
 #### Bug Fixes
 - **(api)** correct priority of actions on register_scan - (e532a5c) - jarkad
