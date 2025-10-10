@@ -83,19 +83,18 @@ def get_quota_durations_time_period(user, start_day, end_day):
     quota_durations = []
 
     for i, assignment in enumerate(assignments):
-        period_start = max(assignment.starting_from, start_day)
+        # period_start = max(assignment.starting_from, start_day)
+        period_start = start_day
 
         if i < len(assignments) - 1:
             period_end = assignments[i + 1].starting_from
         else:
             period_end = end_day
-
         duration_days = (period_end - period_start).days
 
         quota_durations.append(
             {'quota': assignment.quota, 'duration_days': duration_days}
         )
-
     return quota_durations
 
 
