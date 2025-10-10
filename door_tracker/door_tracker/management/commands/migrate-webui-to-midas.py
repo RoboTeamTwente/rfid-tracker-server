@@ -22,6 +22,11 @@ def convert_log(cls, log, session):
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
+        # scanners
+        m.Scanner.objects.bulk_create(
+            m.Scanner(id=s.id, name=s.name) for s in w.Scanner.objects.all()
+        )
+
         # tags
         m.PendingTag.objects.all().delete()
         m.ClaimedTag.objects.all().delete()
