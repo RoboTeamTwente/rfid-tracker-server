@@ -14,6 +14,7 @@ __pycache__
 
 # django
 door_tracker/db.sqlite3
+door_tracker/db.sqlite3-journal
 
 # misc specific files
 /docs/schema.png
