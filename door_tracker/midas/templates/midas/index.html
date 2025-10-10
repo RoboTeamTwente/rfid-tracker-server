@@ -2,47 +2,6 @@
 
 {% block title %}Checked-In Dashboard{% endblock %}
 
-{% block head %}
-  <style>
-    /* Centered purple header, same style as Statistics page */
-    .page-title {
-      text-align: center;
-      font-size: 2rem;
-      font-weight: bold;
-      color: var(--bg-primary);
-      margin-top: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-
-    /* Table styling */
-    .recent-scans {
-      border-collapse: separate;
-      width: 100%;
-      border: 0.5px solid rgb(210, 208, 208);
-      border-radius: 4px;
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      border-spacing: 0;
-    }
-
-    .recent-scans th,
-    .recent-scans td {
-      padding: 8px 16px;
-      text-align: left;
-    }
-
-    .recent-scans th {
-      background: #f2f2f2;
-      font-weight: bold;
-    }
-
-    .recent-scans__wrapper {
-      max-width: 70rem;
-      margin: 0 auto; /* center the white container */
-    }
-  </style>
-{% endblock %}
 
 {% block main %}
   <!-- Purple title above the white card -->
@@ -50,29 +9,31 @@
 
   <!-- White card container -->
   <main class="card recent-scans__wrapper">
-    <table class="recent-scans">
-      <thead>
-        <tr>
-          <th>Check-in Tag</th>
-          <th>Check-in Time</th>
-          <th>Check-out Tag</th>
-          <th>Check-out Time</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for session in sessions %}
-          <tr class="recent-scans__item">
-            <td>{{ session.checkin__tag__name | default:"-" }}</td>
-            <td>{{ session.checkin__time|date:"Y-m-d H:i" }}</td>
-            {% if session.checkout__type == 'remote' %}
-              <td>remote</td>
-            {% else %}
-              <td>{{ session.checkout__tag__name | default:"-" }}</td>
-            {% endif %}
-            <td>{{ session.checkout__time|date:"Y-m-d H:i"|default:"-" }}</td>
+    <div class="recent-scans__scroll">
+      <table class="recent-scans">
+        <thead>
+          <tr>
+            <th>Check-in Tag</th>
+            <th>Check-in Time</th>
+            <th>Check-out Tag</th>
+            <th>Check-out Time</th>
           </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {% for session in sessions %}
+            <tr class="recent-scans__item">
+              <td>{{ session.checkin__tag__name | default:"-" }}</td>
+              <td>{{ session.checkin__time|date:"Y-m-d H:i" }}</td>
+              {% if session.checkout__type == 'remote' %}
+                <td>remote</td>
+              {% else %}
+                <td>{{ session.checkout__tag__name | default:"-" }}</td>
+              {% endif %}
+              <td>{{ session.checkout__time|date:"Y-m-d H:i"|default:"-" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </main>
 {% endblock %}

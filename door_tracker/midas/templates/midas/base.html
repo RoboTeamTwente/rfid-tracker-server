@@ -14,18 +14,25 @@
 
   <body class="body">
     <header class="body__header">
-      <a href="{% url 'midas:index' %}" class="body__logo">
-        <img src="{% static 'midas/logo.svg' %}" alt="RoboTeam Twente Logo" width="50" height="50">
-        RoboTeam Twente
-      </a>
+      <div class="body__logo-wrapper">
+        <a href="{% url 'midas:index' %}" class="body__logo">
+          <img src="{% static 'midas/logo.svg' %}" alt="RoboTeam Twente Logo" width="50" height="50">
+          RoboTeam Twente
+        </a>
+        <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+      </div>
+
       <span class="body__user-status">{{user_status}}</span>
       <div class="body__user">
         <span>Welcome, {{user.get_full_name}}</span>
       </div>
     </header>
 
+
     <div class="body__layout">
       <nav class="sidebar">
+        <button class="sidebar__back" onclick="toggleSidebar()">←</button>
+
         <h3 class="sidebar__section">USER PAGES</h3>
         <a class="sidebar__button" href="{% url 'midas:user_profile' %}">Profile</a>
         <a class="sidebar__button" href="{% url 'midas:index' %}">Sessions</a>
@@ -40,6 +47,8 @@
         <a class="sidebar__button" href="#" onclick="openCheckoutModal()">Remote Checkout</a>
         <a class="sidebar__button" href="{% url 'midas:logout' %}">Log Out</a>
       </nav>
+
+
 
 
       <main class="content-wrapper">
@@ -124,5 +133,30 @@
         }
       })
     </script>
+    <script>
+      // Toggle sidebar visibility (for both desktop and mobile)
+      function toggleSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        const isVisible = sidebar.classList.toggle('show');
+
+        // Add/remove body overlay effect when sidebar is open
+        document.body.classList.toggle('sidebar-open', isVisible);
+      }
+
+      // Close menu automatically when clicking any sidebar link (on mobile)
+      document.addEventListener('DOMContentLoaded', () => {
+        const sidebarButtons = document.querySelectorAll('.sidebar__button');
+        sidebarButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            if (window.innerWidth <= 768) {
+              toggleSidebar();
+            }
+          });
+        });
+      });
+    </script>
+
+
+
   </body>
 </html>
