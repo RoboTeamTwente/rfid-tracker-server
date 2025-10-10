@@ -10,5 +10,6 @@
     "statistics",
     "tooling",
     "webui"
-  ]
+  ],
+  "python.terminal.activateEnvironment": false
 }
