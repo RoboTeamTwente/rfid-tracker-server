@@ -28,7 +28,7 @@ class Command(BaseCommand):
         m.ClaimedTag.objects.bulk_create(
             m.ClaimedTag(owner=tag.owner, name=tag.name, code=tag.tag)
             for tag in w.Tag.objects.all()
-            if tag.name != 'WebUI'
+            if tag.name != 'WebUI' and tag.name != '' and tag.owner
         )
 
         # logs
