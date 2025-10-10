@@ -24,6 +24,7 @@ nixpkgs.lib.mapAttrs (_: mkShell) {
       nixpkgs.uv
     ];
     commands = [
+      { package = nixpkgs.gh; }
       { package = nixpkgs.just; }
       { package = nixpkgs.xh; }
     ];
