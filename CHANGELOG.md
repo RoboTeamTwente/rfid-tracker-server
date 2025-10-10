@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v2.5.2 - 2025-10-10
+#### Bug Fixes
+- **(webui)** correct assignment selection logic on user_statistics - (6adebf9) - jarkad
+
+- - -
+
 ## v2.5.1 - 2025-10-10
 #### Bug Fixes
 - **(model)** migrate scanners as well - (5bde5bb) - jarkad
