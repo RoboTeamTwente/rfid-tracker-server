@@ -71,8 +71,8 @@ def get_quota_durations_time_period(user, start_day, end_day):
         )
     )
 
-    previous_assignments = [a for a in assignments if a.starting_from < start_day]
-    current_assignments = [a for a in assignments if a.starting_from >= start_day]
+    previous_assignments = [a for a in assignments if a.starting_from <= start_day]
+    current_assignments = [a for a in assignments if a.starting_from > start_day]
 
     if previous_assignments:
         previous_assignment = previous_assignments[-1]
