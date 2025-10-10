@@ -6,10 +6,11 @@ on:
       - main
   push:
     branches:
-      - main # we don't actually do pull requests
       - gha/testing # for spamming^W debugging this workflow
       - renovate/* # otherwise renovate never automerges (because the green checkmark never appears)
-  workflow_dispatch: # also for debugging
+  merge_group:
+    branches:
+      - main
 
 jobs:
   test-fast:
