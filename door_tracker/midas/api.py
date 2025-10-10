@@ -316,7 +316,7 @@ def healthcheck(request):
 
 @dataclass
 class CheckoutResponse:
-    time: datetime
+    date: datetime
 
 
 class CheckoutRequestSerializer(Serializer):
@@ -376,6 +376,6 @@ def checkout(request):
         s = APIResponseSerializer(res)
         return Response(s.data, status=404)
     else:
-        res = CheckoutResponse(time=checkout.time)
+        res = CheckoutResponse(date=checkout.time)
         s = CheckoutResponseSerializer(res)
         return Response(s.data, status=201)
