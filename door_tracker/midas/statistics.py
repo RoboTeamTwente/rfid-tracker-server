@@ -13,7 +13,7 @@ from django.db.models.functions import Coalesce
 from django.utils import timezone
 from pytz import AmbiguousTimeError, NonExistentTimeError
 
-from midas.models import Assignment, Session
+from .models import Assignment, Session
 
 # TODO: Get quota for that time period
 
