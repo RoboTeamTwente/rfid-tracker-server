@@ -15,7 +15,7 @@ dependencies = [
   "google-api-python-client>=2.183.0",
   "google-auth>=2.41.0",
   "pytz>=2025.2",
-  "whitenoise[brotli]>=6.9.0",
+  "whitenoise>=6.9.0",
   "drf-spectacular[sidecar]>=0.28.0",
 ]
 
