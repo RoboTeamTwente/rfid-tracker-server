@@ -96,10 +96,7 @@ in
             run = "treefmt '{staged_files}'";
             stage_fixed = true;
           };
-          django-make-migrations = {
-            run = "just make-migrations";
-            stage_fixed = true;
-          };
+          django-make-migrations.run = "just django makemigrations --check";
           django-test.run = "just test";
         };
       };
