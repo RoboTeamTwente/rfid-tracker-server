@@ -13,13 +13,13 @@ nixpkgs.lib.mapAttrs (_: mkShell) {
       std.devshellProfiles.default
     ];
     packages = [
+      cell.packages.python
       nixpkgs.cocogitto
       nixpkgs.curl
       nixpkgs.doxygen
       nixpkgs.git
       nixpkgs.koji
       nixpkgs.openssh
-      nixpkgs.python3
       nixpkgs.skopeo
       nixpkgs.uv
     ];
