@@ -80,6 +80,12 @@ in
       nixpkgs.shellcheck # used by actionlint
     ];
     data = {
+      commit-msg = {
+        parallel = true;
+        commands = {
+          cocogitto.run = "cog verify --file '{1}'";
+        };
+      };
       pre-commit = {
         parallel = true;
         fail_on_changes = "ci"; # only when $CI=1
