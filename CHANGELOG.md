@@ -2,6 +2,23 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v2.6.0 - 2025-10-13
+#### Bug Fixes
+- **(model)** delete existing scanners in midas before migration from webui - (7500dda) - jarkad
+- **(statistics)** fix getting proper start date for quota - (bdd69a4) - Narendra Setty
+- **(tooling)** enable tests in merge queue - (84d2d79) - jarkad
+#### Features
+- **(tooling)** install github cli - (d3a3473) - jarkad
+#### Miscellaneous Chores
+- **(deps)** update renovatebot/github-action action to v43.0.17 - (1e318f8) - renovate-roboteamtwente[bot]
+- **(deps)** update astral-sh/setup-uv digest to 3259c62 - (0bab85a) - renovate-roboteamtwente[bot]
+- **(deps)** update dependency astral-sh/uv to v0.9.2 - (d91788e) - renovate-roboteamtwente[bot]
+- **(deps)** update python docker tag to v3.14 - (f9c06a7) - renovate-roboteamtwente[bot]
+#### Refactoring
+- **(model)** restrict deletion of some models when they are referred to through foreign keys - (5bd69bc) - jarkad
+
+- - -
+
 ## v2.5.3 - 2025-10-10
 #### Bug Fixes
 - **(statistics)** fix error of getting assignment starting day before start_day - (a98fc9a) - Narendra Setty
