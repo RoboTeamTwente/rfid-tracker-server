@@ -237,12 +237,18 @@ def user_profile(request):
         tag_name = serializer.validated_data['tag_name']
 
         # Create a new PendingTag entry (if one doesn't already exist)
-        pending_tag, created = PendingTag.objects.create_or_update(
+        scanner = Scanner.objects.filter(pending_tag__isnull=True).first()
+        if not scanner:
+            messages.error(
+                request,
+                'Someone else is registering a tag right now. Please try again later.',
+            )
+            return redirect('midas:user_profile')
+
+        pending_tag = PendingTag.objects.create(
+            scanner=scanner,
             owner=request.user,
-            defaults={
-                'scanner': Scanner.objects.order_by('?').first(),
-                'name': tag_name,
-            },
+            name=tag_name,
         )
 
         # Redirect to "waiting for scan" modal
