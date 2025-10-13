@@ -13,23 +13,23 @@
       <table class="recent-scans">
         <thead>
           <tr>
+            <th style="text-align: right">Check-in Time</th>
             <th>Check-in Tag</th>
-            <th>Check-in Time</th>
+            <th style="text-align: right">Check-out Time</th>
             <th>Check-out Tag</th>
-            <th>Check-out Time</th>
           </tr>
         </thead>
         <tbody>
           {% for session in sessions %}
             <tr class="recent-scans__item">
+              <td style="text-align: right">{{ session.checkin__time|date:"Y-m-d H:i" }}</td>
               <td>{{ session.checkin__tag__name | default:"-" }}</td>
-              <td>{{ session.checkin__time|date:"Y-m-d H:i" }}</td>
+              <td style="text-align: right">{{ session.checkout__time|date:"Y-m-d H:i"|default:"-" }}</td>
               {% if session.checkout__type == 'remote' %}
                 <td>remote</td>
               {% else %}
                 <td>{{ session.checkout__tag__name | default:"-" }}</td>
               {% endif %}
-              <td>{{ session.checkout__time|date:"Y-m-d H:i"|default:"-" }}</td>
             </tr>
           {% endfor %}
         </tbody>
