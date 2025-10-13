@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v2.7.2 - 2025-10-13
+#### Bug Fixes
+- **(webui)** prevent race conditions when registering a tag - (521d829) - jarkad
+
+- - -
+
 ## v2.7.1 - 2025-10-13
 #### Style
 - **(webui)** reorder sessions table's columns & align times right - (0f388f1) - jarkad
