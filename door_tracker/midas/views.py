@@ -237,10 +237,12 @@ def user_profile(request):
         tag_name = serializer.validated_data['tag_name']
 
         # Create a new PendingTag entry (if one doesn't already exist)
-        pending_tag, created = PendingTag.objects.get_or_create(
+        pending_tag, created = PendingTag.objects.create_or_update(
             owner=request.user,
-            name=tag_name,
-            defaults={'scanner': Scanner.objects.order_by('?').first()},
+            defaults={
+                'scanner': Scanner.objects.order_by('?').first(),
+                'name': tag_name,
+            },
         )
 
         # Redirect to "waiting for scan" modal
