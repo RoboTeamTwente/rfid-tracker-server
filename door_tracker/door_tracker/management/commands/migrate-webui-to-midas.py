@@ -22,14 +22,23 @@ def convert_log(cls, log, session):
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
+        # scrub the database
+        m.Assignment.objects.all().delete()
+        m.Checkin.objects.all().delete()
+        m.Checkout.objects.all().delete()
+        m.ClaimedTag.objects.all().delete()
+        m.PendingTag.objects.all().delete()
+        m.Quota.objects.all().delete()
+        m.Scanner.objects.all().delete()
+        m.Session.objects.all().delete()
+        m.Subteam.objects.all().delete()
+
         # scanners
         m.Scanner.objects.bulk_create(
             m.Scanner(id=s.id, name=s.name) for s in w.Scanner.objects.all()
         )
 
         # tags
-        m.PendingTag.objects.all().delete()
-        m.ClaimedTag.objects.all().delete()
         m.ClaimedTag.objects.bulk_create(
             m.ClaimedTag(owner=tag.owner, name=tag.name, code=tag.tag)
             for tag in w.Tag.objects.all()
@@ -37,9 +46,6 @@ class Command(BaseCommand):
         )
 
         # logs
-        m.Session.objects.all().delete()
-        m.Checkin.objects.all().delete()
-        m.Checkout.objects.all().delete()
 
         for user in User.objects.all():
             logs = list(
@@ -67,9 +73,6 @@ class Command(BaseCommand):
                 convert_log(m.Checkin, cin, session)
 
         # memberhips
-        m.Assignment.objects.all().delete()
-        m.Subteam.objects.all().delete()
-        m.Quota.objects.all().delete()
 
         m.Subteam.objects.bulk_create(
             m.Subteam(name=s.name) for s in w.SubTeam.objects.all()
