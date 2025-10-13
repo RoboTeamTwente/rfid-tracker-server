@@ -226,11 +226,12 @@ def register_scan(request):
             claimed_tag = ClaimedTag.objects.select_related('owner').get(
                 code=args.tag_id
             )
-            current_session = Session.objects.get(
+            current_session = Session.objects.filter(
                 user=claimed_tag.owner,
-                checkin__time__date=timezone.now(),
                 checkout__isnull=True,
-            )
+            ).first()
+            if not current_session:
+                raise Session.DoesNotExist
             Checkout.objects.create(
                 type=LogType.TAG,
                 tag=claimed_tag,
