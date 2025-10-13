@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v2.7.0 - 2025-10-13
+#### Bug Fixes
+- **(webui)** fix UNIQUE constraint failed when registering 2 tags at the same time - (8a684f6) - jarkad
+#### Features
+- **(webui)** promote midas to be the default app - (5a9058f) - jarkad
+
+- - -
+
 ## v2.6.1 - 2025-10-13
 #### Bug Fixes
 - **(api)** allow checking out from yesterday's session - (70f7a0a) - jarkad
