@@ -38,6 +38,10 @@ nixpkgs.lib.mapAttrs (_: mkShell) {
         eval = "$PRJ_ROOT/door_tracker";
       }
       {
+        name = "UV_PYTHON_DOWNLOADS";
+        value = "never";
+      }
+      {
         name = "PATH";
         prefix = "$PRJ_ROOT/door_tracker/.venv/bin";
       }
