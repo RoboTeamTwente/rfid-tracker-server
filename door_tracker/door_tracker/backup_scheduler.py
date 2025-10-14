@@ -14,9 +14,9 @@ def backup_website_job():
     call_command('backup_website')
 
 
-def update_statistics_job():
-    logger.info('Updating statistics…')
-    call_command('update_statistics')
+# def update_statistics_job():
+#     logger.info('Updating statistics…')
+#     call_command('update_statistics')
 
 
 def start():
@@ -36,13 +36,13 @@ def start():
         replace_existing=True,
     )
 
-    scheduler.add_job(
-        update_statistics_job,
-        trigger='cron',
-        minute='*',
-        id='update_statistics_job',
-        replace_existing=True,
-    )
+    # scheduler.add_job(
+    #     update_statistics_job,
+    #     trigger='cron',
+    #     minute='*',
+    #     id='update_statistics_job',
+    #     replace_existing=True,
+    # )
 
     scheduler.start()
     logger.info('Scheduler started!')
