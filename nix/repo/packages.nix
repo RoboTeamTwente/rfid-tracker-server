@@ -30,6 +30,7 @@ let
 
 in
 {
+  inherit python;
   inherit (pythonSet) roboteam-door-tracker;
 
   venv = pythonSet.mkVirtualEnv "rfid-tracker-venv" workspace.deps.default;
