@@ -28,8 +28,10 @@ class SessionSubteamListFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         if not self.value():
             return queryset
-        members = Assignment.objects.filter_current().filter(subteam=self.value())
-        return queryset.filter(user__in=members.values('person'))
+        members = Assignment.objects.filter_current().filter(
+            subteams__in=[self.value()]
+        )
+        return queryset.filter(user__in=members.values('user'))
 
 
 class SessionUserListFilter(admin.SimpleListFilter):
@@ -77,8 +79,7 @@ class AssignmentSubteamListFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         if not self.value():
             return queryset
-        members = Assignment.objects.filter_current().filter(subteam=self.value())
-        return queryset.filter(user__in=members.values('person'))
+        return queryset.filter(subteams__in=[self.value()])
 
 
 class AssignmentUserListFilter(admin.SimpleListFilter):
