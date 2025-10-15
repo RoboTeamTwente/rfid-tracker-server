@@ -31,3 +31,11 @@ jobs:
         run: |
           docker login -u roboteamtwente -p "$DOCKERHUB_TOKEN"
           just deliver
+
+      - name: Create a release
+        if: ${{ github.ref != 'gha/deliver' }}
+        shell: nix develop -c bash -eux {0}
+        env:
+          TAG: ${{ github.ref }}
+        run: |
+          gh release create "$TAG" -n "$(cog changelog --at "$TAG")"
