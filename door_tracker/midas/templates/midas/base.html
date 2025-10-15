@@ -38,9 +38,12 @@
         <a class="sidebar__button" href="{% url 'midas:index' %}">Sessions</a>
         <a class="sidebar__button" href="{% url 'midas:user_statistics' %}">Statistics</a>
 
-        <h3 class="sidebar__section">ADMIN PAGES</h3>
-        <a class="sidebar__button" href="{% url 'midas:index' %}">Team Overview</a>
-        <a class="sidebar__button" href="{% url 'admin:index' %}">Admin Dashboard</a>
+        {% if user.is_superuser %}
+          <h3 class="sidebar__section">ADMIN PAGES</h3>
+          <a class="sidebar__button" href="{% url 'midas:index' %}">Team Overview</a>
+          <a class="sidebar__button" href="{% url 'admin:index' %}">Admin Dashboard</a>
+        {% endif %}
+
 
         <h3 class="sidebar__section">ACTIONS</h3>
         <a class="sidebar__button" href="{% url 'midas:export_user' %}">Export Sessions</a>
