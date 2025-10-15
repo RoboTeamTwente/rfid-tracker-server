@@ -98,6 +98,25 @@ body {
   }
 }
 
+.body__logo-wrapper {
+  grid-area: logo;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--gap-tiny);
+}
+
+@media (max-width: 800px) {
+  .body__logo {
+    justify-content: center;
+    gap: var(--gap-tiny);
+  }
+
+  .body__logo-wrapper {
+    align-items: center;
+  }
+}
+
 .body__user-status {
   grid-area: status;
   font-size: 1.5rem;
@@ -134,14 +153,6 @@ body {
   min-height: 100vh;
   background: var(--bg-default);
   flex: 1 1 auto;
-}
-
-.body__logo-wrapper {
-  grid-area: logo;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--gap-tiny);
 }
 
 .content-wrapper {

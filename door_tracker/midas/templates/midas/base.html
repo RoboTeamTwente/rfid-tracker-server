@@ -20,13 +20,14 @@
           <img src="{% static 'midas/logo.svg' %}" alt="RoboTeam Twente Logo" width="50" height="50">
           RoboTeam Twente
         </a>
-        <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
       </div>
 
       <span class="body__user-status">{{user_status}}</span>
       <div class="body__user">
         <span>Welcome, {{user.get_full_name}}</span>
       </div>
+      <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
     </header>
 
 
@@ -52,14 +53,10 @@
         <a class="sidebar__button" href="{% url 'midas:logout' %}">Log Out</a>
       </nav>
 
-
-
-
       <main class="content-wrapper">
         {% block main %}
           <section class="card">
             <h1 class="role-title">{{ user_role }}</h1>
-            <!-- your dashboard or content here -->
           </section>
         {% endblock %}
       </main>
