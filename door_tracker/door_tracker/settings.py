@@ -176,6 +176,8 @@ STORAGES = {
     }
 }
 
+LOGIN_EXEMPT_URLS = [STATIC_URL]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
