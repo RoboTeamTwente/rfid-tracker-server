@@ -6,7 +6,6 @@ on:
       - main
   push:
     branches:
-      - main # so that you're allowed to push tags pointing to main
       - gha/testing # for spamming^W debugging this workflow
       - renovate/* # otherwise renovate never automerges (because the green checkmark never appears)
   merge_group:
