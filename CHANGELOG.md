@@ -2,6 +2,29 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v2.8.0 - 2025-10-16
+#### Features
+- **(tooling)** automatically create github releases from tags - (77da3b2) - jarkad
+- **(tooling)** check commit messages in pre-push instead of commit-msg - (4a7161b) - jarkad
+- **(tooling)** check that commit messages follow conventional commits - (4cc63dd) - jarkad
+- **(webui)** add favicon - (9b140c5) - jarkad
+- **(webui)** hide the admin pages from normal users - (4c5fefd) - andrei
+#### Miscellaneous Chores
+- **(deps)** update dependency astral-sh/uv to v0.9.3 - (d705cec) - renovate-roboteamtwente[bot]
+- **(tooling)** add sqlite wal to gitignore - (8cd70c0) - jarkad
+#### Performance Improvements
+- **(statistics)** disable the update_statistics job (not needed for midas) - (b037e39) - jarkad
+- **(tooling)** don't run tests on push to main - (e90112c) - jarkad
+#### Refactoring
+- **(tooling)** force UV to use nix-provided python - (bc5a765) - jarkad
+- **(tooling)** use same python for shell & container - (58d1d0a) - jarkad
+- **(webui)** add all the css code in base.css - (ccfa62b) - andrei
+#### Style
+- **(webui)** change icon from white on purple to purple on transparent - (d00d61d) - jarkad
+- prefer relative imports - (460232c) - jarkad
+
+- - -
+
 ## v2.7.2 - 2025-10-13
 #### Bug Fixes
 - **(webui)** prevent race conditions when registering a tag - (521d829) - jarkad
