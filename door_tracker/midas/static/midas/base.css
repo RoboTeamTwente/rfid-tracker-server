@@ -632,6 +632,13 @@ body {
   }
 }
 
+@media (max-width: 768px) {
+  .profile__table {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
 .action__button {
   display: inline-block;
   cursor: pointer;
