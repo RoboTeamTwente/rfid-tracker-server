@@ -424,7 +424,7 @@ def checkin(request):
             new_session = Session.objects.create(user=request.user)
             Checkin.objects.create(
                 type=LogType.REMOTE,
-                time=timezone.now(),
+                time=checkin_time,
                 session=new_session,
             )
     except Exception as e:
