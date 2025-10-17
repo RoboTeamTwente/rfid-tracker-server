@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v2.9.1 - 2025-10-17
+#### Bug Fixes
+- **(tooling)** fix automatic release creation - (54dac03) - jarkad
+#### Performance Improvements
+- **(tooling)** only check the first branch being pushed - (5b75a1c) - jarkad
+
+- - -
+
 ## v2.9.0 - 2025-10-17
 #### Bug Fixes
 - **(admin)** fix filtering by subteam for sessions & assignments - (3fc1417) - jarkad
