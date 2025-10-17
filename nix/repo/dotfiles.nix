@@ -85,13 +85,11 @@ in
         commands = {
           cocogitto.run = ''
             set -ex
-            while read -t 10 -r local_ref local_sha remote_ref remote_sha
-            do
-            	if [ "$remote_sha" = 0000000000000000000000000000000000000000 ]
-            	then remote_sha=main
-            	fi
-            	cog check "$remote_sha..$local_sha"
-            done
+            read -r local_ref local_sha remote_ref remote_sha
+            if [ "$remote_sha" = 0000000000000000000000000000000000000000 ]
+            then remote_sha=main
+            fi
+            cog check "$remote_sha..$local_sha"
           '';
         };
       };
