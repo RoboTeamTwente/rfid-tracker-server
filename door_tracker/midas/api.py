@@ -1,16 +1,19 @@
+import csv
 from dataclasses import dataclass
 from datetime import datetime
 
 from django.db import transaction
 from django.db.models import TextChoices
+from django.http import HttpResponse
 from django.utils import timezone
 from drf_spectacular.utils import (
     OpenApiExample,
     extend_schema,
     extend_schema_serializer,
 )
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.serializers import (
     CharField,
@@ -380,3 +383,76 @@ def checkout(request):
         res = CheckoutResponse(date=checkout.time)
         s = CheckoutResponseSerializer(res)
         return Response(s.data, status=201)
+
+
+class ExportSessionsResponseSerializer(Serializer):
+    pass
+
+
+@extend_schema(
+    operation_id='sessions_csv',
+    responses={200: ExportSessionsResponseSerializer},
+)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def export_sessions_csv(request):
+    sessions = (
+        Session.objects.filter(user=request.user)
+        .select_related('checkin', 'checkout')
+        .order_by('checkin__time', 'checkout__time')
+    )
+    return sessions_to_csv(sessions)
+
+
+def sessions_to_csv(sessions):
+    response = HttpResponse(content_type='text/csv')
+    writer = csv.writer(response, dialect='excel')
+
+    writer.writerow(
+        [
+            'checkin_type',
+            'checkin_time',
+            'checkin_tag',
+            'checkout_type',
+            'checkout_time',
+            'checkout_tag',
+        ]
+    )
+
+    for s in sessions:
+        try:
+            cin_type = s.checkin.type
+            cin_time = s.checkin.time.strftime('%F %T')
+            if s.checkin.tag:
+                cin_tag = s.checkin.tag.name
+            else:
+                cin_tag = '-'
+        except Checkin.DoesNotExist:
+            cin_type = '-'
+            cin_time = '-'
+            cin_tag = '-'
+
+        try:
+            cout_type = s.checkout.type
+            cout_time = s.checkout.time.strftime('%F %T')
+            if s.checkout.tag:
+                cout_tag = s.checkout.tag.name
+            else:
+                cout_tag = '-'
+        except Checkout.DoesNotExist:
+            cout_type = '-'
+            cout_time = '-'
+            cout_tag = '-'
+
+        writer.writerow(
+            [
+                cin_type,
+                cin_time,
+                cin_tag,
+                cout_type,
+                cout_time,
+                cout_tag,
+            ]
+        )
+
+    return response
