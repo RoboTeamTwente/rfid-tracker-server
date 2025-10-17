@@ -73,6 +73,7 @@
           id="checkoutTime"
           name="checkout_time"
           required
+          step=1
           max="{% now 'c' %}"
           style="width: 100%;"
         />
@@ -215,9 +216,7 @@
       function openCheckoutModal() {
         const now = new Date()
         const offset = now.getTimezoneOffset()
-        const localISOTime = new Date(now.getTime() - offset * 60000)
-          .toISOString()
-          .slice(0, 16)
+        const localISOTime = new Date(now.getTime() - offset * 60000).toISOString().slice(0, 19)
         document.getElementById('checkoutTime').value = localISOTime
 
         checkoutModal.style.display = 'flex'
