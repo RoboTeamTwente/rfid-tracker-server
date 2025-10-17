@@ -17,7 +17,7 @@ jobs:
       - uses: DeterminateSystems/nix-installer-action@786fff0690178f1234e4e1fe9b536e94f5433196 # v20
 
       - name: Install dependencies
-        run: nix develop -c true
+        run: nix develop -c uv sync --locked
 
       - name: Create the release
         shell: nix develop -c bash -eux {0}
