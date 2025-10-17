@@ -56,7 +56,7 @@ def get_sessions_time(user, start_of_day, end_of_day):
     if total_duration is None:
         return 0
 
-    return int(total_duration.total_seconds() // 60)
+    return total_duration.total_seconds() // 60
 
 
 def get_quota_durations_time_period(user, start_day, end_day):
@@ -118,19 +118,9 @@ def get_minutes_today(user, day):
 def get_minutes_this_week(user, day):
     # Get start and end of the week (Monday to Sunday)
     start_of_week = day - timedelta(days=day.weekday())
-    start_of_day = safe_make_aware(
-        datetime.combine(
-            start_of_week,
-            datetime.min.time(),
-        )
-    )
-    end_of_week = start_of_week + timedelta(days=6)
-
-    # Using datetime.max will break it durin the time change (DST)
-    # so we use the start of the next day minus 1 microsecond
-    end_of_day = safe_make_aware(
-        datetime.combine(end_of_week + timedelta(days=1), datetime.min.time()),
-    ) - timedelta(microseconds=1)
+    start_of_day = start_of_week.replace(hour=0, minute=0, second=0, microsecond=0)
+    end_of_week = start_of_day + timedelta(days=7)
+    end_of_day = end_of_week - timedelta(microseconds=1)
 
     return get_sessions_time(user, start_of_day, end_of_day)
 
