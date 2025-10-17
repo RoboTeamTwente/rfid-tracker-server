@@ -24,6 +24,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          git config user.name 'Cocogitto'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
           cog bump --auto
 
       - name: Build & upload the container image
