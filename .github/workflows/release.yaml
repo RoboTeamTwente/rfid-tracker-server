@@ -3,6 +3,9 @@ name: Release
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 # abort previous releases for the same tag
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -21,17 +24,16 @@ jobs:
 
       - name: Create the release
         shell: nix develop -c bash -eux {0}
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           git config user.name 'Cocogitto'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git fetch --unshallow
           cog bump --auto
 
       - name: Build & upload the container image
+        shell: nix develop -c bash -eux {0}
         env:
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-        shell: nix develop -c bash -eux {0}
         run: |
           docker login -u roboteamtwente -p "$DOCKERHUB_TOKEN"
           just deliver
