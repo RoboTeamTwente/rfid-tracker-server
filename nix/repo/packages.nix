@@ -5,7 +5,7 @@ let
 
   l = builtins // nixpkgs.lib;
 
-  python = nixpkgs.python314;
+  python = nixpkgs.python313;
 
   workspace = inputs.uv2nix.lib.workspace.loadWorkspace {
     workspaceRoot = inputs.self + /door_tracker;
