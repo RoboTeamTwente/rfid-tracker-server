@@ -4,6 +4,7 @@ from django.db.models import Q
 from django.urls import resolve
 from django.utils import timezone
 
+from .api import sessions_to_csv
 from .models import (
     Assignment,
     Checkin,
@@ -182,8 +183,13 @@ class CheckoutInline(LogInline):
     model = Checkout
 
 
+def export_selected_sessions(modeladmin, request, queryset):
+    return sessions_to_csv(queryset)
+
+
 @admin.register(Session)
 class SessionAdmin(admin.ModelAdmin):
+    actions = [export_selected_sessions]
     list_display = [
         'checkin__time',
         'checkout__time',

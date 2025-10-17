@@ -3,7 +3,6 @@ from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
 )
-from webui import views as old_views
 
 from . import api, views
 
@@ -14,6 +13,7 @@ urlpatterns = [
     path('api/checkout', api.checkout, name='checkout'),
     path('api/healthcheck', api.healthcheck, name='healthcheck'),
     path('api/register_scan', api.register_scan, name='register_scan'),
+    path('api/export/sessions', api.export_sessions_csv, name='export_user'),
     path(
         'api/',
         SpectacularRedocView.as_view(url_name='midas:schema'),
@@ -29,6 +29,4 @@ urlpatterns = [
     path('user_profile', views.user_profile, name='user_profile'),
     path('user_statistics', views.user_statistics, name='user_statistics'),
     path('', views.index, name='index'),
-    # old
-    path('export_user', old_views.export_user_logs, name='export_user'),
 ]
