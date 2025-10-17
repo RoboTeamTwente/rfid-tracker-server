@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime, time, timedelta
+from datetime import datetime, timedelta
 from typing import Optional
 
 from django.contrib import messages
@@ -41,7 +41,7 @@ from .statistics import (
 
 
 def user_statistics(request):
-    current_day = timezone.make_aware(datetime.combine(timezone.now().date(), time.min))
+    current_day = timezone.now()
 
     latest_assignment = (
         Assignment.objects.filter_current().filter(user=request.user).first()
