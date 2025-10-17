@@ -11,6 +11,7 @@ urlpatterns = [
     # API
     path('api/auth/', include('rest_framework.urls')),
     path('api/checkout', api.checkout, name='checkout'),
+    path('api/checkin', api.checkin, name='checkin'),
     path('api/healthcheck', api.healthcheck, name='healthcheck'),
     path('api/register_scan', api.register_scan, name='register_scan'),
     path('api/export/sessions', api.export_sessions_csv, name='export_user'),

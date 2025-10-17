@@ -22,8 +22,15 @@
         <tbody>
           {% for session in sessions %}
             <tr class="recent-scans__item">
+              <!-- CHECKIN -->
               <td style="text-align: right">{{ session.checkin__time|date:"Y-m-d H:i" }}</td>
-              <td>{{ session.checkin__tag__name | default:"-" }}</td>
+              {% if session.checkin__type == 'remote' %}
+                <td>remote</td>
+              {% else %}
+                <td>{{ session.checkin__tag__name | default:"-" }}</td>
+              {% endif %}
+
+              <!-- CHECKOUT -->
               <td style="text-align: right">{{ session.checkout__time|date:"Y-m-d H:i"|default:"-" }}</td>
               {% if session.checkout__type == 'remote' %}
                 <td>remote</td>

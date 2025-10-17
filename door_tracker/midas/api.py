@@ -385,6 +385,58 @@ def checkout(request):
         return Response(s.data, status=201)
 
 
+@dataclass
+class CheckinResponse:
+    date: datetime
+
+
+class CheckinResponseSerializer(Serializer):
+    status = HiddenField(default='ok')
+    date = DateTimeField()
+
+    def create(self, validated_data):
+        return CheckinResponse(**validated_data)
+
+
+@extend_schema(
+    operation_id='checkin',
+    responses={
+        201: CheckinResponseSerializer,
+        400: APIResponseSerializer,
+        403: APIResponseSerializer,
+    },
+)
+@api_view(['POST'])
+def checkin(request):
+    """Check in remotely
+
+    This endpoint is called from frontend to check a user in remotely.
+    """
+    checkin_time = timezone.now()
+
+    if Session.objects.filter(user=request.user, checkout__isnull=True).exists():
+        res = APIResponse.error('User already checked in')
+        s = APIResponseSerializer(res)
+        return Response(s.data, status=403)
+
+    try:
+        with transaction.atomic():
+            new_session = Session.objects.create(user=request.user)
+            Checkin.objects.create(
+                type=LogType.REMOTE,
+                time=timezone.now(),
+                session=new_session,
+            )
+    except Exception as e:
+        res = APIResponse.error(f'Failed to check in: {str(e)}')
+        s = APIResponseSerializer(res)
+        return Response(s.data, status=400)
+
+    res = CheckinResponse(date=checkin_time)
+    s = CheckinResponseSerializer(res)
+    return Response(s.data, status=201)
+
+
 class ExportSessionsResponseSerializer(Serializer):
     pass
 

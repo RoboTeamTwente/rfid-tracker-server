@@ -49,6 +49,7 @@
 
         <h3 class="sidebar__section">ACTIONS</h3>
         <a class="sidebar__button" href="{% url 'midas:export_user' %}">Export Sessions</a>
+        <a class="sidebar__button" href="#" onclick="openCheckinModal()">Remote Checkin</a>
         <a class="sidebar__button" href="#" onclick="openCheckoutModal()">Remote Checkout</a>
         <a class="sidebar__button" href="{% url 'midas:logout' %}">Log Out</a>
       </nav>
@@ -80,6 +81,18 @@
         </div>
       </form>
     </div>
+
+    <div id="checkinModal" class="modal" style="display:none">
+      <div class="modal__content">
+        <h2 class="modal__title">Remote Check-in</h2>
+        <p>Do you want to remotely check in with the current time?</p>
+        <div class="modal__actions">
+          <button type="button" class="modal__action modal--primary" onclick="confirmCheckin()">Yes</button>
+          <button type="button" class="modal__action modal--secondary" onclick="closeCheckinModal()">No</button>
+        </div>
+      </div>
+    </div>
+
 
     <div class="messages">
       {% for message in messages %}
@@ -134,6 +147,49 @@
         }
       })
     </script>
+    <script>
+      // --- Remote Check-in Modal Logic ---
+      const checkinModal = document.getElementById('checkinModal')
+
+      function openCheckinModal() {
+        checkinModal.style.display = 'flex'
+      }
+
+      function closeCheckinModal() {
+        checkinModal.style.display = 'none'
+      }
+
+      async function confirmCheckin() {
+        closeCheckinModal()
+
+        try {
+          const response = await fetch("{% url 'midas:checkin' %}", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: JSON.stringify({
+              time: new Date().toISOString(), // current time
+            }),
+          })
+
+          const data = await response.json()
+
+          if (response.ok) {
+            showMessage('success', `Successfully checked in at ${data.date}`)
+            setTimeout(() => {
+              window.location.reload()
+            }, 2000)
+          } else {
+            showMessage('error', data.message || 'An error occurred during check-in')
+          }
+        } catch (error) {
+          showMessage('error', 'Network error: ' + error.message)
+        }
+      }
+    </script>
+
     <script>
       // Toggle sidebar visibility (for both desktop and mobile)
       function toggleSidebar() {
