@@ -36,6 +36,7 @@ jobs:
         if: ${{ github.ref != 'gha/deliver' }}
         shell: nix develop -c bash -eux {0}
         env:
-          TAG: ${{ github.ref }}
+          TAG: ${{ github.ref_name }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "$TAG" -n "$(cog changelog --at "$TAG")"
