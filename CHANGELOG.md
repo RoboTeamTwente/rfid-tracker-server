@@ -2,6 +2,21 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v2.9.0 - 2025-10-17
+#### Bug Fixes
+- **(admin)** fix filtering by subteam for sessions & assignments - (3fc1417) - jarkad
+- **(deps)** disable brotli compression of static assets - (adb5de3) - jarkad
+#### Features
+- **(webui)** implement export of sessions - (6147025) - jarkad
+#### Miscellaneous Chores
+- **(deps)** update to python3.14 - (732f8df) - jarkad
+- **(deps)** update transitive dependencies - (bf4deae) - jarkad
+#### Refactoring
+- **(webui)** fix the navigation bar on mobile to be a bit more centered - (f221d86) - andrei
+- **(webui)** re-organize base.css - (2f16a60) - andrei
+
+- - -
+
 ## v2.8.0 - 2025-10-16
 #### Features
 - **(tooling)** automatically create github releases from tags - (77da3b2) - jarkad
