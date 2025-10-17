@@ -13,7 +13,10 @@ fmt:
 
 # Run all formatters & tests
 check:
+    # run tests & pre-commit hooks
     lefthook run --all-files --force pre-commit
+    # also check that the container still builds
+    std //repo/containers/prod-latest:build
 
 # Run the dev server
 dev: migrate (django 'runserver')
