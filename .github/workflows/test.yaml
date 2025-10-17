@@ -37,6 +37,7 @@ jobs:
           ./manage.py test --noinput
 
   test-thorough:
+    if: ${{ github.event_name == 'merge_group' }}
     runs-on: ubuntu-latest
 
     steps:
