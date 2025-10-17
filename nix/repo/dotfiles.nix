@@ -83,14 +83,7 @@ in
       pre-push = {
         parallel = true;
         commands = {
-          cocogitto.run = ''
-            set -ex
-            read -r local_ref local_sha remote_ref remote_sha
-            if [ "$remote_sha" = 0000000000000000000000000000000000000000 ]
-            then remote_sha=main
-            fi
-            cog check "$remote_sha..$local_sha"
-          '';
+          cocogitto.run = "cog check -l";
         };
       };
       pre-commit = {
