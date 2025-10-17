@@ -36,15 +36,9 @@ migrate: (django 'migrate')
 # Run tests
 test: (django 'test')
 
-# Bump the package version & update the changelog
-bump:
-    cog bump --auto
-
 # Release a new version on Github
 release:
-    #!/bin/sh
-    tag="v$(cog get-version)"
-    gh release create "$tag" --notes "$(cog changelog --at "$tag")"
+    gh workflow run release.yaml
 
 # Build & upload the container image
 deliver:
