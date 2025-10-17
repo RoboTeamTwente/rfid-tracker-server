@@ -74,13 +74,16 @@
           name="checkout_time"
           required
           max="{% now 'c' %}"
+          style="width: 100%;"
         />
-        <div class="modal__actions">
+        <div class="modal__actions" style="margin-top: 1rem;">
           <button type="submit" class="modal__action modal--primary">Checkout</button>
           <button type="button" class="modal__action modal--secondary" onclick="closeCheckoutModal()">Cancel</button>
         </div>
       </form>
     </div>
+
+
 
     <div id="checkinModal" class="modal" style="display:none">
       <div class="modal__content">
@@ -148,7 +151,6 @@
       })
     </script>
     <script>
-      // --- Remote Check-in Modal Logic ---
       const checkinModal = document.getElementById('checkinModal')
 
       function openCheckinModal() {
@@ -170,7 +172,7 @@
               'X-CSRFToken': '{{ csrf_token }}',
             },
             body: JSON.stringify({
-              time: new Date().toISOString(), // current time
+              time: new Date().toISOString(),
             }),
           })
 
@@ -191,16 +193,13 @@
     </script>
 
     <script>
-      // Toggle sidebar visibility (for both desktop and mobile)
       function toggleSidebar() {
         const sidebar = document.querySelector('.sidebar');
         const isVisible = sidebar.classList.toggle('show');
 
-        // Add/remove body overlay effect when sidebar is open
         document.body.classList.toggle('sidebar-open', isVisible);
       }
 
-      // Close menu automatically when clicking any sidebar link (on mobile)
       document.addEventListener('DOMContentLoaded', () => {
         const sidebarButtons = document.querySelectorAll('.sidebar__button');
         sidebarButtons.forEach(btn => {
@@ -212,8 +211,23 @@
         });
       });
     </script>
+    <script>
+      function openCheckoutModal() {
+        const now = new Date()
+        const offset = now.getTimezoneOffset()
+        const localISOTime = new Date(now.getTime() - offset * 60000)
+          .toISOString()
+          .slice(0, 16)
+        document.getElementById('checkoutTime').value = localISOTime
 
+        checkoutModal.style.display = 'flex'
+      }
 
+      function closeCheckoutModal() {
+        checkoutModal.style.display = 'none'
+        checkoutForm.reset()
+      }
+    </script>
 
   </body>
 </html>
