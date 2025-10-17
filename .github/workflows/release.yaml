@@ -1,12 +1,7 @@
-name: Deliver
+name: Release
 
 on:
-  workflow_dispatch: # for debugging
-  push:
-    branches:
-      - gha/deliver # for spamming^W debugging this workflow
-    tags:
-      - v* # for actual releases
+  workflow_dispatch:
 
 # abort previous releases for the same tag
 concurrency:
@@ -22,7 +17,14 @@ jobs:
       - uses: DeterminateSystems/nix-installer-action@786fff0690178f1234e4e1fe9b536e94f5433196 # v20
 
       - name: Install dependencies
-        run: nix develop -c uv sync --locked --no-progress
+        run: nix develop -c true
+
+      - name: Create the release
+        shell: nix develop -c bash -eux {0}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cog bump --auto
 
       - name: Build & upload the container image
         env:
@@ -32,11 +34,11 @@ jobs:
           docker login -u roboteamtwente -p "$DOCKERHUB_TOKEN"
           just deliver
 
-      - name: Create a release
-        if: ${{ github.ref != 'gha/deliver' }}
+      - name: Publish the release
         shell: nix develop -c bash -eux {0}
         env:
-          TAG: ${{ github.ref_name }}
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$TAG" -n "$(cog changelog --at "$TAG")"
+          tag="v$(cog get-version)"
+          git push --tags
+          gh release create "$tag" -n "$(cog changelog --at "$tag")"
