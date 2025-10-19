@@ -8,9 +8,6 @@ on:
     branches:
       - gha/testing # for spamming^W debugging this workflow
       - renovate/* # otherwise renovate never automerges (because the green checkmark never appears)
-  merge_group:
-    branches:
-      - main
 
 jobs:
   test-fast:
@@ -37,7 +34,6 @@ jobs:
           ./manage.py test --noinput
 
   test-thorough:
-    if: ${{ github.event_name == 'merge_group' }}
     runs-on: ubuntu-latest
 
     steps:
