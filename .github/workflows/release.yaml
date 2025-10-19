@@ -46,4 +46,4 @@ jobs:
         run: |
           tag="v$(cog get-version)"
           git push origin "$BRANCH" --tags
-          gh release create "$tag" -n "$(cog changelog --at "$tag")"
+          gh release create "$tag" --notes "$(cog changelog --at "$tag")"
