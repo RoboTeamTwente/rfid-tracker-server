@@ -2,6 +2,37 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v2.10.0 - 2025-10-19
+#### Bug Fixes
+- **(deps)** downgrade to python3.13 - (ca08e0b) - jarkad
+- **(tooling)** explicitly skip v2.10.0 because GitHub refuses to work - (35b2434) - jarkad
+- **(tooling)** push the release commit to current branch as well - (668fc28) - jarkad
+- **(tooling)** make release workflow work - (d00fd50) - jarkad
+- **(tooling)** don't try to be clever and check all commit messages - (0a33993) - jarkad
+- **(tooling)** configure git author for bump commits - (540d6c9) - jarkad
+- **(webui)** include seconds in remote checkout autocomplete - (35fd6ce) - andrei
+- **(webui)** change the checkin to use a timezone.now variable instead of calling it 3 times (future-proof) - (e3a362f) - andrei
+#### Features
+- **(tooling)** check for container build failures in CI - (0125fd6) - jarkad
+- **(webui)** auto complete current time for remote checkout modal - (8f0411f) - andrei
+- **(webui)** add remote checkin functionality to the sessions page - (499a249) - andrei
+#### Miscellaneous Chores
+- **(deps)** update dependency astral-sh/uv to v0.9.4 - (10ff327) - renovate-roboteamtwente[bot]
+#### Performance Improvements
+- **(tooling)** remove magic-nix-cache and halve build times - (8da5431) - jarkad
+- **(tooling)** don't do thorough checks before merge queue - (3b4ffcd) - jarkad
+#### Refactoring
+- **(statistics)** cleanup statistics a bit - (58ffa9f) - andrei
+- **(tooling)** explicitly push new tag - (4d2bc49) - jarkad
+- **(tooling)** update Justfile to reflect new release workflow - (11b01e9) - jarkad
+- **(tooling)** uv sync in a separate step - (57b9d26) - jarkad
+- **(tooling)** trigger releases from github actions - (86761a8) - jarkad
+- **(webui)** fix some of the padding in user profile tags - (49ed83b) - andrei
+#### Style
+- **(tooling)** use long argument names for readability - (90681a7) - jarkad
+
+- - -
+
 ## v2.9.1 - 2025-10-17
 #### Bug Fixes
 - **(tooling)** fix automatic release creation - (54dac03) - jarkad
