@@ -45,5 +45,5 @@ jobs:
           BRANCH: ${{ github.ref_name }}
         run: |
           tag="v$(cog get-version)"
-          git push origin "$BRANCH" --tags
+          git push origin "$BRANCH" "$tag"
           gh release create "$tag" --notes "$(cog changelog --at "$tag")"
