@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v2.10.1 - 2025-10-19
+#### Bug Fixes
+- **(tooling)** revert "explicitly skip v2.10.0 because GitHub refuses to work" - (39609c6) - jarkad
+
+- - -
+
 ## v2.10.0 - 2025-10-19
 #### Bug Fixes
 - **(deps)** downgrade to python3.13 - (ca08e0b) - jarkad
