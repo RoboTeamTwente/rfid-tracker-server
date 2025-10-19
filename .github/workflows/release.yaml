@@ -28,7 +28,7 @@ jobs:
           git config user.name 'Cocogitto'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git fetch --unshallow
-          cog bump --version 2.10.1
+          cog bump --auto
 
       - name: Build & upload the container image
         shell: nix develop -c bash -eux {0}
