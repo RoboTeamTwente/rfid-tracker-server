@@ -42,7 +42,8 @@ jobs:
         shell: nix develop -c bash -eux {0}
         env:
           GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ github.ref_name }}
         run: |
           tag="v$(cog get-version)"
-          git push --tags
+          git push origin "$BRANCH" --tags
           gh release create "$tag" -n "$(cog changelog --at "$tag")"
