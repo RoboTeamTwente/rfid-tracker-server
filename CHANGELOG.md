@@ -2,6 +2,19 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v2.11.0 - 2025-10-20
+#### Features
+- **(tooling)** ignore merges when checking for conventional commits (#62) - (c9ec53c) - Jarkad
+- **(tooling)** ignore merges when checking for conventional commits - (9ea5858) - jarkad
+- **(tooling)** only allow bumping from release branches - (ff4f944) - jarkad
+#### Miscellaneous Chores
+- **(deps)** update renovatebot/github-action action to v43.0.18 - (175812c) - renovate-roboteamtwente[bot]
+- **(deps)** update astral-sh/setup-uv digest to 2ddd2b9 - (b7844f5) - renovate-roboteamtwente[bot]
+#### Style
+- **(tooling)** remove default settings from cog.toml - (8ee2e0a) - jarkad
+
+- - -
+
 ## v2.10.1 - 2025-10-19
 #### Bug Fixes
 - **(tooling)** revert "explicitly skip v2.10.0 because GitHub refuses to work" - (39609c6) - jarkad
