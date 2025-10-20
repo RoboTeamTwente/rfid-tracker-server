@@ -1,15 +1,8 @@
-from_latest_tag = false
-branch_whitelist = []
-skip_ci = "[skip ci]"
-skip_untracked = false
+branch_whitelist = ["release/*"]
 tag_prefix = "v"
 pre_bump_hooks = ["uv version {{version}}"]
-post_bump_hooks = []
-pre_package_bump_hooks = []
-post_package_bump_hooks = []
 
 [changelog]
-path = "CHANGELOG.md"
 remote = "github.com"
 owner = "RoboTeamTwente"
 repository = "rfid-tracker-server"
