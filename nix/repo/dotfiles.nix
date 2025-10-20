@@ -84,6 +84,7 @@ in
         parallel = true;
         commands = {
           cocogitto.run = "cog check -l";
+          django-test.run = "just test";
         };
       };
       pre-commit = {
@@ -103,7 +104,6 @@ in
             stage_fixed = true;
           };
           django-make-migrations.run = "just django makemigrations --check";
-          django-test.run = "just test";
         };
       };
     };
