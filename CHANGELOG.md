@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v2.11.1 - 2025-10-21
+#### Bug Fixes
+- **(webui)** remove erroneous ".0"s from user_statistics - (a36e409) - jarkad
+
+- - -
+
 ## v2.11.0 - 2025-10-20
 #### Features
 - **(tooling)** ignore merges when checking for conventional commits (#62) - (c9ec53c) - Jarkad
