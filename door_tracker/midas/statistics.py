@@ -56,7 +56,7 @@ def get_sessions_time(user, start_of_day, end_of_day):
     if total_duration is None:
         return 0
 
-    return total_duration.total_seconds() // 60
+    return int(total_duration.total_seconds() // 60)
 
 
 def get_quota_durations_time_period(user, start_day, end_day):
