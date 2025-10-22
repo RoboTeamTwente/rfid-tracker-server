@@ -9,13 +9,7 @@ steps:
     image: nixos/nix
     volumes:
       - crow-rtt-nix:/nix
-    entrypoint:
-      - nix
-      - --extra-experimental-features
-      - nix-command flakes
-      - develop
-      - -c
-      - echo $CI_SCRIPT | base64 -d | sh -eu
     commands:
-      - uv sync --locked --no-progress
-      - just check
+      - echo 'experimental-features = nix-command flakes' >> /etc/nix/nix.conf
+      - nix develop -c uv sync --locked --no-progress
+      - nix develop -c just check
