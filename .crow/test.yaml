@@ -11,5 +11,5 @@ steps:
       - crow-rtt-nix:/nix
     commands:
       - echo 'experimental-features = nix-command flakes' >> /etc/nix/nix.conf
-      - nix develop -c uv sync --locked --no-progress
-      - nix develop -c just check
+      - nix develop -Lc uv sync --locked --no-progress
+      - nix develop -Lc just check
