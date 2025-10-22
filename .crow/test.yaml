@@ -1,0 +1,19 @@
+when:
+  - event: [push, pull_request]
+    branch: main
+  - event: push
+    branch: renovate/*
+
+steps:
+  test:
+    image: nixos/nix
+    volumes:
+      - crow-rtt-nix:/nix
+    entrypoint:
+      - nix
+      - develop
+      - -c
+      - echo $CI_SCRIPT | base64 -d | sh -eu
+    commands:
+      - uv sync --locked --no-progress
+      - just check
