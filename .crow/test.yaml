@@ -11,6 +11,8 @@ steps:
       - crow-rtt-nix:/nix
     entrypoint:
       - nix
+      - --extra-experimental-features
+      - nix-command flakes
       - develop
       - -c
       - echo $CI_SCRIPT | base64 -d | sh -eu
