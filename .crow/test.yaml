@@ -5,7 +5,13 @@ when:
     branch: renovate/*
 
 steps:
-  test:
+  fast:
+    image: ghcr.io/astral-sh/uv:debian
+    directory: door_tracker
+    commands:
+      - uv sync --locked --no-progress
+      - uv run manage.py test --noinput
+  thorough:
     image: nixos/nix
     volumes:
       - crow-rtt-nix:/nix
