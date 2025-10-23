@@ -39,6 +39,7 @@
         cellBlocks = with inputs.std.blockTypes; [
           (containers "containers")
           (devshells "shells" { ci.build = true; })
+          (installables "ci-jobs" { ci.build = true; })
           (installables "packages" { ci.build = true; })
           (nixago "dotfiles")
           (runnables "operables" { ci.build = true; })
@@ -52,6 +53,10 @@
         packages = inputs.std.harvest inputs.self [
           "repo"
           "packages"
+        ];
+        hydraJobs = inputs.std.harvest inputs.self [
+          "repo"
+          "ci-jobs"
         ];
       };
 }
