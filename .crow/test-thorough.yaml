@@ -7,13 +7,29 @@ when:
     branch: renovate/*
 
 steps:
-  test:
+
+  setup:
+    image: nixos/nix
+    volumes:
+      - crow-rtt-nix:/nix
+    commands:
+      - echo 'experimental-features = nix-command flakes' >> /etc/nix/nix.conf
+      - nix develop -Lc uv sync --locked --no-progress
+
+  pre-commit:
+    depends_on: setup
     image: nixos/nix
     volumes:
       - crow-rtt-nix:/nix
     environment:
       CI: 1 # for //repo/dotfiles/lefthook
     commands:
-      - echo 'experimental-features = nix-command flakes' >> /etc/nix/nix.conf
-      - nix develop -Lc uv sync --locked --no-progress
-      - nix develop -Lc just check
+      - nix develop -Lc lefthook run --all-files --force pre-commit
+
+  build-container:
+    depends_on: setup
+    image: nixos/nix
+    volumes:
+      - crow-rtt-nix:/nix
+    commands:
+      - nix develop -Lc std //repo/containers/prod-latest:build
