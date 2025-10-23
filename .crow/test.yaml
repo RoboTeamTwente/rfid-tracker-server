@@ -9,11 +9,13 @@ when:
 steps:
   fast:
     image: ghcr.io/astral-sh/uv:debian
+    depends_on: []
     directory: door_tracker
     commands:
       - uv sync --locked --no-progress
       - uv run manage.py test --noinput
   thorough:
+    depends_on: []
     image: nixos/nix
     volumes:
       - crow-rtt-nix:/nix
