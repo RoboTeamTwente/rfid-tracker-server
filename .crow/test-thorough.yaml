@@ -6,11 +6,15 @@ when:
   - event: push
     branch: renovate/*
 
-steps:
-  setup:
+variables:
+  - &nix
     image: nixos/nix
     volumes:
       - crow-rtt-nix:/nix
+
+steps:
+  setup:
+    <<: *nix
     commands:
       - echo 'experimental-features = nix-command flakes' >> /etc/nix/nix.conf
       - echo 'max-jobs = auto' >> /etc/nix/nix.conf
@@ -18,9 +22,7 @@ steps:
 
   pre-commit:
     depends_on: setup
-    image: nixos/nix
-    volumes:
-      - crow-rtt-nix:/nix
+    <<: *nix
     environment:
       CI: 1 # for //repo/dotfiles/lefthook
     commands:
@@ -28,8 +30,6 @@ steps:
 
   build-container:
     depends_on: setup
-    image: nixos/nix
-    volumes:
-      - crow-rtt-nix:/nix
+    <<: *nix
     commands:
       - nix develop -Lc std //repo/containers/prod-latest:build
