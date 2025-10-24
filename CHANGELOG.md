@@ -2,6 +2,51 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.12.0 - 2025-10-24
+
+### Bug Fixes
+
+- *(tooling)* Enable flakes in crow CI
+- *(tooling)* Don't use entrypoint
+- *(tooling)* Set CI=1 in crow
+- *(tooling)* Split test workflow
+- *(tooling)* Run test-thorough in the merge queue
+- *(tooling)* Remove unused block type `scripts`
+- *(tooling)* Check release branches as well
+
+
+### Features
+
+- *(tooling)* Add crow CI
+- *(tooling)* Show build output when running nix develop in crow CI
+- *(tooling)* Remove GHA test workflow
+- *(tooling)* Port test-fast to Crow CI
+- *(tooling)* Add schema to Crow CI workflow
+- *(tooling)* Parallelize fast and thorough tests
+- *(tooling)* Fail on change in `just check`
+
+
+### Miscellaneous Tasks
+
+- *(deps)* Update dependency astral-sh/uv to v0.9.5
+- *(version)* V2.12.0
+
+
+### Performance
+
+- *(tooling)* Parallelize test-thorough
+- *(tooling)* Enable nix parallelism in CI
+
+
+### Refactor
+
+- *(tooling)* Use YAML anchors
+- *(tooling)* Same check name for PR and MQ
+- *(tooling)* From cocogitto to git-cliff
+- *(tooling)* Use git-cliff in just release
+- *(No Category)* Rewrite CHANGELOG.md using git-cliff
+
+
 ## 2.11.1 - 2025-10-21
 
 ### Bug Fixes
