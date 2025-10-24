@@ -6,6 +6,7 @@ when:
       - main
       - renovate/*
       - feature/*
+      - release/*
       - gh-readonly-queue/main/*
 
 variables:
