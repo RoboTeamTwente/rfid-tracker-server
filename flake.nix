@@ -42,7 +42,6 @@
           (installables "packages" { ci.build = true; })
           (nixago "dotfiles")
           (runnables "operables" { ci.build = true; })
-          (runnables "scripts" { ci.build = true; })
         ];
       }
       {
