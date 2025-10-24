@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/woodpecker-ci/woodpecker/main/pipeline/frontend/yaml/linter/schema/schema.json
+
+when:
+  - event: push
+    branch:
+      - main
+      - renovate/*
+      - feature/*
+      - gh-readonly-queue/main/*
+
+variables:
+  - &nix
+    image: nixos/nix
+    volumes:
+      - crow-rtt-nix:/nix
+
+steps:
+  setup:
+    <<: *nix
+    commands:
+      - echo 'experimental-features = nix-command flakes' >> /etc/nix/nix.conf
+      - echo 'max-jobs = auto' >> /etc/nix/nix.conf
+      - nix develop -Lc uv sync --locked --no-progress
+
+  pre-commit:
+    depends_on: setup
+    <<: *nix
+    environment:
+      CI: 1 # for //repo/dotfiles/lefthook
+    commands:
+      - nix develop -Lc lefthook run --all-files --force pre-commit
+
+  build-container:
+    depends_on: setup
+    <<: *nix
+    commands:
+      - nix develop -Lc std //repo/containers/prod-latest:build
