@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/woodpecker-ci/woodpecker/main/pipeline/frontend/yaml/linter/schema/schema.json
+
+when:
+  - event: push
+    branch:
+      - feature/*
+
+steps:
+  test:
+    image: ghcr.io/astral-sh/uv:debian
+    directory: door_tracker
+    commands:
+      - uv sync --locked --no-progress
+      - uv run manage.py test --noinput
