@@ -14,7 +14,7 @@ fmt:
 # Run all formatters & tests
 check:
     # run tests & pre-commit hooks
-    lefthook run --all-files --force pre-commit
+    CI=1 lefthook run --all-files --force pre-commit
     # also check that the container still builds
     std //repo/containers/prod-latest:build
 
