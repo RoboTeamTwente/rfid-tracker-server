@@ -1,491 +1,1032 @@
 # Changelog
-All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
-- - -
-## v2.11.1 - 2025-10-21
-#### Bug Fixes
-- **(webui)** remove erroneous ".0"s from user_statistics - (a36e409) - jarkad
+All notable changes to this project will be documented in this file.
 
-- - -
+## 2.11.1 - 2025-10-21
 
-## v2.11.0 - 2025-10-20
-#### Features
-- **(tooling)** ignore merges when checking for conventional commits (#62) - (c9ec53c) - Jarkad
-- **(tooling)** ignore merges when checking for conventional commits - (9ea5858) - jarkad
-- **(tooling)** only allow bumping from release branches - (ff4f944) - jarkad
-#### Miscellaneous Chores
-- **(deps)** update renovatebot/github-action action to v43.0.18 - (175812c) - renovate-roboteamtwente[bot]
-- **(deps)** update astral-sh/setup-uv digest to 2ddd2b9 - (b7844f5) - renovate-roboteamtwente[bot]
-#### Style
-- **(tooling)** remove default settings from cog.toml - (8ee2e0a) - jarkad
+### Bug Fixes
 
-- - -
-
-## v2.10.1 - 2025-10-19
-#### Bug Fixes
-- **(tooling)** revert "explicitly skip v2.10.0 because GitHub refuses to work" - (39609c6) - jarkad
-
-- - -
-
-## v2.10.0 - 2025-10-19
-#### Bug Fixes
-- **(deps)** downgrade to python3.13 - (ca08e0b) - jarkad
-- **(tooling)** explicitly skip v2.10.0 because GitHub refuses to work - (35b2434) - jarkad
-- **(tooling)** push the release commit to current branch as well - (668fc28) - jarkad
-- **(tooling)** make release workflow work - (d00fd50) - jarkad
-- **(tooling)** don't try to be clever and check all commit messages - (0a33993) - jarkad
-- **(tooling)** configure git author for bump commits - (540d6c9) - jarkad
-- **(webui)** include seconds in remote checkout autocomplete - (35fd6ce) - andrei
-- **(webui)** change the checkin to use a timezone.now variable instead of calling it 3 times (future-proof) - (e3a362f) - andrei
-#### Features
-- **(tooling)** check for container build failures in CI - (0125fd6) - jarkad
-- **(webui)** auto complete current time for remote checkout modal - (8f0411f) - andrei
-- **(webui)** add remote checkin functionality to the sessions page - (499a249) - andrei
-#### Miscellaneous Chores
-- **(deps)** update dependency astral-sh/uv to v0.9.4 - (10ff327) - renovate-roboteamtwente[bot]
-#### Performance Improvements
-- **(tooling)** remove magic-nix-cache and halve build times - (8da5431) - jarkad
-- **(tooling)** don't do thorough checks before merge queue - (3b4ffcd) - jarkad
-#### Refactoring
-- **(statistics)** cleanup statistics a bit - (58ffa9f) - andrei
-- **(tooling)** explicitly push new tag - (4d2bc49) - jarkad
-- **(tooling)** update Justfile to reflect new release workflow - (11b01e9) - jarkad
-- **(tooling)** uv sync in a separate step - (57b9d26) - jarkad
-- **(tooling)** trigger releases from github actions - (86761a8) - jarkad
-- **(webui)** fix some of the padding in user profile tags - (49ed83b) - andrei
-#### Style
-- **(tooling)** use long argument names for readability - (90681a7) - jarkad
-
-- - -
-
-## v2.9.1 - 2025-10-17
-#### Bug Fixes
-- **(tooling)** fix automatic release creation - (54dac03) - jarkad
-#### Performance Improvements
-- **(tooling)** only check the first branch being pushed - (5b75a1c) - jarkad
-
-- - -
-
-## v2.9.0 - 2025-10-17
-#### Bug Fixes
-- **(admin)** fix filtering by subteam for sessions & assignments - (3fc1417) - jarkad
-- **(deps)** disable brotli compression of static assets - (adb5de3) - jarkad
-#### Features
-- **(webui)** implement export of sessions - (6147025) - jarkad
-#### Miscellaneous Chores
-- **(deps)** update to python3.14 - (732f8df) - jarkad
-- **(deps)** update transitive dependencies - (bf4deae) - jarkad
-#### Refactoring
-- **(webui)** fix the navigation bar on mobile to be a bit more centered - (f221d86) - andrei
-- **(webui)** re-organize base.css - (2f16a60) - andrei
-
-- - -
-
-## v2.8.0 - 2025-10-16
-#### Features
-- **(tooling)** automatically create github releases from tags - (77da3b2) - jarkad
-- **(tooling)** check commit messages in pre-push instead of commit-msg - (4a7161b) - jarkad
-- **(tooling)** check that commit messages follow conventional commits - (4cc63dd) - jarkad
-- **(webui)** add favicon - (9b140c5) - jarkad
-- **(webui)** hide the admin pages from normal users - (4c5fefd) - andrei
-#### Miscellaneous Chores
-- **(deps)** update dependency astral-sh/uv to v0.9.3 - (d705cec) - renovate-roboteamtwente[bot]
-- **(tooling)** add sqlite wal to gitignore - (8cd70c0) - jarkad
-#### Performance Improvements
-- **(statistics)** disable the update_statistics job (not needed for midas) - (b037e39) - jarkad
-- **(tooling)** don't run tests on push to main - (e90112c) - jarkad
-#### Refactoring
-- **(tooling)** force UV to use nix-provided python - (bc5a765) - jarkad
-- **(tooling)** use same python for shell & container - (58d1d0a) - jarkad
-- **(webui)** add all the css code in base.css - (ccfa62b) - andrei
-#### Style
-- **(webui)** change icon from white on purple to purple on transparent - (d00d61d) - jarkad
-- prefer relative imports - (460232c) - jarkad
-
-- - -
-
-## v2.7.2 - 2025-10-13
-#### Bug Fixes
-- **(webui)** prevent race conditions when registering a tag - (521d829) - jarkad
-
-- - -
-
-## v2.7.1 - 2025-10-13
-#### Style
-- **(webui)** reorder sessions table's columns & align times right - (0f388f1) - jarkad
-
-- - -
-
-## v2.7.0 - 2025-10-13
-#### Bug Fixes
-- **(webui)** fix UNIQUE constraint failed when registering 2 tags at the same time - (8a684f6) - jarkad
-#### Features
-- **(webui)** promote midas to be the default app - (5a9058f) - jarkad
-
-- - -
-
-## v2.6.1 - 2025-10-13
-#### Bug Fixes
-- **(api)** allow checking out from yesterday's session - (70f7a0a) - jarkad
-- **(model)** add migrations forgotten in #17 - (460a8ab) - jarkad
-- **(tooling)** make the makemigrations check effective - (4138b28) - jarkad
-- **(tooling)** break deadlock between checks and tags - (e872f2d) - jarkad
-
-- - -
-
-## v2.6.0 - 2025-10-13
-#### Bug Fixes
-- **(model)** delete existing scanners in midas before migration from webui - (7500dda) - jarkad
-- **(statistics)** fix getting proper start date for quota - (bdd69a4) - Narendra Setty
-- **(tooling)** enable tests in merge queue - (84d2d79) - jarkad
-#### Features
-- **(tooling)** install github cli - (d3a3473) - jarkad
-#### Miscellaneous Chores
-- **(deps)** update renovatebot/github-action action to v43.0.17 - (1e318f8) - renovate-roboteamtwente[bot]
-- **(deps)** update astral-sh/setup-uv digest to 3259c62 - (0bab85a) - renovate-roboteamtwente[bot]
-- **(deps)** update dependency astral-sh/uv to v0.9.2 - (d91788e) - renovate-roboteamtwente[bot]
-- **(deps)** update python docker tag to v3.14 - (f9c06a7) - renovate-roboteamtwente[bot]
-#### Refactoring
-- **(model)** restrict deletion of some models when they are referred to through foreign keys - (5bd69bc) - jarkad
-
-- - -
-
-## v2.5.3 - 2025-10-10
-#### Bug Fixes
-- **(statistics)** fix error of getting assignment starting day before start_day - (a98fc9a) - Narendra Setty
-- **(webui)** do not crash when user has no assignments - (0f45d12) - jarkad
-
-- - -
-
-## v2.5.2 - 2025-10-10
-#### Bug Fixes
-- **(webui)** correct assignment selection logic on user_statistics - (6adebf9) - jarkad
-
-- - -
-
-## v2.5.1 - 2025-10-10
-#### Bug Fixes
-- **(model)** migrate scanners as well - (5bde5bb) - jarkad
-#### Build system
-- **(tooling)** add a task for generating the github release - (c93f71f) - jarkad
-
-- - -
-
-## v2.5.0 - 2025-10-10
-#### Bug Fixes
-- **(api)** correct priority of actions on register_scan - (e532a5c) - jarkad
-- **(api)** show proper error message when renaming a tag - (e9506b1) - jarkad
-- **(api)** make checkout work in midas - (a9bddcc) - jarkad
-- **(model)** make edit_profile modal create a new Assignment instead of modifying the existing one - (622ca8f) - jarkad
-- **(tooling)** gitignore sqlite wal - (c926bd0) - jarkad
-- **(tooling)** tell vscode to not type random commands in the terminal - (98182ba) - jarkad
-- **(webui)** add tags by name, not by ID - (086f002) - jarkad
-- **(webui)** remove unused endpoints from midas - (087a3fc) - jarkad
-#### Features
-- **(model)** add a script to migrate data from webui to midas - (bff4fa8) - jarkad
-- **(tooling)** add `just release` - (38572e0) - jarkad
-- **(tooling)** label container images with source commit & version - (0c7c13b) - jarkad
-- **(tooling)** skip docs deploy on the debug branch - (0b12f43) - jarkad
-- **(webui)** add side nav bar logic for both desktop and mobile view. - (93f1909) - andrei
-- **(webui)** add complete side navigation bar with css tweaks for all pages - (07b9f31) - andrei
-#### Miscellaneous Chores
-- **(deps)** update dependency astral-sh/uv to v0.9.1 - (256c7ac) - renovate-roboteamtwente[bot]
-#### Refactoring
-- **(tooling)** regenerate CHANGELOG.md with cocogitto - (35f2fd0) - jarkad
-- **(tooling)** replace commitizen with cocogitto - (e3e93bf) - jarkad
-- **(tooling)** use std instead of devenv - (083d51d) - jarkad
-- **(webui)** user midas logo in midas - (0e089a0) - jarkad
-#### Style
-- clean various code smells - (08fbc16) - jarkad
-
-- - -
+- *(webui)* Remove erroneous ".0"s from user_statistics
 
 
-## v2.4.0 - 2025-10-09
-#### Bug Fixes
-- **(api)** don't use .date() - (909c7e3) - jarkad
-- **(api)** don't use .date() - (f016709) - jarkad
-- **(models)** make Quota.name non-optional - (2a2c932) - jarkad
-- **(statistics)** Fix monthly and weekly quota calculation in statistics and other minor bugs - (db08abe) - Narendra Setty
-- **(webui)** point midas modals to midas - (4cd9b63) - jarkad
-#### Features
-- **(models)** add Assignment.objects.filter_effective() - (9071ed9) - jarkad
-- **(statistics)** add datetime helper functions - (95412dd) - jarkad
-- **(webui)** make user_statistics page work - (4adaab0) - Narendra Setty
-- **(webui)** allow date ranges instead of just a single date in get all statistics for the admin overview - (3575934) - CandelaCG04
-- **(webui)** add filters to get all statistics for admin overview page - (e0cfdf1) - CandelaCG04
-- **(webui)** port signup page to midas - (5d302ff) - jarkad
-- **(webui)** add rename and delete tag on user profile page functionality - (afac0f5) - andrei
-- **(webui)** add new edit profile functionality - (5f2193b) - andrei
-#### Miscellaneous Chores
-- **(deps)** update dependency astral-sh/uv to v0.9.0 (#12) - (d4423ea) - renovate-roboteamtwente[bot]
-- **(deps)** update renovatebot/github-action action to v43.0.16 (#11) - (6454cbc) - renovate-roboteamtwente[bot]
-- **(deps)** update astral-sh/setup-uv action to v7 - (7745227) - renovate-roboteamtwente[bot]
-#### Performance Improvements
-- **(statistics)** run update_statistics in background - (40c760c) - jarkad
-#### Refactoring
-- **(admin)** allow creating claimed tags from admin page (for debugging only) - (8ac00c3) - jarkad
-- **(admin)** move global admin config from webui to door_tracker - (370ca4f) - jarkad
-- **(css)** add side navigation bar (work in progress). - (bde5934) - andrei
-- **(webui)** remove an extra arrow from uer profile icons - (97a6426) - andrei
-#### Style
-- **(admin)** rename get_subteams to subteam_names - (e617ffa) - jarkad
-- **(tooling)** use double quotes in .toml files - (1436e1f) - jarkad
-- **(webui)** remove extra newlines from midas/index.html - (ecf11a4) - jarkad
+### Miscellaneous Tasks
 
-- - -
+- *(version)* V2.11.1
 
-## v2.3.0 - 2025-10-09
-#### Bug Fixes
-- **(tooling)** move ruff config to root of repo - (c1f8148) - jarkad
-#### Documentation
-- **(api)** make API docs look presentable - (6702e71) - jarkad
-#### Features
-- **(api)** add autogenerated API docs - (f643f1b) - jarkad
-#### Style
-- run ruff on the entire repo - (e85bce4) - jarkad
 
-- - -
+## 2.11.0 - 2025-10-20
 
-## v2.2.3 - 2025-10-08
-#### Continuous Integration
-- **(tooling)** add a job to run thorough tests - (c2b4cba) - jarkad
-#### Performance Improvements
-- **(tooling)** do not cache deliver workflow - (170c758) - jarkad
-#### Refactoring
-- **(api)** register_scan: allow both tag_id and card_id - (df0bc35) - jarkad
+### Features
 
-- - -
+- *(tooling)* Only allow bumping from release branches
+- *(tooling)* Ignore merges when checking for conventional commits
+- *(tooling)* Ignore merges when checking for conventional commits (#62)
 
-## v2.2.2 - 2025-10-08
-#### Bug Fixes
-- **(tooling)** bump-version: cd to repo root before running checks - (88860a5) - jarkad
-#### Miscellaneous Chores
-- **(deps)** update dependency astral-sh/uv to v0.8.24 - (5399354) - renovate-roboteamtwente[bot]
-- **(deps)** pin determinatesystems/magic-nix-cache-action action to 5656843 - (3ca7688) - renovate-roboteamtwente[bot]
-#### Performance Improvements
-- **(tooling)** reduce amount of docker image layers - (24261e0) - jarkad
 
-- - -
+### Miscellaneous Tasks
 
-## v2.2.1 - 2025-10-08
-#### Bug Fixes
-- **(tooling)** update magic-nix-cache-action - (ecddec4) - jarkad
-- **(tooling)** move whitenoise app higher than staticfiles - (4fc6936) - jarkad
-#### Build system
-- **(tooling)** pin detsys-nix actions - (fb3e2d4) - jarkad
-#### Continuous Integration
-- **(tooling)** bump-version: automatically push & generate github release - (83c3ebe) - jarkad
-#### Miscellaneous Chores
-- **(deps)** update determinatesystems/nix-installer-action action to v20 - (bcbd22a) - renovate-roboteamtwente[bot]
-- **(deps)** pin determinatesystems/nix-installer-action action to 129f079 - (1733c30) - renovate-roboteamtwente[bot]
-- **(deps)** pin actions/checkout action to 08c6903 - (251b372) - renovate-roboteamtwente[bot]
+- *(deps)* Update astral-sh/setup-uv digest to 2ddd2b9
+- *(deps)* Update renovatebot/github-action action to v43.0.18
+- *(version)* V2.11.0
 
-- - -
 
-## v2.2.0 - 2025-10-08
-#### Bug Fixes
-- **(api)** use RegisterScan.make() to cut down on copypaste - (cc73f77) - jarkad
-- **(api)** rename new register_scan to avoid name collisions - (bfbe487) - jarkad
-- **(statistics)** remove leftover debug print lines - (e0224b6) - CandelaCG04
-- **(statistics)** remove need to pass total minutes as an argument to get the weekly average - (2567342) - CandelaCG04
-- **(statistics)** keep it from breaking with the time change (DST) - (1d7bbad) - CandelaCG04
-- **(tooling)** ignore long lines in CHANGELOG.md - (66a532e) - jarkad
-- **(tooling)** remove duplicate ruff config - (07d95b8) - jarkad
-- **(tooling)** update devenv - (2477a2a) - jarkad
-- **(webui)** run s/webui/midas in views.py - (699ed7b) - jarkad
-- **(webui)** make midas html point to midas' base.html - (72a540a) - jarkad
-#### Features
-- **(api)** port API to midas - (0df3af7) - jarkad
-- **(model)** add related_name to ForeignKeys - (96f7402) - jarkad
-- **(tests)** add tests for midas - (593f0e8) - jarkad
-- **(tooling)** enforce conventional commits using commitizen - (513c690) - jarkad
-- **(tooling)** automatically upload releases to dockerhub - (8922713) - jarkad
-- **(tooling)** run tests in pre-commit hook - (27ae726) - jarkad
-- **(webui)** add function for get everyone's statistics in one go - (f9fb90e) - CandelaCG04
-- **(webui)** add htmx instead of hard refresh on user_profile and tweak views user_profile to return HtmlResponse - (64b8c02) - andrei
-- **(webui)** make User Profile displays user informtion and add tag functionality - (bf9ecce) - andrei
-- **(webui)** add new user dashboard with new database logic - (8fbafe3) - andrei
-#### Miscellaneous Chores
-- **(deps)** update renovatebot/github-action action to v43.0.15 - (3cf5bc3) - renovate-roboteamtwente[bot]
-- **(deps)** update dependency astral-sh/uv to v0.8.23 - (9af1b9b) - renovate-roboteamtwente[bot]
-- **(release)** bump 2.1.0 -> 2.2.0 - (f962c18) - jarkad
-#### Refactoring
-- **(api)** use objects.create() instead of save() - (4d17dea) - jarkad
-- **(statistics)** accept user directly rather than request - (716bfe8) - jarkad
-- **(webui)** namespace midas urls - (707cba1) - jarkad
-- **(webui)** remove useless order_by() in is_checked_in() - (a84756b) - jarkad
-#### Style
-- **(webui)** remove commented imports - (80b9458) - jarkad
-- **(webui)** sort urls.py - (3af99f2) - jarkad
-#### Tests
-- **(api)** repeat check-in/out 10 times - (a6d4c74) - jarkad
+### Styling
 
-- - -
+- *(tooling)* Remove default settings from cog.toml
 
-## v2.1.0 - 2025-10-08
-#### Features
-- **(admin)** add filters to admin page - (090f04c) - CandelaCG04
-- **(admin)** sort everything - (4241b19) - jarkad
-- **(api)** allow register_scan with trailing slash again - (092e2b4) - jarkad
-- **(model)** add statistics calculation - (282c6c4) - CandelaCG04
-#### Miscellaneous Chores
-- **(release)** bump 2.0.0 -> 2.1.0 - (b92c898) - jarkad
-#### Refactoring
-- **(midas)** split log table into checkin and checkout - (f01052c) - jarkad
-- **(midas)** add midas app, put new models in it - (81acdb0) - jarkad
-- **(statistics)** move statistics calculations to statistics.py - (db947d1) - jarkad
-- **(tooling)** add statistics scope for conventional commits - (be697de) - jarkad
-- prettify admin page, changes in models - (110972d) - jarkad
-#### Style
-- **(midas)** reorder models in the admin page - (dbc16b5) - jarkad
 
-- - -
+## 2.10.1 - 2025-10-19
 
-## v2.0.0 - 2025-10-08
-#### Bug Fixes
-- **(backups)** add packages required to run `django backup_website` - (2d376bb) - jarkad
-#### Features
-- **(commands)** add init_admin - (65465da) - jarkad
-- **(containers)** mount credentials in the example compose.yaml - (697a0e0) - jarkad
-- **(containers)** make backup credentials file location configurable - (c232b3f) - jarkad
-- **(docker)** autocreate an admin on container startup - (5ffec32) - jarkad
-- **(tooling)** add example backup env vars to compose.yaml - (fa89a97) - jarkad
-- **(tooling)** gitignore the credentials folder - (145df7e) - jarkad
-- **(tooling)** add conventional commits to vscode - (7900e22) - jarkad
-- **(webui)** add a button to redirect to dashboard - (62f2f3e) - andrei
-#### Miscellaneous Chores
-- **(deps)** update astral-sh/setup-uv digest to d0cc045 - (409f3f6) - renovate-roboteamtwente[bot]
-- **(deps)** update renovatebot/github-action action to v43.0.14 - (2c2f1d6) - renovate-roboteamtwente[bot]
-- **(release)** bump 1.2.0 -> 2.0.0 - (f8ba8e9) - jarkad
-#### Refactoring
-- **(api)** removed a slash at the end of register_scan - (cc2d483) - jarkad
-- **(css)** move log in button to nav bar - (4925e4c) - andrei
+### Bug Fixes
 
-- - -
+- *(deps)* Downgrade to python3.13
+- *(tooling)* Configure git author for bump commits
+- *(tooling)* Don't try to be clever and check all commit messages
+- *(tooling)* Make release workflow work
+- *(tooling)* Push the release commit to current branch as well
+- *(tooling)* Explicitly skip v2.10.0 because GitHub refuses to work
+- *(tooling)* Revert "explicitly skip v2.10.0 because GitHub refuses to work"
+- *(webui)* Change the checkin to use a timezone.now variable instead of calling it 3 times (future-proof)
+- *(webui)* Include seconds in remote checkout autocomplete
 
-## v1.2.0 - 2025-10-08
-#### Features
-- **(tooling)** abort bump-version script when worktree is dirty - (d94fd0c) - jarkad
-- **(tooling)** add test step to release script - (1fd4086) - jarkad
-#### Miscellaneous Chores
-- **(release)** bump 1.1.0 -> 1.2.0 - (145ac38) - jarkad
-#### Performance Improvements
-- **(tooling)** let cz bump fail fast - (9794258) - jarkad
-- **(tooling)** prune unused git hooks in bump-version script - (07e9d4f) - jarkad
-#### Refactoring
-- **(tooling)** get rid of next-version - (38bc4a4) - jarkad
-- **(tooling)** scripts: s/release/deliver/; release = bump && deliver - (a13b1e1) - jarkad
-- **(tooling)** move version bump out of release into a separate script - (2a29758) - jarkad
-- **(webui)** do not nest BEM css selectors - (254f603) - jarkad
-- **(webui)** BEMify base.css - (1c713d1) - jarkad
 
-- - -
+### Features
 
-## v1.1.0 - 2025-10-08
-#### Bug Fixes
-- **(admin)** fix export of large logs - (3cc290a) - jarkad
-- **(tooling)** make release script follow commitizen's tag schema - (bf2d3f2) - jarkad
-- **(tooling)** show `cd` in trace of *-container scripts - (edc2ceb) - jarkad
-- **(webui)** fix base.html modal z-index - (9b0c2d8) - jarkad
-#### Features
-- **(containers)** add sqlite to the container image - (6475a55) - jarkad
-#### Miscellaneous Chores
-- **(release)** bump 1.0.0 -> 1.1.0 - (d79df15) - jarkad
-#### Performance Improvements
-- **(tooling)** speed up release script - (6851c0c) - jarkad
-#### Refactoring
-- **(views)** inline current_user_logs - (b349356) - jarkad
-- **(views)** remove unused serializers & fields - (1be01cc) - jarkad
-#### Style
-- **(webui)** run <script>s through prettier - (15702a8) - jarkad
-- **(webui)** make profile action buttons more prominent - (561ccd2) - jarkad
+- *(tooling)* Check for container build failures in CI
+- *(webui)* Add remote checkin functionality to the sessions page
+- *(webui)* Auto complete current time for remote checkout modal
 
-- - -
 
-## v1.0.0 - 2025-10-08
-#### Bug Fixes
-- **(api)** pick correct statistics row - (9b398fa) - jarkad
-- **(api)** fix queries - (08c1186) - jarkad
-- **(api)** register_scan: update JSON keys to match the OpenAPI spec - (2e81610) - jarkad
-- **(css)** resurrect a wrongly deleted line - (4d09167) - jarkad
-- **(css)** make all modals of same width - (991ff5e) - jarkad
-- **(docker)** run debug in local compose - (34c3b0c) - jarkad
-- **(docs)** exclude a duplicate CHANGELOG from Doxygen docs - (d16d037) - jarkad
-- **(edit_profile)** handle half-filled membership - (60f94d5) - jarkad
-- **(edit_profile)** fix edit membership when no membership found - (d56a537) - jarkad
-- **(edit_profile)** handle empty fields in submission - (8f4e223) - jarkad
-- **(fmt)** copy my local .prettierrc into the repo - (b8c9546) - jarkad
-- **(model)** fucking timezones - (f3e350d) - jarkad
-- **(model)** makemigrations --merge - (3c03207) - jarkad
-- **(model)** fucking timezones - (1a222d9) - jarkad
-- **(model)** fucking timezones - (372ef98) - jarkad
-- **(webui)** fix edit_profile 500 when no current membership - (43be7ca) - jarkad
-- make statistics & profile pages work when the user is not a member - (c5aed12) - jarkad
-#### Build system
-- **(pip)** remove duplicate dependency - (f0ff454) - jarkad
-- add a "first-start" package - (7f83248) - jarkad
-- simplify build instructions - (67bf6c4) - jarkad
-- add a production container - (21b7cef) - jarkad
-- package the project with Nix - (b904be8) - jarkad
-#### Continuous Integration
-- **(docs)** deploy doxygen docs to github pages - (d97501c) - jarkad
-- **(git)** add commitizen config - (43a63fe) - jarkad
-- **(test)** actually make it run on renovate/* branches - (3a17141) - jarkad
-- **(test)** run test workflow on renovate/* branches - (3fa09d0) - jarkad
-#### Documentation
-- **(gha)** comment on triggers of gha workflows - (2b3c1fc) - jarkad
-- add CHANGELOG.md - (0a6243a) - jarkad
-- remove all mentions of devcontainers - (d346bb8) - jarkad
-- add wiki link to README - (068c897) - jarkad
-- add github actions status badge to README - (cc8d083) - jarkad
-- exclude migrations from the auto-generated docs - (f7531a4) - jarkad
-- add docs badge to README - (ceecb5d) - jarkad
-- add doxygen - (d20fec0) - jarkad
-- update README Getting Stared to use nix instead of devcontainers - (57caa50) - jarkad
-- move schema.puml to docs - (9cea9d5) - jarkad
-- add scanner api - (6c18387) - jarkad
-#### Features
-- **(admin)** auto-generate scanner ID on creation - (799571a) - jarkad
-- **(devenv)** add release script - (f5f851f) - jarkad
-- **(devenv)** add next-version script - (852e444) - jarkad
-- **(devenv)** add current-version script - (785f8ca) - jarkad
-- **(devenv)** add commitizen - (19cb93a) - jarkad
-- **(devenv)** add upload-container-to script - (411a656) - jarkad
-- **(docker)** don't renovate compose.yaml - (26517a4) - jarkad
-- add profile edit modal - (5fe8ab7) - jarkad
-- add tag deletion confirmation - (c91b5a0) - jarkad
-#### Miscellaneous Chores
-- **(deps)** update roboteamtwente/rfid-tracker-serve docker digest to 0faffdc - (882d3ba) - renovate-roboteamtwente[bot]
-- **(deps)** update roboteamtwente/rfid-tracker-serve docker digest to efe6204 - (f845dee) - renovate-roboteamtwente[bot]
-- **(deps)** update roboteamtwente/rfid-tracker-serve docker digest to b8dc9ec - (5706932) - renovate-roboteamtwente[bot]
-- **(deps)** update roboteamtwente/rfid-tracker-serve docker digest to 1e474b6 - (3824250) - renovate-roboteamtwente[bot]
-- **(deps)** update roboteamtwente/rfid-tracker-serve docker digest to f157deb - (40b78e5) - renovate-roboteamtwente[bot]
-- **(deps)** update roboteamtwente/rfid-tracker-serve docker digest to b25e65d - (9b92f92) - renovate-roboteamtwente[bot]
-- **(deps)** update dependency astral-sh/uv to v0.8.22 - (5332f1a) - renovate-roboteamtwente[bot]
-- **(deps)** update roboteamtwente/rfid-tracker-serve docker digest to 4ddccc0 - (05f1350) - renovate-roboteamtwente[bot]
-- **(deps)** update dependency astral-sh/uv to v0.8.21 - (d216b47) - renovate-roboteamtwente[bot]
-- **(deps)** update actions/upload-pages-artifact action to v4 - (e44cb51) - renovate-roboteamtwente[bot]
-- **(deps)** update actions/checkout action to v5 - (7327c4e) - renovate-roboteamtwente[bot]
-- **(deps)** update mattnotmitt/doxygen-action action to v1.12.0 - (5a20323) - renovate-roboteamtwente[bot]
-- **(deps)** pin dependencies - (30fa6de) - renovate-roboteamtwente[bot]
-- **(deps)** update renovatebot/github-action action to v43.0.13 - (7e39ea8) - renovate-roboteamtwente[bot]
-- **(deps)** update dependency astral-sh/uv to v0.8.20 - (eb0689f) - renovate-roboteamtwente[bot]
-- **(deps)** pin dependencies - (1d4e42d) - renovate-roboteamtwente[bot]
-- **(deps)** update dependency font-awesome to v7 - (97c4f16) - renovate-roboteamtwente[bot]
-- **(deps)** update actions/create-github-app-token action to v2 - (f2def6f) - renovate-roboteamtwente[bot]
-- **(deps)** update actions/checkout action to v5 - (e14fe39) - renovate-roboteamtwente[bot]
-- **(docs)** run prettier on README.md - (b933447) - jarkad
-- **(release)** bump 0.1.0 -> 1.0.0 - (9425f6d) - jarkad
-- **(release)** force a major release - (85f8fda) - jarkad
-#### Refactoring
-- **(devenv)** hide superfluous debug output in *-container scripts - (44b0c91) - jarkad
-#### Style
-- **(devenv)** move prettier git-hook into a separate paragraph - (b988ee0) - jarkad
-- **(user_profile)** reorder profile fields to match edit_profile - (932333f) - jarkad
-- **(user_profile)** clarify UI message - (2ef9cc6) - jarkad
-- update message - (1be5a5a) - jarkad
+### Miscellaneous Tasks
 
-- - -
+- *(deps)* Update dependency astral-sh/uv to v0.9.4
+- *(version)* V2.10.0
+- *(version)* V2.10.1
 
-Changelog generated by [cocogitto](https://github.com/cocogitto/cocogitto).
+
+### Performance
+
+- *(tooling)* Don't do thorough checks before merge queue
+- *(tooling)* Remove magic-nix-cache and halve build times
+
+
+### Refactor
+
+- *(statistics)* Cleanup statistics a bit
+- *(tooling)* Trigger releases from github actions
+- *(tooling)* Uv sync in a separate step
+- *(tooling)* Update Justfile to reflect new release workflow
+- *(tooling)* Explicitly push new tag
+- *(webui)* Fix some of the padding in user profile tags
+
+
+### Styling
+
+- *(tooling)* Use long argument names for readability
+
+
+## 2.9.1 - 2025-10-17
+
+### Bug Fixes
+
+- *(tooling)* Fix automatic release creation
+
+
+### Miscellaneous Tasks
+
+- *(version)* V2.9.1
+
+
+### Performance
+
+- *(tooling)* Only check the first branch being pushed
+
+
+## 2.9.0 - 2025-10-17
+
+### Bug Fixes
+
+- *(admin)* Fix filtering by subteam for sessions & assignments
+- *(deps)* Disable brotli compression of static assets
+
+
+### Features
+
+- *(webui)* Implement export of sessions
+
+
+### Miscellaneous Tasks
+
+- *(deps)* Update transitive dependencies
+- *(deps)* Update to python3.14
+- *(version)* V2.9.0
+
+
+### Refactor
+
+- *(webui)* Re-organize base.css
+- *(webui)* Fix the navigation bar on mobile to be a bit more centered
+
+
+## 2.8.0 - 2025-10-16
+
+### Features
+
+- *(tooling)* Check that commit messages follow conventional commits
+- *(tooling)* Check commit messages in pre-push instead of commit-msg
+- *(tooling)* Automatically create github releases from tags
+- *(webui)* Hide the admin pages from normal users
+- *(webui)* Add favicon
+
+
+### Miscellaneous Tasks
+
+- *(deps)* Update dependency astral-sh/uv to v0.9.3
+- *(tooling)* Add sqlite wal to gitignore
+- *(version)* V2.8.0
+
+
+### Performance
+
+- *(statistics)* Disable the update_statistics job (not needed for midas)
+- *(tooling)* Don't run tests on push to main
+
+
+### Refactor
+
+- *(tooling)* Use same python for shell & container
+- *(tooling)* Force UV to use nix-provided python
+- *(webui)* Add all the css code in base.css
+
+
+### Styling
+
+- *(webui)* Change icon from white on purple to purple on transparent
+- *(No Category)* Prefer relative imports
+
+
+## 2.7.2 - 2025-10-13
+
+### Bug Fixes
+
+- *(webui)* Prevent race conditions when registering a tag
+
+
+### Miscellaneous Tasks
+
+- *(version)* V2.7.2
+
+
+## 2.7.1 - 2025-10-13
+
+### Miscellaneous Tasks
+
+- *(version)* V2.7.1
+
+
+### Styling
+
+- *(webui)* Reorder sessions table's columns & align times right
+
+
+## 2.7.0 - 2025-10-13
+
+### Bug Fixes
+
+- *(webui)* Fix UNIQUE constraint failed when registering 2 tags at the same time
+
+
+### Features
+
+- *(webui)* Promote midas to be the default app
+
+
+### Miscellaneous Tasks
+
+- *(version)* V2.7.0
+
+
+## 2.6.1 - 2025-10-13
+
+### Bug Fixes
+
+- *(api)* Allow checking out from yesterday's session
+- *(model)* Add migrations forgotten in #17
+- *(tooling)* Break deadlock between checks and tags
+- *(tooling)* Make the makemigrations check effective
+
+
+### Miscellaneous Tasks
+
+- *(version)* V2.6.1
+
+
+## 2.6.0 - 2025-10-13
+
+### Bug Fixes
+
+- *(model)* Delete existing scanners in midas before migration from webui
+- *(statistics)* Fix getting proper start date for quota
+- *(tooling)* Enable tests in merge queue
+
+
+### Features
+
+- *(tooling)* Install github cli
+
+
+### Miscellaneous Tasks
+
+- *(deps)* Update python docker tag to v3.14
+- *(deps)* Update dependency astral-sh/uv to v0.9.2
+- *(deps)* Update astral-sh/setup-uv digest to 3259c62
+- *(deps)* Update renovatebot/github-action action to v43.0.17
+- *(version)* V2.6.0
+
+
+### Refactor
+
+- *(model)* Restrict deletion of some models when they are referred to through foreign keys
+
+
+## 2.5.3 - 2025-10-10
+
+### Bug Fixes
+
+- *(statistics)* Fix error of getting assignment starting day before start_day
+- *(webui)* Do not crash when user has no assignments
+
+
+### Miscellaneous Tasks
+
+- *(version)* V2.5.3
+
+
+## 2.5.2 - 2025-10-10
+
+### Bug Fixes
+
+- *(webui)* Correct assignment selection logic on user_statistics
+
+
+### Miscellaneous Tasks
+
+- *(version)* V2.5.2
+
+
+## 2.5.1 - 2025-10-10
+
+### Bug Fixes
+
+- *(model)* Migrate scanners as well
+
+
+### Miscellaneous Tasks
+
+- *(version)* V2.5.1
+
+
+### Build
+
+- *(tooling)* Add a task for generating the github release
+
+
+## 2.5.0 - 2025-10-10
+
+### Bug Fixes
+
+- *(api)* Make checkout work in midas
+- *(api)* Show proper error message when renaming a tag
+- *(api)* Correct priority of actions on register_scan
+- *(model)* Make edit_profile modal create a new Assignment instead of modifying the existing one
+- *(tooling)* Tell vscode to not type random commands in the terminal
+- *(tooling)* Gitignore sqlite wal
+- *(webui)* Remove unused endpoints from midas
+- *(webui)* Add tags by name, not by ID
+
+
+### Features
+
+- *(model)* Add a script to migrate data from webui to midas
+- *(tooling)* Skip docs deploy on the debug branch
+- *(tooling)* Label container images with source commit & version
+- *(tooling)* Add `just release`
+- *(webui)* Add complete side navigation bar with css tweaks for all pages
+- *(webui)* Add side nav bar logic for both desktop and mobile view.
+
+
+### Miscellaneous Tasks
+
+- *(deps)* Update dependency astral-sh/uv to v0.9.1
+- *(version)* V2.5.0
+
+
+### Refactor
+
+- *(tooling)* Use std instead of devenv
+- *(tooling)* Replace commitizen with cocogitto
+- *(tooling)* Regenerate CHANGELOG.md with cocogitto
+- *(webui)* User midas logo in midas
+
+
+### Styling
+
+- *(No Category)* Clean various code smells
+
+
+## 2.4.0 - 2025-10-09
+
+### Bug Fixes
+
+- *(api)* Don't use .date()
+- *(api)* Don't use .date()
+- *(models)* Make Quota.name non-optional
+- *(statistics)* Fix monthly and weekly quota calculation in statistics and other minor bugs
+- *(tooling)* Automatically abort duplicate releases
+- *(webui)* Point midas modals to midas
+
+
+### Features
+
+- *(models)* Add Assignment.objects.filter_effective()
+- *(statistics)* Add datetime helper functions
+- *(webui)* Add new edit profile functionality
+- *(webui)* Add rename and delete tag on user profile page functionality
+- *(webui)* Port signup page to midas
+- *(webui)* Add filters to get all statistics for admin overview page
+- *(webui)* Allow date ranges instead of just a single date in get all statistics for the admin overview
+- *(webui)* Make user_statistics page work
+
+
+### Miscellaneous Tasks
+
+- *(deps)* Update astral-sh/setup-uv action to v7
+- *(deps)* Update renovatebot/github-action action to v43.0.16 (#11)
+- *(deps)* Update dependency astral-sh/uv to v0.9.0 (#12)
+
+
+### Performance
+
+- *(statistics)* Run update_statistics in background
+
+
+### Refactor
+
+- *(admin)* Move global admin config from webui to door_tracker
+- *(admin)* Allow creating claimed tags from admin page (for debugging only)
+- *(css)* Add side navigation bar (work in progress).
+- *(webui)* Remove an extra arrow from uer profile icons
+
+
+### Styling
+
+- *(admin)* Rename get_subteams to subteam_names
+- *(tooling)* Use double quotes in .toml files
+- *(webui)* Remove extra newlines from midas/index.html
+
+
+### Bump
+
+- *(No Category)* Version 2.3.0 → 2.4.0
+
+
+## 2.3.0 - 2025-10-07
+
+### Bug Fixes
+
+- *(tooling)* Move ruff config to root of repo
+
+
+### Documentation
+
+- *(api)* Make API docs look presentable
+
+
+### Features
+
+- *(api)* Add autogenerated API docs
+
+
+### Styling
+
+- *(No Category)* Run ruff on the entire repo
+
+
+### Bump
+
+- *(No Category)* Version 2.2.3 → 2.3.0
+
+
+## 2.2.3 - 2025-10-07
+
+### Performance
+
+- *(tooling)* Do not cache deliver workflow
+
+
+### Refactor
+
+- *(api)* Register_scan: allow both tag_id and card_id
+
+
+### Bump
+
+- *(No Category)* Version 2.2.2 → 2.2.3
+
+
+### Ci
+
+- *(tooling)* Add a job to run thorough tests
+
+
+## 2.2.2 - 2025-10-07
+
+### Bug Fixes
+
+- *(tooling)* Bump-version: cd to repo root before running checks
+
+
+### Miscellaneous Tasks
+
+- *(deps)* Pin determinatesystems/magic-nix-cache-action action to 5656843
+- *(deps)* Update dependency astral-sh/uv to v0.8.24
+
+
+### Performance
+
+- *(tooling)* Reduce amount of docker image layers
+
+
+### Bump
+
+- *(No Category)* Version 2.2.1 → 2.2.2
+
+
+## 2.2.1 - 2025-10-06
+
+### Bug Fixes
+
+- *(tooling)* Move whitenoise app higher than staticfiles
+- *(tooling)* Update magic-nix-cache-action
+
+
+### Miscellaneous Tasks
+
+- *(deps)* Pin actions/checkout action to 08c6903
+- *(deps)* Pin determinatesystems/nix-installer-action action to 129f079
+- *(deps)* Update determinatesystems/nix-installer-action action to v20
+
+
+### Build
+
+- *(tooling)* Pin detsys-nix actions
+
+
+### Bump
+
+- *(No Category)* Version 2.2.0 → 2.2.1
+
+
+### Ci
+
+- *(tooling)* Bump-version: automatically push & generate github release
+
+
+## 2.2.0 - 2025-10-06
+
+### Bug Fixes
+
+- *(api)* Rename new register_scan to avoid name collisions
+- *(api)* Use RegisterScan.make() to cut down on copypaste
+- *(statistics)* Keep it from breaking with the time change (DST)
+- *(statistics)* Remove need to pass total minutes as an argument to get the weekly average
+- *(statistics)* Remove leftover debug print lines
+- *(tooling)* Update devenv
+- *(tooling)* Remove duplicate ruff config
+- *(tooling)* Ignore long lines in CHANGELOG.md
+- *(webui)* Make midas html point to midas' base.html
+- *(webui)* Run s/webui/midas in views.py
+
+
+### Features
+
+- *(api)* Port API to midas
+- *(model)* Add related_name to ForeignKeys
+- *(tests)* Add tests for midas
+- *(tooling)* Run tests in pre-commit hook
+- *(tooling)* Automatically upload releases to dockerhub
+- *(tooling)* Enforce conventional commits using commitizen
+- *(webui)* Add new user dashboard with new database logic
+- *(webui)* Make User Profile displays user informtion and add tag functionality
+- *(webui)* Add htmx instead of hard refresh on user_profile and tweak views user_profile to return HtmlResponse
+- *(webui)* Add function for get everyone's statistics in one go
+
+
+### Miscellaneous Tasks
+
+- *(deps)* Update dependency astral-sh/uv to v0.8.23
+- *(deps)* Update renovatebot/github-action action to v43.0.15
+- *(release)* Bump 2.1.0 -> 2.2.0
+
+
+### Refactor
+
+- *(api)* Use objects.create() instead of save()
+- *(statistics)* Accept user directly rather than request
+- *(webui)* Remove useless order_by() in is_checked_in()
+- *(webui)* Namespace midas urls
+
+
+### Styling
+
+- *(webui)* Sort urls.py
+- *(webui)* Remove commented imports
+
+
+### Testing
+
+- *(api)* Repeat check-in/out 10 times
+
+
+## 2.1.0 - 2025-10-03
+
+### Features
+
+- *(admin)* Sort everything
+- *(admin)* Add filters to admin page
+- *(api)* Allow register_scan with trailing slash again
+- *(model)* Add statistics calculation
+
+
+### Miscellaneous Tasks
+
+- *(release)* Bump 2.0.0 -> 2.1.0
+
+
+### Refactor
+
+- *(midas)* Add midas app, put new models in it
+- *(midas)* Split log table into checkin and checkout
+- *(statistics)* Move statistics calculations to statistics.py
+- *(tooling)* Add statistics scope for conventional commits
+- *(No Category)* Prettify admin page, changes in models
+
+
+### Styling
+
+- *(midas)* Reorder models in the admin page
+
+
+## 2.0.0 - 2025-10-01
+
+### Bug Fixes
+
+- *(backups)* Add packages required to run `django backup_website`
+
+
+### Features
+
+- *(commands)* Add init_admin
+- *(containers)* Make backup credentials file location configurable
+- *(containers)* Mount credentials in the example compose.yaml
+- *(docker)* Autocreate an admin on container startup
+  - **BREAKING**: docker image autocreates a superuser now.
+- *(tooling)* Add conventional commits to vscode
+- *(tooling)* Gitignore the credentials folder
+- *(tooling)* Add example backup env vars to compose.yaml
+- *(webui)* Add a button to redirect to dashboard
+
+
+### Miscellaneous Tasks
+
+- *(deps)* Update renovatebot/github-action action to v43.0.14
+- *(deps)* Update astral-sh/setup-uv digest to d0cc045
+- *(release)* Bump 1.2.0 -> 2.0.0
+
+
+### Refactor
+
+- *(api)* Removed a slash at the end of register_scan
+  - **BREAKING**: register_scan endpoint requires no slash at the end now
+- *(css)* Move log in button to nav bar
+
+
+## 1.2.0 - 2025-09-28
+
+### Features
+
+- *(tooling)* Add test step to release script
+- *(tooling)* Abort bump-version script when worktree is dirty
+
+
+### Miscellaneous Tasks
+
+- *(release)* Bump 1.1.0 -> 1.2.0
+
+
+### Performance
+
+- *(tooling)* Prune unused git hooks in bump-version script
+- *(tooling)* Let cz bump fail fast
+
+
+### Refactor
+
+- *(tooling)* Move version bump out of release into a separate script
+- *(tooling)* Scripts: s/release/deliver/; release = bump && deliver
+- *(tooling)* Get rid of next-version
+- *(webui)* BEMify base.css
+- *(webui)* Do not nest BEM css selectors
+
+
+## 1.1.0 - 2025-09-27
+
+### Bug Fixes
+
+- *(admin)* Fix export of large logs
+- *(tooling)* Show `cd` in trace of *-container scripts
+- *(tooling)* Make release script follow commitizen's tag schema
+- *(webui)* Fix base.html modal z-index
+
+
+### Features
+
+- *(containers)* Add sqlite to the container image
+
+
+### Miscellaneous Tasks
+
+- *(release)* Bump 1.0.0 -> 1.1.0
+
+
+### Performance
+
+- *(tooling)* Speed up release script
+
+
+### Refactor
+
+- *(views)* Remove unused serializers & fields
+- *(views)* Inline current_user_logs
+
+
+### Styling
+
+- *(webui)* Make profile action buttons more prominent
+- *(webui)* Run <script>s through prettier
+
+
+## 1.0.0 - 2025-09-27
+
+### Bug Fixes
+
+- *(api)* Register_scan: update JSON keys to match the OpenAPI spec
+- *(api)* Fix queries
+- *(api)* Pick correct statistics row
+- *(css)* Make all modals of same width
+- *(css)* Resurrect a wrongly deleted line
+- *(docker)* Run debug in local compose
+- *(docs)* Exclude a duplicate CHANGELOG from Doxygen docs
+- *(edit_profile)* Handle empty fields in submission
+- *(edit_profile)* Fix edit membership when no membership found
+- *(edit_profile)* Handle half-filled membership
+- *(fmt)* Copy my local .prettierrc into the repo
+- *(model)* Fucking timezones
+- *(model)* Fucking timezones
+- *(model)* Makemigrations --merge
+- *(model)* Fucking timezones
+- *(webui)* Fix edit_profile 500 when no current membership
+- *(No Category)* Add migrations for last 2 commits
+- *(No Category)* Make statistics & profile pages work when the user is not a member
+
+
+### Documentation
+
+- *(gha)* Comment on triggers of gha workflows
+- *(No Category)* Add scanner api
+- *(No Category)* Move schema.puml to docs
+- *(No Category)* Update README Getting Stared to use nix instead of devcontainers
+- *(No Category)* Add doxygen
+- *(No Category)* Add docs badge to README
+- *(No Category)* Exclude migrations from the auto-generated docs
+- *(No Category)* Add github actions status badge to README
+- *(No Category)* Add wiki link to README
+- *(No Category)* Remove all mentions of devcontainers
+- *(No Category)* Add CHANGELOG.md
+
+
+### Features
+
+- *(admin)* Auto-generate scanner ID on creation
+- *(devenv)* Add upload-container-to script
+- *(devenv)* Add commitizen
+- *(devenv)* Add current-version script
+- *(devenv)* Add next-version script
+- *(devenv)* Add release script
+- *(docker)* Don't renovate compose.yaml
+- *(No Category)* Add tag deletion confirmation
+- *(No Category)* Add profile edit modal
+
+
+### Miscellaneous Tasks
+
+- *(deps)* Update actions/checkout action to v5
+- *(deps)* Update actions/create-github-app-token action to v2
+- *(deps)* Update dependency font-awesome to v7
+- *(deps)* Pin dependencies
+- *(deps)* Update dependency astral-sh/uv to v0.8.20
+- *(deps)* Update renovatebot/github-action action to v43.0.13
+- *(deps)* Pin dependencies
+- *(deps)* Update mattnotmitt/doxygen-action action to v1.12.0
+- *(deps)* Update actions/upload-pages-artifact action to v4
+- *(deps)* Update actions/checkout action to v5
+- *(deps)* Update dependency astral-sh/uv to v0.8.21
+- *(deps)* Update roboteamtwente/rfid-tracker-serve docker digest to 4ddccc0
+- *(deps)* Update dependency astral-sh/uv to v0.8.22
+- *(deps)* Update roboteamtwente/rfid-tracker-serve docker digest to b25e65d
+- *(deps)* Update roboteamtwente/rfid-tracker-serve docker digest to f157deb
+- *(deps)* Update roboteamtwente/rfid-tracker-serve docker digest to 1e474b6
+- *(deps)* Update roboteamtwente/rfid-tracker-serve docker digest to b8dc9ec
+- *(deps)* Update roboteamtwente/rfid-tracker-serve docker digest to efe6204
+- *(deps)* Update roboteamtwente/rfid-tracker-serve docker digest to 0faffdc
+- *(docs)* Run prettier on README.md
+- *(release)* Force a major release
+  - **BREAKING**: force a major release
+- *(release)* Bump 0.1.0 -> 1.0.0
+
+
+### README
+
+- *(No Category)* Mention pre-commit pitfalls
+
+
+### Refactor
+
+- *(devenv)* Hide superfluous debug output in *-container scripts
+
+
+### Styling
+
+- *(devenv)* Move prettier git-hook into a separate paragraph
+- *(user_profile)* Clarify UI message
+- *(user_profile)* Reorder profile fields to match edit_profile
+- *(No Category)* Update message
+
+
+### Testing
+
+- *(No Category)* Add tests for /register_scan endpoint
+
+
+### Admin
+
+- *(No Category)* Fix get_app_list method
+- *(No Category)* Add filtering by subteam and/or person to Log admin page
+- *(No Category)* Adjust default sorting in admin page to show most recent first
+- *(No Category)* Show tag status
+- *(No Category)* Make logs and memberships searchable
+- *(No Category)* Add CSV export feature for logs
+- *(No Category)* Use django helpers to generate register link
+- *(No Category)* Adapt to new, stringy, tag_id
+
+
+### Build
+
+- *(pip)* Remove duplicate dependency
+- *(No Category)* Package the project with Nix
+- *(No Category)* Add a production container
+- *(No Category)* Simplify build instructions
+- *(No Category)* Add a "first-start" package
+
+
+### Ci
+
+- *(docs)* Deploy doxygen docs to github pages
+- *(git)* Add commitizen config
+- *(test)* Run test workflow on renovate/* branches
+- *(test)* Actually make it run on renovate/* branches
+
+
+### Cicd
+
+- *(No Category)* Compose: run in production mode
+- *(No Category)* Enable Renovate
+- *(No Category)* Enable manual trigger of Renovate
+
+
+### Css
+
+- *(No Category)* Use nested css to simplify selectors
+
+
+### Devcontainer
+
+- *(No Category)* Init
+- *(No Category)* Use custom Dockerfile
+- *(No Category)* Mount /nix in a volume for faster rebuilds
+- *(No Category)* Move nix commands to onCreateCommand to use the cache volume
+- *(No Category)* Generate vscode tasks
+- *(No Category)* Make `dev` script default and autostart it on folder open
+- *(No Category)* Implement login to dockerhub
+- *(No Category)* Fix container upload
+- *(No Category)* Add `repl` script
+- *(No Category)* Add curl, httpie
+- *(No Category)* Script docker-login: provide default username, pass arguments through
+- *(No Category)* Force container build every time (devenv caches too much)
+- *(No Category)* Remove
+
+
+### Devenv
+
+- *(No Category)* Add testing
+- *(No Category)* Add virtualenv to $PATH
+- *(No Category)* Add scripts
+- *(No Category)* Do not hardcode virtualenv location
+- *(No Category)* Generate treefmt.toml
+- *(No Category)* Simplify test
+- *(No Category)* Automigrate while in development
+- *(No Category)* Make scripts accept arguments
+- *(No Category)* Add a script to create a new database
+- *(No Category)* Add shfmt and taplo code formatters
+- *(No Category)* Add git hooks
+- *(No Category)* Build all containers manually, add them to .vscode/tasks.json
+- *(No Category)* Scripts: add build-container, upload-container
+
+
+### Django
+
+- *(No Category)* Init
+- *(No Category)* Create app WebUI
+- *(No Category)* Change production URL
+- *(No Category)* Trust reverse proxy in production
+
+
+### Formatting
+
+- *(No Category)* Get rid of treefmt
+- *(No Category)* Set ruff to use max. 80 characters per line
+- *(No Category)* Add prettier
+- *(No Category)* Reformat entire repo to get our new, shorter, lines
+- *(No Category)* Make ruff sort imports
+- *(No Category)* Format python with single quotes
+
+
+### Frontend
+
+- *(No Category)* Use {% csrf_token %} instead of parsing cookies
+
+
+### Gha
+
+- *(No Category)* Use working-directory
+
+
+### Git
+
+- *(No Category)* Run pre-commit on all files
+- *(No Category)* Disable lychee pre-commit hook
+- *(No Category)* Mark .envrc as a bash script
+- *(No Category)* Always use LF line endings
+- *(No Category)* Add djhtml pre-commit hook to format django templates
+- *(No Category)* Add makemigrations pre-commit hook
+- *(No Category)* Silence some pre-commit warnings
+- *(No Category)* Run pre-commit on all files
+
+
+### Html
+
+- *(No Category)* Use sans-serif font
+- *(No Category)* Fadeout messages
+- *(No Category)* Make RoboTeam logo a link to /
+- *(No Category)* Add {% modal %} tag
+- *(No Category)* Set max-width for main content
+- *(No Category)* Update user_profile.html to use base.html and {% modal %}
+- *(No Category)* Use {{user}} directly
+- *(No Category)* Cleanup css & js in index.html and user_profile.html
+- *(No Category)* Tweak gaps in user_profile.html
+- *(No Category)* Update user_statistics.html to use base.html & cleanup css
+- *(No Category)* Index.html: don't hide separator after the last "recent scan"
+
+
+### Lychee
+
+- *(No Category)* Ignore django templates
+
+
+### Model
+
+- *(No Category)* Add the "forever data" table
+- *(No Category)* Adjust ordering & pretty names on admin page
+- *(No Category)* Allow unclaimed tags, update admin to match
+- *(No Category)* Do not sort models in the admin
+- *(No Category)* Mark remote checkouts as 'WebUI' on admin page
+- *(No Category)* Add `filter_effective` query to Membership table
+- *(No Category)* Make tag ID optional, add get_state()
+- *(No Category)* Tag.person(): return none if owner is none
+- *(No Category)* Tag: handle nullable fields in methods
+- *(No Category)* Log: use | separator when stringifying
+- *(No Category)* Add Scanner
+- *(No Category)* Add "registered" log type
+- *(No Category)* Make tag_id a string
+- *(No Category)* Add Tag.objects.get_pending() method
+- *(No Category)* Fix is_checked_in
+- *(No Category)* Don't use memberships with starting_from in the future
+
+
+### Models
+
+- *(No Category)* Use django.contrib.auth.User instead of Person
+- *(No Category)* Make Log.tag optional, to model WebUI self-checkout
+
+
+### Nix
+
+- *(No Category)* Init
+- *(No Category)* Let formatters be installed by pre-commit
+- *(No Category)* Add openssh (for git pull/push)
+- *(No Category)* Scripts {build,upload}-container: make them work in any directory
+- *(No Category)* Don't rebuild environment every time pyproject.toml is changed
+
+
+### Packaging
+
+- *(No Category)* Build container manually, get 10x size reduction
+- *(No Category)* Run tini as PID 1, to properly handle signals in the container
+- *(No Category)* Add django templates to the python virtualenv
+- *(No Category)* Add compose.yaml
+- *(No Category)* Add admin html overrides to the production package
+
+
+### Pre-commit
+
+- *(No Category)* Disable check-python (use ruff instead)
+- *(No Category)* Enable ruff-format
+- *(No Category)* Update hook list
+
+
+### Python
+
+- *(No Category)* Install optional dependencies for python-lsp-server
+- *(No Category)* Explicitly add daphne server to dependency list
+- *(No Category)* Remove ruff from dependencies, it is installed with nix instead
+- *(No Category)* Remove unused dependencies
+- *(No Category)* Include static files in the docker image
+
+
+### Schema
+
+- *(No Category)* Add crow feet
+- *(No Category)* Fix type of tag_person::tag_id (foreign_key -> ID)
+- *(No Category)* Remove a field left over from previous design
+- *(No Category)* Encode many-to-many relationship directly, not through an extra table
+- *(No Category)* Add membership & job tables
+
+
+### Uv
+
+- *(No Category)* Init
+
+
+### View
+
+- *(No Category)* Remove link to nonexistent style.css
+- *(No Category)* Export: check authentication
+
+
+### Views
+
+- *(No Category)* Update register_scan
+- *(No Category)* Automate serializer error message generation
+- *(No Category)* Change_status: use serializer
+- *(No Category)* Register_scan: clarify error message
+- *(No Category)* Remove ui prefix
+- *(No Category)* Register_scan: use hex instead of base64 for card_id
+- *(No Category)* Register_scan: don't parse tag_id
+- *(No Category)* Show error message when base64 decoding failed
+- *(No Category)* Remove unused views: check_status, change_status, save_statistics
+- *(No Category)* Use django forms in /login
+- *(No Category)* Don't use javascript in index view
+- *(No Category)* Get rid of most of JS in user_statistics.html
+- *(No Category)* Don't use JS in user_profile
+- *(No Category)* Implement "delete tag" button
+- *(No Category)* Don't crash if membership not found
+- *(No Category)* Use latest statistics row, not earliest
+- *(No Category)* Index: s/Database Entries/Recent Tag Scans
+- *(No Category)* Index: make tag scans non-expandable
+- *(No Category)* Index: limit shown tag scans to max 10
+- *(No Category)* Add /healthcheck endpoint
+- *(No Category)* Add base.html, use it in index.html
+- *(No Category)* Implement messages
+- *(No Category)* Csv export: format time in a way excel understands (excel sucks btw)
+- *(No Category)* Login: show a message on successful login
+
+
+### Vscode
+
+- *(No Category)* Recommend Devcontainers extension
+- *(No Category)* Disable automatic port forwarding
+- *(No Category)* Add extensions: openapi, ruff, markdownlint
+- *(No Category)* Move extension recommendations from devcontainer.json to extensions.json
+
+
+<!-- generated by git-cliff -->

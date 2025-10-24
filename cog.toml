@@ -1,9 +1,0 @@
-ignore_merge_commits = true
-branch_whitelist = ["release/*"]
-tag_prefix = "v"
-pre_bump_hooks = ["uv version {{version}}"]
-
-[changelog]
-remote = "github.com"
-owner = "RoboTeamTwente"
-repository = "rfid-tracker-server"

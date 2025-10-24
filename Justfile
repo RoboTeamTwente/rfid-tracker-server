@@ -14,7 +14,7 @@ fmt:
 # Run all formatters & tests
 check:
     # run tests & pre-commit hooks
-    lefthook run --all-files --force pre-commit
+    CI=1 lefthook run --all-files --force pre-commit
     # also check that the container still builds
     std //repo/containers/prod-latest:build
 
@@ -38,7 +38,11 @@ test: (django 'test')
 
 # Release a new version on Github
 release:
-    gh workflow run release.yaml
+    #!/bin/sh -eux
+    uv version "$(git cliff --bumped-version)"
+    message="chore(version): $(git cliff --bumped-version)"
+    git cliff --bump -o CHANGELOG.md --with-commit "$message"
+    git commit . -m "$message"
 
 # Build & upload the container image
 deliver:
