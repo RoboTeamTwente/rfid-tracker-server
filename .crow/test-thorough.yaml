@@ -4,7 +4,9 @@ when:
   - event: [push, pull_request]
     branch: main
   - event: push
-    branch: renovate/*
+    branch:
+      - renovate/*
+      - gh-readonly-queue/main/*
 
 variables:
   - &nix
