@@ -14,10 +14,10 @@ nixpkgs.lib.mapAttrs (_: mkShell) {
     ];
     packages = [
       cell.packages.python
-      nixpkgs.cocogitto
       nixpkgs.curl
       nixpkgs.doxygen
       nixpkgs.git
+      nixpkgs.git-cliff
       nixpkgs.koji
       nixpkgs.openssh
       nixpkgs.skopeo
