@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/woodpecker-ci/woodpecker/main/pipeline/frontend/yaml/linter/schema/schema.json
+
+when:
+  - event: tag
+    ref: refs/tags/v*
+
+variables:
+  - &nix
+    image: nixos/nix
+    volumes:
+      - crow-rtt-nix:/nix
+
+steps:
+  setup:
+    <<: *nix
+    commands:
+      - echo 'experimental-features = nix-command flakes' >> /etc/nix/nix.conf
+      - echo 'max-jobs = auto' >> /etc/nix/nix.conf
+      - nix develop -Lc true
+
+  deliver:
+    <<: *nix
+    environment:
+      DOCKERHUB_TOKEN:
+        from_secret: dockerhub_token
+    commands:
+      - nix develop -Lc skopeo login docker.io -u roboteamtwente -p "$DOCKERHUB_TOKEN"
+      - nix develop -Lc just deliver
