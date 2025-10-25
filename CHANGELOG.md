@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.13.0 - 2025-10-25
+
+### Features
+
+- *(tooling)* Implement releases in crow CI
+
+
+### Miscellaneous Tasks
+
+- *(version)* V2.13.0
+
+
 ## 2.12.0 - 2025-10-24
 
 ### Bug Fixes
