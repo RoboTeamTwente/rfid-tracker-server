@@ -20,9 +20,19 @@ steps:
 
   deliver:
     <<: *nix
+    depends_on: setup
     environment:
       DOCKERHUB_TOKEN:
         from_secret: dockerhub_token
     commands:
       - nix develop -Lc skopeo login docker.io -u roboteamtwente -p "$DOCKERHUB_TOKEN"
       - nix develop -Lc just deliver
+
+  release:
+    <<: *nix
+    depends_on: setup
+    environment:
+      GITHUB_TOKEN:
+        from_secret: github_token
+    commands:
+      - nix develop -Lc sh -c 'gh release new "$CI_COMMIT_TAG" --notes "$(git cliff --latest --strip all)"'
