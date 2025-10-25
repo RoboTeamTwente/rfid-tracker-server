@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.14.0 - 2025-10-25
+
+### Features
+
+- *(tooling)* Automatically create GitHub release
+
+
+### Miscellaneous Tasks
+
+- *(version)* V2.14.0
+
+
 ## 2.13.0 - 2025-10-25
 
 ### Features
