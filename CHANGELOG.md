@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.15.0 - 2025-11-03
+
+### Bug Fixes
+
+- *(tooling)* Don't build for Darwin
+
+
+### Features
+
+- *(tooling)* Add hydra jobs
+
+
+### Miscellaneous Tasks
+
+- *(deps)* Update nix dependencies
+- *(deps)* Update renovatebot/github-action action to v43.0.19
+- *(deps)* Update renovatebot/github-action action to v43.0.20
+- *(version)* V2.15.0
+
+
 ## 2.14.0 - 2025-10-25
 
 ### Features
