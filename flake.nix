@@ -35,6 +35,10 @@
     inputs.std.growOn
       {
         inherit inputs;
+        systems = [
+          "x86_64-linux"
+          "aarch64-linux"
+        ];
         cellsFrom = ./nix;
         cellBlocks = with inputs.std.blockTypes; [
           (containers "containers")
