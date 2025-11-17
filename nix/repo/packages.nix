@@ -5,7 +5,7 @@ let
 
   l = builtins // nixpkgs.lib;
 
-  python = nixpkgs.python313;
+  python = nixpkgs.python314;
 
   workspace = inputs.uv2nix.lib.workspace.loadWorkspace {
     workspaceRoot = inputs.self + /door_tracker;
@@ -15,8 +15,12 @@ let
     sourcePreference = "wheel";
   };
 
-  # hacks = nixpkgs.callPackage inputs.pyproject-nix.build.hacks { };
-  pyprojectOverrides = _pypkgs: _prev: {
+  hacks = nixpkgs.callPackage inputs.pyproject-nix.build.hacks { };
+  pyprojectOverrides = pypkgs: prev: {
+    zope-interface = hacks.nixpkgsPrebuilt {
+      from = python.pkgs.zope-interface;
+      prev = prev.zope-interface;
+    };
   };
 
   baseSet = nixpkgs.callPackage inputs.pyproject-nix.build.packages { inherit python; };
