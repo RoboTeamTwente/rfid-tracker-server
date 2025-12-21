@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.15.2 - 2025-12-21
+
+### Miscellaneous Tasks
+
+- *(deps)* Update actions/checkout action to v6
+- *(version)* V2.15.2
+
+
 ## 2.15.1 - 2025-12-21
 
 ### Bug Fixes
@@ -23,6 +31,7 @@ All notable changes to this project will be documented in this file.
 - *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to e94b924
 - *(deps)* Update actions/create-github-app-token digest to 29824e6
 - *(deps)* Update renovatebot/github-action action to v44.2.0
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to 0dbcb81
 - *(version)* V2.15.1
 
 
