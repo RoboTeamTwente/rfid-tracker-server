@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.15.1 - 2025-12-21
+
+### Bug Fixes
+
+- *(tooling)* Fix build with python 3.14
+
+
+### Miscellaneous Tasks
+
+- *(deps)* Upgrade to Python 3.14
+- *(deps)* Update renovatebot/github-action action to v44
+- *(deps)* Update determinatesystems/nix-installer-action action to v21
+- *(deps)* Pin ghcr.io/astral-sh/uv docker tag to a87efc5
+- *(deps)* Update actions/checkout action to v5.0.1
+- *(deps)* Update actions/checkout digest to 93cb6ef
+- *(deps)* Update actions/create-github-app-token digest to 7e473ef
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to ed8b7cf
+- *(deps)* Update renovatebot/github-action action to v44.0.5
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to e94b924
+- *(deps)* Update actions/create-github-app-token digest to 29824e6
+- *(deps)* Update renovatebot/github-action action to v44.2.0
+- *(version)* V2.15.1
+
+
 ## 2.15.0 - 2025-11-17
 
 ### Bug Fixes
