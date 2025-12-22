@@ -96,6 +96,19 @@ If a tutorial, Stack Overflow, etc. asks you to run `python manage.py
 foo bar`, run `django foo bar` instead. This script works from any
 directory, in contrast to `manage.py`.
 
+## Releasing
+
+First, generate the changelog: create a new feature branch, run `just
+release` (it will make a commit), and merge it. Don't delete the branch
+just yet.
+
+After Github shows a green checkmark against the release commit, tag it
+with the new version (i.e. `git tag v1.2.3`) and push the tag.
+
+If the checkmark was not green, you will see an error message. In this
+case, wait and try again. If the push was successful, you will soon see
+the new release on Github and Dockerhub.
+
 ## Pitfalls
 
 ### Pre-commit
