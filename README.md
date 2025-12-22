@@ -109,6 +109,20 @@ If the checkmark was not green, you will see an error message. In this
 case, wait and try again. If the push was successful, you will soon see
 the new release on Github and Dockerhub.
 
+## Deploying
+
+After the image is update on Dockerhub, it is possible to deploy it on
+the server:
+
+```bash
+ssh your-username@ip-of-the-server # ask the admin for access
+cd ~/docker
+vim docker-compose.yml # change major version, if needed
+docker compose pull rfid-tracker # download the new image
+docker compose up -d rfid-tracker # restart with the new image
+docker compose logs -f rfid-tracker # confirm that the server didn't die
+```
+
 ## Pitfalls
 
 ### Pre-commit
