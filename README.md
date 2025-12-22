@@ -117,7 +117,7 @@ the server:
 ```bash
 ssh your-username@ip-of-the-server # ask the admin for access
 cd ~/docker
-vim docker-compose.yml # change major version, if needed
+vim docker-compose.yml # update the image tag, if it was a major release
 docker compose pull rfid-tracker # download the new image
 docker compose up -d rfid-tracker # restart with the new image
 docker compose logs -f rfid-tracker # confirm that the server didn't die
