@@ -1,6 +1,6 @@
 services:
   serve:
-    image: roboteamtwente/rfid-tracker-serve
+    build: door_tracker
     ports:
       - 8001:8000
     volumes:
@@ -14,5 +14,13 @@ services:
       - ADMIN_USER=admin
       - ADMIN_PASS=admin
       - ADMIN_EMAIL=admin@localhost
+    develop:
+      watch:
+        - path: door_tracker/
+          target: /app
+          ignore: .venv
+          action: sync
+        - path: door_tracker/pyproject.toml
+          action: rebuild
 volumes:
   db:
