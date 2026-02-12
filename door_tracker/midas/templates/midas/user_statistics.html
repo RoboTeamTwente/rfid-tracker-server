@@ -4,7 +4,6 @@
 
 {% block head %}
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
-
 {% endblock %}
 
 {% block main %}
@@ -46,19 +45,22 @@
         <div class="dashboard__quota-info">
           Weekly Quota: {{ total_hours_week }} / {{ quota_hours_week }}
         </div>
+        <div class="dashboard__quota-info">
+          Monthly Quota: {{ total_hours_month }} / {{ quota_hours_month }}
+        </div>
       </div>
     </div>
   </main>
 
   {{ script_data | json_script }}
   <script>
-// CSRF
+  // CSRF
     function getCSRFToken() {
       const el = document.querySelector('[name=csrfmiddlewaretoken]')
       return el ? el.value : ''
     }
 
-// fuel gauge
+  // fuel gauge
     const chartDom = document.getElementById('gauge-chart')
     const chart = echarts.init(chartDom)
 
@@ -66,7 +68,7 @@
       chart.resize()
     })
 
-// extract values from json_script above
+  // extract values from json_script above
     const data = JSON.parse(
       document.currentScript.previousElementSibling.textContent,
     )

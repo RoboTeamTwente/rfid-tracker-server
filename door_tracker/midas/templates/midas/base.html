@@ -42,7 +42,7 @@
 
         {% if user.is_superuser %}
           <h3 class="sidebar__section">ADMIN PAGES</h3>
-          <a class="sidebar__button" href="{% url 'midas:index' %}">Team Overview</a>
+          <a class="sidebar__button" href="{% url 'midas:team_overview' %}">Team Overview</a>
           <a class="sidebar__button" href="{% url 'admin:index' %}">Admin Dashboard</a>
         {% endif %}
 
