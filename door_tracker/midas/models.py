@@ -132,7 +132,7 @@ class Assignment(models.Model):
                     )
                     .values('user')
                     .annotate(starting_from=Max('starting_from'))
-                    .values('starting_from')
+                    .values('starting_from')[:1]
                 ),
             )
 

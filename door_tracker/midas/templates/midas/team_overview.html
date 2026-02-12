@@ -1,0 +1,194 @@
+{% extends 'midas/base.html' %}
+
+{% block title %}Team Overview{% endblock %}
+
+{% block head %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+    /* 1. LAYOUT OVERRIDES */
+    /* Make the main container take up 95% of the screen */
+        main {
+            width: 95% !important;
+            max-width: 1800px !important; /* Cap it for 4k screens */
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+    /* 2. HEADER CONTROLS (The "Top Bar") */
+        .dashboard-controls {
+            display: flex;
+            justify-content: space-between; /* Push items to edges */
+            align-items: center;
+            background: #fff;
+            padding: 20px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            border-left: 5px solid #36a2eb; /* Blue accent on left */
+        }
+
+        .dashboard-controls h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #2c3e50;
+        }
+
+        .team-selector {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+    /* Styling the dropdown to look like a button */
+        select.team-select {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background-color: #f8f9fa;
+            font-size: 16px;
+            cursor: pointer;
+            min-width: 250px;
+            transition: border-color 0.2s;
+        }
+        select.team-select:hover {
+            border-color: #36a2eb;
+        }
+
+    /* 3. SUMMARY CARDS */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+            gap: 30px; /* big spacing */
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-5px); }
+
+        .stat-card h3 { margin: 0 0 10px 0; color: #64748b; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-card p { margin: 0; font-size: 36px; font-weight: 800; color: #1e293b; }
+
+    /* 4. CHART CARD */
+        .chart-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            height: 600px; /* Taller chart since we have width */
+            width: 100%;
+            position: relative;
+        }
+    </style>
+{% endblock %}
+
+{% block main %}
+    <main>
+
+        <div class="dashboard-controls">
+            <div class="title-section">
+                <h1>Team Performance</h1>
+                <span style="color: #64748b; font-size: 14px;">Overview for {{ current_subteam.name }}</span>
+            </div>
+
+            <div class="team-selector">
+                <label for="subteam_select" style="font-weight: 600; color: #475569;">Switch Team:</label>
+                <form method="GET" action="" style="margin:0;">
+                    <select name="subteam_id" id="subteam_select" class="team-select" onchange="this.form.submit()">
+                        {% for team in all_subteams %}
+                            <option value="{{ team.id }}"
+                                    {% if team.id == current_subteam.id %}selected{% endif %}>
+                                {{ team.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+        </div>
+
+        <div class="summary-cards">
+            <div class="stat-card" style="border-bottom: 4px solid #36a2eb;">
+                <h3>Total Hours</h3>
+                <p>{{ summary.total_hours }}h</p>
+            </div>
+            <div class="stat-card" style="border-bottom: 4px solid #ff6384;">
+                <h3>Active Members</h3>
+                <p>{{ summary.member_count }}</p>
+            </div>
+            <div class="stat-card" style="border-bottom: 4px solid #ffcd56;">
+                <h3>Avg per Member</h3>
+                <p>{{ summary.avg_hours }}h</p>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="teamChart"></canvas>
+        </div>
+
+    </main>
+
+    {{ page_data|json_script:"frontend-data" }}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const appData = JSON.parse(document.getElementById('frontend-data').textContent);
+            const ctx = document.getElementById('teamChart').getContext('2d');
+
+        // Gradient Fill
+            let gradient = ctx.createLinearGradient(0, 0, 0, 600);
+            gradient.addColorStop(0, 'rgba(54, 162, 235, 0.3)');
+            gradient.addColorStop(1, 'rgba(54, 162, 235, 0.0)');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: appData.chart.labels,
+                    datasets: [{
+                        label: 'Hours Worked',
+                        data: appData.chart.data,
+                        borderColor: '#36a2eb',
+                        backgroundColor: gradient,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#36a2eb',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        pointHoverRadius: 9,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }, // Hide legend since title is enough
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            padding: 12,
+                            titleFont: { size: 14 },
+                            bodyFont: { size: 14 },
+                            displayColors: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { borderDash: [5, 5], color: '#f0f0f0' },
+                            title: { display: true, text: 'Hours' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}
