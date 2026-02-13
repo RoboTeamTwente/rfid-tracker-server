@@ -16,7 +16,7 @@ steps:
       - echo 'store = unix:///mnt/nix/var/nix/daemon-socket/socket?root=/mnt' >> /etc/nix/nix.conf
       - nix develop -Lc true
 
-  deliver:
+  upload:
     image: nixos/nix@sha256:bf1d938835ab96312f098fa6c2e9cab367728e0aad0646ee3e02a787c80d8fb8
     privileged: true
     volumes:
@@ -30,7 +30,7 @@ steps:
       - echo 'max-jobs = auto' >> /etc/nix/nix.conf
       - echo 'store = unix:///mnt/nix/var/nix/daemon-socket/socket?root=/mnt' >> /etc/nix/nix.conf
       - nix develop -Lc skopeo login docker.io -u roboteamtwente -p "$DOCKERHUB_TOKEN"
-      - nix develop -Lc just deliver
+      - nix develop -Lc just upload-image
 
   release:
     image: nixos/nix@sha256:bf1d938835ab96312f098fa6c2e9cab367728e0aad0646ee3e02a787c80d8fb8
