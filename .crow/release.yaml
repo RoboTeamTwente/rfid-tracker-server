@@ -30,7 +30,7 @@ steps:
       - echo 'max-jobs = auto' >> /etc/nix/nix.conf
       - echo 'store = unix:///mnt/nix/var/nix/daemon-socket/socket?root=/mnt' >> /etc/nix/nix.conf
       - nix develop -Lc skopeo login docker.io -u roboteamtwente -p "$DOCKERHUB_TOKEN"
-      - nix develop -Lc just deliver
+      - nix develop -Lc just upload-image
 
   release:
     image: nixos/nix@sha256:e2fe74e96e965653c7b8f16ac64d1e56581c63c84d7fa07fb0692fd055cd06b0
