@@ -30,5 +30,7 @@ urlpatterns = [
     path('user_profile', views.user_profile, name='user_profile'),
     path('user_statistics', views.user_statistics, name='user_statistics'),
     path('team_overview', views.team_overview, name='team_overview'),
+    path('user_overview', views.user_overview, name='user_overview'),
+
     path('', views.index, name='index'),
 ]

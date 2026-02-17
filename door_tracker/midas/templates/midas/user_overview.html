@@ -1,27 +1,27 @@
 {% extends 'midas/base.html' %}
 
-{% block title %}Team Overview{% endblock %}
+{% block title %}User Overview{% endblock %}
 
 {% block head %}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         main {
             width: 95% !important;
-            max-width: 1800px !important; 
+            max-width: 1800px !important;
             margin: 20px auto;
             padding: 0 20px;
         }
 
         .dashboard-controls {
             display: flex;
-            justify-content: space-between; 
+            justify-content: space-between;
             align-items: center;
             background: #fff;
             padding: 20px 30px;
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             margin-bottom: 30px;
-            border-left: 5px solid #36a2eb; 
+            border-left: 5px solid #36a2eb;
             flex-wrap: wrap;
             gap: 20px;
         }
@@ -63,14 +63,15 @@
         
         select.team-select { min-width: 200px; }
         
-        select.team-select:hover, input[type="date"].date-select:hover {
-            border-color: #36a2eb;
+        select.team-select:hover, input[type="date"].date-select:hover { 
+            border-color: #36a2eb; 
         }
 
+        /* Expanded to 4 columns to include Range Total */
         .summary-cards {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); 
-            gap: 30px; 
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
             margin-bottom: 30px;
         }
 
@@ -83,7 +84,6 @@
             transition: transform 0.2s;
         }
         .stat-card:hover { transform: translateY(-5px); }
-
         .stat-card h3 { margin: 0 0 10px 0; color: #64748b; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
         .stat-card p { margin: 0; font-size: 36px; font-weight: 800; color: #1e293b; }
 
@@ -92,7 +92,7 @@
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-            height: 600px; 
+            height: 600px;
             width: 100%;
             position: relative;
         }
@@ -101,13 +101,18 @@
 
 {% block main %}
     <main>
-
         <div class="dashboard-controls">
             <div class="title-section">
-                <h1>Team Performance</h1>
-                <span style="color: #64748b; font-size: 14px;">Overview for {{ current_subteam.name }}</span>
+                <h1 style="margin-bottom: 4px;">User Performance</h1>
+                <span style="color: #64748b; font-size: 14px;">
+                    Overview for {{ page_data.meta.username }} &bull; 
+                    Weekly Quota: 
+                    <span style="font-weight: 700; color: {% if page_data.meta.weekly_quota_met == 'MET' %}#4fb854{% else %}#d32f2f{% endif %};">
+                        {{ page_data.meta.weekly_quota_met }}
+                    </span>
+                </span>
             </div>
-
+            
             <form method="GET" action="" class="control-form">
                 <div class="input-group">
                     <label for="start_date">From:</label>
@@ -120,12 +125,11 @@
                 </div>
 
                 <div class="input-group" style="margin-left: 15px; padding-left: 15px; border-left: 2px solid #e2e8f0;">
-                    <label for="subteam_select">Team:</label>
-                    <select name="subteam_id" id="subteam_select" class="team-select" onchange="this.form.submit()">
-                        {% for team in all_subteams %}
-                            <option value="{{ team.id }}"
-                                    {% if team.id == current_subteam.id %}selected{% endif %}>
-                                {{ team.name }}
+                    <label for="user_select">User:</label>
+                    <select name="user_id" id="user_select" class="team-select" onchange="this.form.submit()">
+                        {% for u in all_users %}
+                            <option value="{{ u.id }}" {% if u.id == current_user.id %}selected{% endif %}>
+                                {{ u.get_full_name|default:u.username }}
                             </option>
                         {% endfor %}
                     </select>
@@ -135,23 +139,26 @@
 
         <div class="summary-cards">
             <div class="stat-card" style="border-bottom: 4px solid #36a2eb;">
-                <h3>Total Hours</h3>
-                <p>{{ summary.total_hours }}h</p>
-            </div>
-            <div class="stat-card" style="border-bottom: 4px solid #ff6384;">
-                <h3>Active Members</h3>
-                <p>{{ summary.member_count }}</p>
+                <h3>Today</h3>
+                <p>{{ summary.today }}</p>
             </div>
             <div class="stat-card" style="border-bottom: 4px solid #ffcd56;">
-                <h3>Avg per Member</h3>
-                <p>{{ summary.avg_hours }}h</p>
+                <h3>This Week</h3>
+                <p>{{ summary.week }}</p>
+            </div>
+            <div class="stat-card" style="border-bottom: 4px solid #ff6384;">
+                <h3>This Month</h3>
+                <p>{{ summary.month }}</p>
+            </div>
+            <div class="stat-card" style="border-bottom: 4px solid #4bc0c0;">
+                <h3>Range Total</h3>
+                <p>{{ summary.range_total }}</p>
             </div>
         </div>
 
         <div class="chart-container">
-            <canvas id="teamChart"></canvas>
+            <canvas id="userChart"></canvas>
         </div>
-
     </main>
 
     {{ page_data|json_script:"frontend-data" }}
@@ -159,21 +166,17 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const appData = JSON.parse(document.getElementById('frontend-data').textContent);
-            const ctx = document.getElementById('teamChart').getContext('2d');
-
-            let gradient = ctx.createLinearGradient(0, 0, 0, 600);
-            gradient.addColorStop(0, 'rgba(54, 162, 235, 0.3)');
-            gradient.addColorStop(1, 'rgba(54, 162, 235, 0.0)');
+            const ctx = document.getElementById('userChart').getContext('2d');
 
             new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: appData.chart.labels,
                     datasets: [{
-                        label: 'Hours Worked',
+                        label: appData.meta.range_label,
                         data: appData.chart.data,
                         backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                        borderColor: '#36a2eb',
+                        borderColor: 'rgba(54, 162, 235, 1)',
                         borderWidth: 1,
                         borderRadius: 4
                     }]
@@ -181,16 +184,6 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: 'rgba(0,0,0,0.8)',
-                            padding: 12,
-                            titleFont: { size: 14 },
-                            bodyFont: { size: 14 },
-                            displayColors: false
-                        }
-                    },
                     scales: {
                         y: {
                             beginAtZero: true,
@@ -199,6 +192,18 @@
                         },
                         x: {
                             grid: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { 
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            padding: 12,
+                            titleFont: { size: 14 },
+                            bodyFont: { size: 14 }
                         }
                     }
                 }

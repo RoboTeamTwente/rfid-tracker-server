@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 from typing import Optional
 
 import pytz
@@ -13,6 +13,7 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django.utils.dateparse import parse_date
 from rest_framework import serializers
 
 from . import statistics
@@ -23,6 +24,7 @@ from .statistics import (
     get_minutes_this_month,
     get_minutes_this_week,
     get_minutes_today,
+    get_sessions_time,
     get_total_minutes,
 )
 
@@ -109,51 +111,68 @@ def user_statistics(request):
             'user_name': request.user.get_full_name(),
             'user_role': subteam_name,
             'user_status': user_status(request),
-            # totals (Work done)
+            
+            # totals (Work done) - FORMATTED FOR HTML DISPLAY
             'total_hours_day': format_time(total_minutes_day),
             'total_hours_week': format_time(total_minutes_week),
             'total_hours_month': format_time(total_minutes_month),
             'total_hours_all': format_time(total_minutes_all),
             'average_hours_week': format_time(average_minutes_week),
-            # targets (Goals)
+            
+            # targets (Goals) - FORMATTED FOR HTML DISPLAY
             'quota_hours_week': format_time(weekly_hours_target * 60),
             'quota_hours_month': format_time(monthly_hours_target * 60),
+            
             # quotas (Status)
             'quota_week_met': 'MET' if quota_week_met else 'UNMET',
             'quota_month_met': 'MET' if quota_month_met else 'UNMET',
-            # js values
+            
+            # js values - RAW NUMBERS FOR ECHARTS CALCULATION
             'script_data': {
                 'total_hours_week': total_minutes_week,
                 'quota_hours_week': weekly_hours_target * 60,
+                'total_hours_month': total_minutes_month,
+                'quota_hours_month': monthly_hours_target * 60,
             },
         },
     )
 
-
-# Make sure to import your models!
-
-
 def team_overview(request):
-    all_subteams = Subteam.objects.all()
+    utc_now = timezone.now()
+    current_day = utc_now.astimezone(AMSTERDAM_TZ)
 
+    # 1. Date Range Handling
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
+
+    if start_date_str and end_date_str:
+        start_date = parse_date(start_date_str)
+        end_date = parse_date(end_date_str)
+    else:
+        end_date = current_day.date()
+        start_date = end_date - timedelta(days=6)
+
+    if start_date > end_date:
+        start_date, end_date = end_date, start_date
+
+    # Create aware boundaries for get_sessions_time
+    start_dt = AMSTERDAM_TZ.localize(datetime.combine(start_date, time.min))
+    end_dt = AMSTERDAM_TZ.localize(datetime.combine(end_date + timedelta(days=1), time.min)) - timedelta(microseconds=1)
+
+    # 2. Subteam Handling
+    all_subteams = Subteam.objects.all()
     selected_id = request.GET.get('subteam_id')
 
     if selected_id:
         current_subteam = get_object_or_404(Subteam, id=selected_id)
     else:
-        # Default: Use the user's primary subteam, or the first one available
-        # You might need to adjust this logic based on your Assignment model
-        user_assignment = (
-            Assignment.objects.filter_current().filter(user=request.user).first()
-        )
+        user_assignment = Assignment.objects.filter_current().filter(user=request.user).first()
         if user_assignment and user_assignment.subteams.exists():
             current_subteam = user_assignment.subteams.first()
         else:
             current_subteam = all_subteams.first()
 
-    # 3. Fetch Real Data for this specific subteam
-    # (This assumes you have a way to link Users to Subteams via Assignment)
-    # This is a hypothetical query - adjust to your exact model structure
+    # 3. Data Extraction
     members = (
         Assignment.objects.filter_current()
         .filter(subteams=current_subteam)
@@ -162,28 +181,28 @@ def team_overview(request):
 
     chart_labels = []
     chart_data = []
-    total_hours = 0
+    total_hours_float = 0.0
 
     for assignment in members:
-        # Calculate hours for this user (using your helper functions or direct query)
-        # For this example, I'll generate dummy data based on the name length so you see it change
-        # REPLACE THIS WITH REAL get_minutes_this_week() LOGIC
-        hours = (len(assignment.user.username) * 5) + 2
+        user_obj = assignment.user
+        
+        # Calculate minutes spanning exact date range
+        minutes = get_sessions_time(user_obj, start_dt, end_dt)
+        hours = round(minutes / 60.0, 2)
 
-        chart_labels.append(assignment.user.get_full_name() or assignment.user.username)
+        chart_labels.append(user_obj.get_full_name() or user_obj.username)
         chart_data.append(hours)
-        total_hours += hours
+        total_hours_float += hours
 
-    # 4. Prepare the Context
     context = {
         'all_subteams': all_subteams,
         'current_subteam': current_subteam,
+        'start_date': start_date.strftime('%Y-%m-%d'),
+        'end_date': end_date.strftime('%Y-%m-%d'),
         'summary': {
-            'total_hours': total_hours,
+            'total_hours': round(total_hours_float, 2),
             'member_count': len(chart_labels),
-            'avg_hours': round(total_hours / len(chart_labels), 1)
-            if chart_labels
-            else 0,
+            'avg_hours': round(total_hours_float / len(chart_labels), 1) if chart_labels else 0,
         },
         'page_data': {
             'meta': {
@@ -194,6 +213,98 @@ def team_overview(request):
     }
 
     return render(request, 'midas/team_overview.html', context)
+
+def user_overview(request):
+    utc_now = timezone.now()
+    current_day = utc_now.astimezone(AMSTERDAM_TZ)
+
+    # 1. Handle Date Range Selection
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
+
+    if start_date_str and end_date_str:
+        start_date = parse_date(start_date_str)
+        end_date = parse_date(end_date_str)
+    else:
+        end_date = current_day.date()
+        start_date = end_date - timedelta(days=6)
+
+    # Enforce chronological order
+    if start_date > end_date:
+        start_date, end_date = end_date, start_date
+
+    # Cap maximum range to prevent excessive DB queries (e.g., 90 days)
+    if (end_date - start_date).days > 90:
+        start_date = end_date - timedelta(days=90)
+
+    # 2. Handle User Selection
+    all_users = User.objects.all().order_by('username')
+    selected_id = request.GET.get('user_id')
+
+    if selected_id:
+        current_user = get_object_or_404(User, id=selected_id)
+    else:
+        current_user = request.user
+
+    # 3. Standard Metrics
+    minutes_today = get_minutes_today(current_user, current_day)
+    minutes_week = get_minutes_this_week(current_user, current_day)
+    minutes_month = get_minutes_this_month(current_user, current_day)
+
+    def format_time(minutes):
+        hours = int(minutes) // 60
+        mins = int(minutes) % 60
+        return f"{hours}h {mins}m" if mins else f"{hours}h"
+
+    # 4. Generate Custom Range Chart Data
+    chart_labels = []
+    chart_data = []
+    range_total_minutes = 0
+
+    current_iter_date = start_date
+    while current_iter_date <= end_date:
+        day_minutes = get_minutes_today(current_user, current_iter_date)
+        
+        chart_labels.append(current_iter_date.strftime('%b %d'))
+        chart_data.append(round(day_minutes / 60.0, 2))
+        range_total_minutes += day_minutes
+        
+        current_iter_date += timedelta(days=1)
+
+    latest_assignment = (
+        Assignment.objects.filter_current().filter(user=current_user).first()
+    )
+
+    weekly_quota_hours = (
+            latest_assignment.quota.hours if latest_assignment.quota else 0
+        )
+    weekly_quota_met = minutes_week / 60.0 >= weekly_quota_hours
+
+    context = {
+        'all_users': all_users,
+        'current_user': current_user,
+        'start_date': start_date.strftime('%Y-%m-%d'),
+        'end_date': end_date.strftime('%Y-%m-%d'),
+        'summary': {
+            'today': format_time(minutes_today),
+            'week': format_time(minutes_week),
+            'month': format_time(minutes_month),
+            'range_total': format_time(range_total_minutes),
+        },
+        'page_data': {
+            'meta': {
+                'weekly_quota_met': 'MET' if weekly_quota_met else 'UNMET',
+                'username': current_user.get_full_name() or current_user.username,
+                'range_label': f"Hours Worked ({start_date.strftime('%b %d')} - {end_date.strftime('%b %d')})",
+            },
+            'chart': {
+                'labels': chart_labels,
+                'data': chart_data
+            }
+        },
+    }
+
+    return render(request, 'midas/user_overview.html', context)
 
 
 # TODO: Refactor for Midas

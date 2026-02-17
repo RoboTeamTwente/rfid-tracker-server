@@ -43,13 +43,14 @@
         {% if user.is_superuser %}
           <h3 class="sidebar__section">ADMIN PAGES</h3>
           <a class="sidebar__button" href="{% url 'midas:team_overview' %}">Team Overview</a>
+          <a class="sidebar__button" href="{% url 'midas:user_overview' %}">User Overview</a>
           <a class="sidebar__button" href="{% url 'admin:index' %}">Admin Dashboard</a>
         {% endif %}
 
 
         <h3 class="sidebar__section">ACTIONS</h3>
         <a class="sidebar__button" href="{% url 'midas:export_user' %}">Export Sessions</a>
-        <a class="sidebar__button" href="#" onclick="openCheckinModal()">Remote Checkin</a>
+        <a class="sidebar__button" href="#" onclick="openCheckinModal()">Remote Checkin</a> 
         <a class="sidebar__button" href="#" onclick="openCheckoutModal()">Remote Checkout</a>
         <a class="sidebar__button" href="{% url 'midas:logout' %}">Log Out</a>
       </nav>
