@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.16.0 - 2026-02-17
+
+### Features
+
+- *(docs)* Document release process
+- *(docs)* Document deployment of a new release
+
+
+### Miscellaneous Tasks
+
+- *(deps)* Update renovatebot/github-action action to v44.2.1
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to 748d5d5
+- *(deps)* Update renovatebot/github-action action to v44.2.2
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to cbdbeec
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to 7b91606
+- *(deps)* Update renovatebot/github-action action to v44.2.3
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to c3854e7
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to 7393efb
+- *(deps)* Update renovatebot/github-action action to v44.2.4
+- *(deps)* Update renovatebot/github-action action to v44.2.5
+- *(deps)* Update actions/checkout action to v6.0.2
+- *(deps)* Update dependency django to v5.2.9 [security]
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to 1cda6dd
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to 8fcd673
+- *(deps)* Update actions/checkout digest to de0fac2
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to 8375c02
+- *(deps)* Update dependency django to v6.0.2 [security]
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to e2acc84
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to 14141ad
+- *(version)* V2.16.0
+
+
+### Refactor
+
+- *(docs)* Clarify instructions in README
+
+
 ## 2.15.2 - 2025-12-21
 
 ### Miscellaneous Tasks
