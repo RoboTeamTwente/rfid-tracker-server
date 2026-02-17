@@ -10,7 +10,7 @@ from django.db.models import (
     Sum,
     When,
 )
-from django.db.models.functions import Coalesce
+from django.db.models.functions import Coalesce, ExtractWeek, ExtractYear
 from django.utils import timezone
 from pytz import AmbiguousTimeError, NonExistentTimeError
 
@@ -222,39 +222,25 @@ def get_total_minutes(user, day):
 def get_average_week(user, day):
     total_minutes = get_total_minutes(user, day)
 
-    earliest_session = (
-        Session.objects.filter(user=user, checkin__isnull=False)
-        .order_by('checkin__time')
-        .first()
-    )
-
-    if earliest_session is None or not hasattr(earliest_session, 'checkin'):
+    if total_minutes == 0:
         return 0
 
-    # Fix: Ensure compatible types for subtraction
-    first_checkin_dt = earliest_session.checkin.time.astimezone(AMSTERDAM_TZ)
+    # Count distinct weeks with at least one check-in
+    active_weeks_count = (
+        Session.objects.filter(user=user, checkin__isnull=False)
+        .annotate(
+            year=ExtractYear('checkin__time', tzinfo=AMSTERDAM_TZ),
+            week=ExtractWeek('checkin__time', tzinfo=AMSTERDAM_TZ)
+        )
+        .values('year', 'week')
+        .distinct()
+        .count()
+    )
 
-    if isinstance(day, datetime):
-        if timezone.is_naive(day):
-            day = AMSTERDAM_TZ.localize(day)
-        else:
-            day = day.astimezone(AMSTERDAM_TZ)
-    else:
-        # If day is date, make it end of day datetime
-        day = AMSTERDAM_TZ.localize(datetime.combine(day, time.max))
-
-    days_difference = (day - first_checkin_dt).days + 1
-
-    # FIX: Use ceil or max(1) to avoid inflating averages for new users
-    # If I worked 3 days, that is "1 week" of activity conceptually for averages
-    import math
-
-    weeks_difference = max(1, math.ceil(days_difference / 7))
-
-    if weeks_difference == 0:
+    if active_weeks_count == 0:
         return total_minutes
 
-    return int(total_minutes // weeks_difference)
+    return int(total_minutes // active_weeks_count)
 
 
 # Helper function kept for compatibility, but usage replaced with explicit AMSTERDAM_TZ
