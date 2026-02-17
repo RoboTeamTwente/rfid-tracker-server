@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.16.1 - 2026-02-17
+
+### Miscellaneous Tasks
+
+- *(version)* V2.16.0
+
+
 ## 2.16.0 - 2026-02-17
 
 ### Features
