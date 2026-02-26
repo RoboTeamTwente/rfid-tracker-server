@@ -2,11 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.16.2 - 2026-02-26
+
+### Bug Fixes
+
+- *(build)* Fixup py-ubjson build definition
+
+
+### Miscellaneous Tasks
+
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to 3f5bf82
+- *(deps)* Update renovatebot/github-action action to v46
+- *(deps)* Update renovatebot/github-action action to v46.1.2
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to d558f1a
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to f9c0968
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to 87e35fb
+- *(deps)* Lock file maintenance
+- *(version)* V2.16.2
+
+
 ## 2.16.1 - 2026-02-17
 
 ### Miscellaneous Tasks
 
-- *(version)* V2.16.0
+- *(version)* V2.16.1
 
 
 ## 2.16.0 - 2026-02-17
