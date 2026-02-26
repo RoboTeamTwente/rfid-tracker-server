@@ -17,9 +17,9 @@ let
 
   hacks = nixpkgs.callPackage inputs.pyproject-nix.build.hacks { };
   pyprojectOverrides = pypkgs: prev: {
-    zope-interface = hacks.nixpkgsPrebuilt {
-      from = python.pkgs.zope-interface;
-      prev = prev.zope-interface;
+    py-ubjson = hacks.nixpkgsPrebuilt {
+      from = python.pkgs.py-ubjson;
+      prev = prev.py-ubjson;
     };
   };
 
