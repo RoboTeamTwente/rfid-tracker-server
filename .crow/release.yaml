@@ -4,22 +4,20 @@ when:
   - event: tag
     ref: refs/tags/v*
 
-variables:
-  - &nix
+steps:
+  setup:
     image: nixos/nix
     volumes:
       - crow-rtt-nix:/nix
-
-steps:
-  setup:
-    <<: *nix
     commands:
       - echo 'experimental-features = nix-command flakes' >> /etc/nix/nix.conf
       - echo 'max-jobs = auto' >> /etc/nix/nix.conf
       - nix develop -Lc true
 
   deliver:
-    <<: *nix
+    image: nixos/nix
+    volumes:
+      - crow-rtt-nix:/nix
     depends_on: setup
     environment:
       DOCKERHUB_TOKEN:
@@ -29,7 +27,9 @@ steps:
       - nix develop -Lc just deliver
 
   release:
-    <<: *nix
+    image: nixos/nix
+    volumes:
+      - crow-rtt-nix:/nix
     depends_on: setup
     environment:
       GITHUB_TOKEN:
