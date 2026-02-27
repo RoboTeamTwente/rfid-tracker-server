@@ -230,7 +230,7 @@ def get_average_week(user, day):
         Session.objects.filter(user=user, checkin__isnull=False)
         .annotate(
             year=ExtractYear('checkin__time', tzinfo=AMSTERDAM_TZ),
-            week=ExtractWeek('checkin__time', tzinfo=AMSTERDAM_TZ)
+            week=ExtractWeek('checkin__time', tzinfo=AMSTERDAM_TZ),
         )
         .values('year', 'week')
         .distinct()

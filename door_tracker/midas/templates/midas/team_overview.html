@@ -7,21 +7,21 @@
     <style>
         main {
             width: 95% !important;
-            max-width: 1800px !important; 
+            max-width: 1800px !important;
             margin: 20px auto;
             padding: 0 20px;
         }
 
         .dashboard-controls {
             display: flex;
-            justify-content: space-between; 
+            justify-content: space-between;
             align-items: center;
             background: #fff;
             padding: 20px 30px;
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             margin-bottom: 30px;
-            border-left: 5px solid #36a2eb; 
+            border-left: 5px solid #36a2eb;
             flex-wrap: wrap;
             gap: 20px;
         }
@@ -60,17 +60,17 @@
             cursor: pointer;
             transition: border-color 0.2s;
         }
-        
+
         select.team-select { min-width: 200px; }
-        
+
         select.team-select:hover, input[type="date"].date-select:hover {
             border-color: #36a2eb;
         }
 
         .summary-cards {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); 
-            gap: 30px; 
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
             margin-bottom: 30px;
         }
 
@@ -92,7 +92,7 @@
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-            height: 600px; 
+            height: 600px;
             width: 100%;
             position: relative;
         }
@@ -113,7 +113,7 @@
                     <label for="start_date">From:</label>
                     <input type="date" id="start_date" name="start_date" class="date-select" value="{{ start_date }}" onchange="this.form.submit()">
                 </div>
-                
+
                 <div class="input-group">
                     <label for="end_date">To:</label>
                     <input type="date" id="end_date" name="end_date" class="date-select" value="{{ end_date }}" onchange="this.form.submit()">

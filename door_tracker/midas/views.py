@@ -111,22 +111,18 @@ def user_statistics(request):
             'user_name': request.user.get_full_name(),
             'user_role': subteam_name,
             'user_status': user_status(request),
-            
             # totals (Work done) - FORMATTED FOR HTML DISPLAY
             'total_hours_day': format_time(total_minutes_day),
             'total_hours_week': format_time(total_minutes_week),
             'total_hours_month': format_time(total_minutes_month),
             'total_hours_all': format_time(total_minutes_all),
             'average_hours_week': format_time(average_minutes_week),
-            
             # targets (Goals) - FORMATTED FOR HTML DISPLAY
             'quota_hours_week': format_time(weekly_hours_target * 60),
             'quota_hours_month': format_time(monthly_hours_target * 60),
-            
             # quotas (Status)
             'quota_week_met': 'MET' if quota_week_met else 'UNMET',
             'quota_month_met': 'MET' if quota_month_met else 'UNMET',
-            
             # js values - RAW NUMBERS FOR ECHARTS CALCULATION
             'script_data': {
                 'total_hours_week': total_minutes_week,
@@ -136,6 +132,7 @@ def user_statistics(request):
             },
         },
     )
+
 
 def team_overview(request):
     utc_now = timezone.now()
@@ -157,7 +154,9 @@ def team_overview(request):
 
     # Create aware boundaries for get_sessions_time
     start_dt = AMSTERDAM_TZ.localize(datetime.combine(start_date, time.min))
-    end_dt = AMSTERDAM_TZ.localize(datetime.combine(end_date + timedelta(days=1), time.min)) - timedelta(microseconds=1)
+    end_dt = AMSTERDAM_TZ.localize(
+        datetime.combine(end_date + timedelta(days=1), time.min)
+    ) - timedelta(microseconds=1)
 
     # 2. Subteam Handling
     all_subteams = Subteam.objects.all()
@@ -166,7 +165,9 @@ def team_overview(request):
     if selected_id:
         current_subteam = get_object_or_404(Subteam, id=selected_id)
     else:
-        user_assignment = Assignment.objects.filter_current().filter(user=request.user).first()
+        user_assignment = (
+            Assignment.objects.filter_current().filter(user=request.user).first()
+        )
         if user_assignment and user_assignment.subteams.exists():
             current_subteam = user_assignment.subteams.first()
         else:
@@ -185,7 +186,7 @@ def team_overview(request):
 
     for assignment in members:
         user_obj = assignment.user
-        
+
         # Calculate minutes spanning exact date range
         minutes = get_sessions_time(user_obj, start_dt, end_dt)
         hours = round(minutes / 60.0, 2)
@@ -202,7 +203,9 @@ def team_overview(request):
         'summary': {
             'total_hours': round(total_hours_float, 2),
             'member_count': len(chart_labels),
-            'avg_hours': round(total_hours_float / len(chart_labels), 1) if chart_labels else 0,
+            'avg_hours': round(total_hours_float / len(chart_labels), 1)
+            if chart_labels
+            else 0,
         },
         'page_data': {
             'meta': {
@@ -213,6 +216,7 @@ def team_overview(request):
     }
 
     return render(request, 'midas/team_overview.html', context)
+
 
 def user_overview(request):
     utc_now = timezone.now()
@@ -254,7 +258,7 @@ def user_overview(request):
     def format_time(minutes):
         hours = int(minutes) // 60
         mins = int(minutes) % 60
-        return f"{hours}h {mins}m" if mins else f"{hours}h"
+        return f'{hours}h {mins}m' if mins else f'{hours}h'
 
     # 4. Generate Custom Range Chart Data
     chart_labels = []
@@ -264,20 +268,18 @@ def user_overview(request):
     current_iter_date = start_date
     while current_iter_date <= end_date:
         day_minutes = get_minutes_today(current_user, current_iter_date)
-        
+
         chart_labels.append(current_iter_date.strftime('%b %d'))
         chart_data.append(round(day_minutes / 60.0, 2))
         range_total_minutes += day_minutes
-        
+
         current_iter_date += timedelta(days=1)
 
     latest_assignment = (
         Assignment.objects.filter_current().filter(user=current_user).first()
     )
 
-    weekly_quota_hours = (
-            latest_assignment.quota.hours if latest_assignment.quota else 0
-        )
+    weekly_quota_hours = latest_assignment.quota.hours if latest_assignment.quota else 0
     weekly_quota_met = minutes_week / 60.0 >= weekly_quota_hours
 
     context = {
@@ -295,12 +297,9 @@ def user_overview(request):
             'meta': {
                 'weekly_quota_met': 'MET' if weekly_quota_met else 'UNMET',
                 'username': current_user.get_full_name() or current_user.username,
-                'range_label': f"Hours Worked ({start_date.strftime('%b %d')} - {end_date.strftime('%b %d')})",
+                'range_label': f'Hours Worked ({start_date.strftime("%b %d")} - {end_date.strftime("%b %d")})',
             },
-            'chart': {
-                'labels': chart_labels,
-                'data': chart_data
-            }
+            'chart': {'labels': chart_labels, 'data': chart_data},
         },
     }
 

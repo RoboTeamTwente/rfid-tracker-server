@@ -363,9 +363,9 @@ def register_scan(request):
             tag = Tag.objects.get_authorized().get(tag=card_id)
             checkout = is_checked_in(tag.owner)
             Log.objects.create(
-                type=Log.LogEntryType.CHECKOUT
-                if checkout
-                else Log.LogEntryType.CHECKIN,
+                type=(
+                    Log.LogEntryType.CHECKOUT if checkout else Log.LogEntryType.CHECKIN
+                ),
                 scanner=scanner,
                 tag=tag,
             )
@@ -385,7 +385,7 @@ def register_scan(request):
     # give up
 
     with transaction.atomic():
-        (tag, _) = Tag.objects.update_or_create(tag=card_id)
+        tag, _ = Tag.objects.update_or_create(tag=card_id)
         Log.objects.create(
             type=Log.LogEntryType.UNKNOWN,
             scanner=scanner,
