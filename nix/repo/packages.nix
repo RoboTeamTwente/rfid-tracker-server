@@ -16,12 +16,12 @@ let
   };
 
   hacks = nixpkgs.callPackage inputs.pyproject-nix.build.hacks { };
-  pyprojectOverrides = pypkgs: prev: {
-    py-ubjson = hacks.nixpkgsPrebuilt {
-      from = python.pkgs.py-ubjson;
-      prev = prev.py-ubjson;
+  infuse = import inputs.infuse { inherit (nixpkgs) lib; };
+  pyprojectOverrides =
+    pypkgs: prev:
+    infuse.v1.infuse prev {
+      py-ubjson.__output.buildInputs.__append = pypkgs.resolveBuildSystem { setuptools = [ ]; };
     };
-  };
 
   baseSet = nixpkgs.callPackage inputs.pyproject-nix.build.packages { inherit python; };
   pythonSet = baseSet.overrideScope (
