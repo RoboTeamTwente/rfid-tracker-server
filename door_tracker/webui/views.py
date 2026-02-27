@@ -770,9 +770,9 @@ def fuel_guage(request):
                 },
             }
         )
-    except Exception as e:
+    except Exception:
         return JsonResponse(
-            {'status': 'error', 'message': f'Error retrieving data: {str(e)}'},
+            {'status': 'error', 'message': 'Error retrieving data'},
             status=500,
         )
 
