@@ -60,11 +60,11 @@
             cursor: pointer;
             transition: border-color 0.2s;
         }
-        
+
         select.team-select { min-width: 200px; }
-        
-        select.team-select:hover, input[type="date"].date-select:hover { 
-            border-color: #36a2eb; 
+
+        select.team-select:hover, input[type="date"].date-select:hover {
+            border-color: #36a2eb;
         }
 
         /* Expanded to 4 columns to include Range Total */
@@ -105,20 +105,20 @@
             <div class="title-section">
                 <h1 style="margin-bottom: 4px;">User Performance</h1>
                 <span style="color: #64748b; font-size: 14px;">
-                    Overview for {{ page_data.meta.username }} &bull; 
-                    Weekly Quota: 
+                    Overview for {{ page_data.meta.username }} &bull;
+                    Weekly Quota:
                     <span style="font-weight: 700; color: {% if page_data.meta.weekly_quota_met == 'MET' %}#4fb854{% else %}#d32f2f{% endif %};">
                         {{ page_data.meta.weekly_quota_met }}
                     </span>
                 </span>
             </div>
-            
+
             <form method="GET" action="" class="control-form">
                 <div class="input-group">
                     <label for="start_date">From:</label>
                     <input type="date" id="start_date" name="start_date" class="date-select" value="{{ start_date }}" onchange="this.form.submit()">
                 </div>
-                
+
                 <div class="input-group">
                     <label for="end_date">To:</label>
                     <input type="date" id="end_date" name="end_date" class="date-select" value="{{ end_date }}" onchange="this.form.submit()">
@@ -195,7 +195,7 @@
                         }
                     },
                     plugins: {
-                        legend: { 
+                        legend: {
                             display: true,
                             position: 'top'
                         },
