@@ -20,6 +20,7 @@ let
   pyprojectOverrides =
     pypkgs: prev:
     infuse.v1.infuse prev {
+      autobahn.__output.buildInputs.__append = pypkgs.resolveBuildSystem { hatchling = [ ]; };
       py-ubjson.__output.buildInputs.__append = pypkgs.resolveBuildSystem { setuptools = [ ]; };
     };
 
