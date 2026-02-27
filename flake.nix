@@ -28,6 +28,10 @@
       inputs.pyproject-nix.follows = "pyproject-nix";
       url = "github:pyproject-nix/uv2nix";
     };
+    infuse = {
+      flake = false;
+      url = "git+https://codeberg.org/amjoseph/infuse.nix";
+    };
   };
 
   outputs =
