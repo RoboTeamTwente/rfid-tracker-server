@@ -5,7 +5,7 @@ when:
 
 steps:
   setup:
-    image: nixos/nix
+    image: nixos/nix@sha256:c2f7db70a432d00c6759af108ff4fbc74a4c00e2d4517162e72338e7b9449c1f
     volumes:
       - crow-rtt-nix:/nix
     commands:
@@ -14,7 +14,7 @@ steps:
       - nix develop -Lc uv sync --locked --no-progress
 
   pre-commit:
-    image: nixos/nix
+    image: nixos/nix@sha256:c2f7db70a432d00c6759af108ff4fbc74a4c00e2d4517162e72338e7b9449c1f
     volumes:
       - crow-rtt-nix:/nix
     depends_on: setup
@@ -24,7 +24,7 @@ steps:
       - nix develop -Lc lefthook run --all-files --force pre-commit
 
   build-container:
-    image: nixos/nix
+    image: nixos/nix@sha256:c2f7db70a432d00c6759af108ff4fbc74a4c00e2d4517162e72338e7b9449c1f
     volumes:
       - crow-rtt-nix:/nix
     depends_on: setup
