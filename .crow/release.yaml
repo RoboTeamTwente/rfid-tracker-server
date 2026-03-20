@@ -6,7 +6,7 @@ when:
 
 steps:
   setup:
-    image: nixos/nix@sha256:c2f7db70a432d00c6759af108ff4fbc74a4c00e2d4517162e72338e7b9449c1f
+    image: nixos/nix@sha256:cf42be9911411150ed246632633e846ee185384d97c9a8a27e8ca15ab3a7a48f
     volumes:
       - crow-rtt-nix:/nix
     commands:
@@ -15,7 +15,7 @@ steps:
       - nix develop -Lc true
 
   deliver:
-    image: nixos/nix@sha256:c2f7db70a432d00c6759af108ff4fbc74a4c00e2d4517162e72338e7b9449c1f
+    image: nixos/nix@sha256:cf42be9911411150ed246632633e846ee185384d97c9a8a27e8ca15ab3a7a48f
     volumes:
       - crow-rtt-nix:/nix
     depends_on: setup
@@ -27,7 +27,7 @@ steps:
       - nix develop -Lc just deliver
 
   release:
-    image: nixos/nix@sha256:c2f7db70a432d00c6759af108ff4fbc74a4c00e2d4517162e72338e7b9449c1f
+    image: nixos/nix@sha256:cf42be9911411150ed246632633e846ee185384d97c9a8a27e8ca15ab3a7a48f
     volumes:
       - crow-rtt-nix:/nix
     depends_on: setup
