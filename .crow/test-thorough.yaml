@@ -4,31 +4,42 @@ when:
   - event: push
     branch: main
   - event: pull_request
+  - event: manual
 
 steps:
   setup:
     image: nixos/nix@sha256:c2f7db70a432d00c6759af108ff4fbc74a4c00e2d4517162e72338e7b9449c1f
+    privileged: true
     volumes:
-      - crow-rtt-nix:/nix
+      - /nix:/mnt/nix
     commands:
       - echo 'experimental-features = nix-command flakes' >> /etc/nix/nix.conf
       - echo 'max-jobs = auto' >> /etc/nix/nix.conf
+      - echo 'store = unix:///mnt/nix/var/nix/daemon-socket/socket?root=/mnt' >> /etc/nix/nix.conf
       - nix develop -Lc uv sync --locked --no-progress
 
   lint:
     image: nixos/nix@sha256:c2f7db70a432d00c6759af108ff4fbc74a4c00e2d4517162e72338e7b9449c1f
+    privileged: true
     volumes:
-      - crow-rtt-nix:/nix
+      - /nix:/mnt/nix
     depends_on: setup
     environment:
       CI: 1 # for //repo/dotfiles/lefthook
     commands:
+      - echo 'experimental-features = nix-command flakes' >> /etc/nix/nix.conf
+      - echo 'max-jobs = auto' >> /etc/nix/nix.conf
+      - echo 'store = unix:///mnt/nix/var/nix/daemon-socket/socket?root=/mnt' >> /etc/nix/nix.conf
       - nix develop -Lc lefthook run --all-files --force pre-commit
 
   build:
     image: nixos/nix@sha256:c2f7db70a432d00c6759af108ff4fbc74a4c00e2d4517162e72338e7b9449c1f
+    privileged: true
     volumes:
-      - crow-rtt-nix:/nix
+      - /nix:/mnt/nix
     depends_on: setup
     commands:
+      - echo 'experimental-features = nix-command flakes' >> /etc/nix/nix.conf
+      - echo 'max-jobs = auto' >> /etc/nix/nix.conf
+      - echo 'store = unix:///mnt/nix/var/nix/daemon-socket/socket?root=/mnt' >> /etc/nix/nix.conf
       - nix develop -Lc std //repo/operables/serve:build

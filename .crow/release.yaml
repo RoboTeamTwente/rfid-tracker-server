@@ -7,32 +7,42 @@ when:
 steps:
   setup:
     image: nixos/nix@sha256:c2f7db70a432d00c6759af108ff4fbc74a4c00e2d4517162e72338e7b9449c1f
+    privileged: true
     volumes:
-      - crow-rtt-nix:/nix
+      - /nix:/mnt/nix
     commands:
       - echo 'experimental-features = nix-command flakes' >> /etc/nix/nix.conf
       - echo 'max-jobs = auto' >> /etc/nix/nix.conf
+      - echo 'store = unix:///mnt/nix/var/nix/daemon-socket/socket?root=/mnt' >> /etc/nix/nix.conf
       - nix develop -Lc true
 
   deliver:
     image: nixos/nix@sha256:c2f7db70a432d00c6759af108ff4fbc74a4c00e2d4517162e72338e7b9449c1f
+    privileged: true
     volumes:
-      - crow-rtt-nix:/nix
+      - /nix:/mnt/nix
     depends_on: setup
     environment:
       DOCKERHUB_TOKEN:
         from_secret: dockerhub_token
     commands:
+      - echo 'experimental-features = nix-command flakes' >> /etc/nix/nix.conf
+      - echo 'max-jobs = auto' >> /etc/nix/nix.conf
+      - echo 'store = unix:///mnt/nix/var/nix/daemon-socket/socket?root=/mnt' >> /etc/nix/nix.conf
       - nix develop -Lc skopeo login docker.io -u roboteamtwente -p "$DOCKERHUB_TOKEN"
       - nix develop -Lc just deliver
 
   release:
     image: nixos/nix@sha256:c2f7db70a432d00c6759af108ff4fbc74a4c00e2d4517162e72338e7b9449c1f
+    privileged: true
     volumes:
-      - crow-rtt-nix:/nix
+      - /nix:/mnt/nix
     depends_on: setup
     environment:
       GITHUB_TOKEN:
         from_secret: github_token
     commands:
+      - echo 'experimental-features = nix-command flakes' >> /etc/nix/nix.conf
+      - echo 'max-jobs = auto' >> /etc/nix/nix.conf
+      - echo 'store = unix:///mnt/nix/var/nix/daemon-socket/socket?root=/mnt' >> /etc/nix/nix.conf
       - nix develop -Lc sh -c 'gh release new "$CI_COMMIT_TAG" --notes "$(git cliff --latest --strip all)"'
