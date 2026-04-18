@@ -5,7 +5,7 @@ when:
 
 steps:
   test:
-    image: ghcr.io/astral-sh/uv:debian@sha256:07815eb92d9cd9fe050177ca5dac467f2bca19be23f7d2db04cd25a8c13bd26b
+    image: ghcr.io/astral-sh/uv:debian@sha256:56511ed50bdda41321be85a424c550027f82b53c0281519205187fe1fa100b7f
     directory: door_tracker
     commands:
       - uv sync --locked --no-progress
