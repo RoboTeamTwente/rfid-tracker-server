@@ -20,6 +20,5 @@ from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('webui/', include('webui.urls')),
     path('', include('midas.urls')),
 ]
