@@ -364,31 +364,6 @@ wheels = [
 ]
 
 [[package]]
-name = "django-extensions"
-version = "4.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "django" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/6d/b3/ed0f54ed706ec0b54fd251cc0364a249c6cd6c6ec97f04dc34be5e929eac/django_extensions-4.1.tar.gz", hash = "sha256:7b70a4d28e9b840f44694e3f7feb54f55d495f8b3fa6c5c0e5e12bcb2aa3cdeb", size = 283078, upload-time = "2025-04-11T01:15:39.617Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/64/96/d967ca440d6a8e3861120f51985d8e5aec79b9a8bdda16041206adfe7adc/django_extensions-4.1-py3-none-any.whl", hash = "sha256:0699a7af28f2523bf8db309a80278519362cd4b6e1fd0a8cd4bf063e1e023336", size = 232980, upload-time = "2025-04-11T01:15:37.701Z" },
-]
-
-[[package]]
-name = "django-organizations"
-version = "2.6.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "django" },
-    { name = "django-extensions" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/82/1b/7d1d676a3f949bd53e72d58dc68e5658eb271c970c3951e3825865ae4696/django_organizations-2.6.0.tar.gz", hash = "sha256:ce3e64e5f6406b7af557a35bfd1f1081d68f0f64ce4c87326b77e4a66e7b39a9", size = 75999, upload-time = "2026-03-08T16:51:45.94Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/f6/54/f484a7331872f5a337dc8e4b056c444235ad79ec54fb73735c5adb70f78a/django_organizations-2.6.0-py3-none-any.whl", hash = "sha256:6f1b17e010ae25674cfd4c6fed34ee14ea0c3d6449dfbaafb5da226a8362155f", size = 54938, upload-time = "2026-03-08T16:51:46.791Z" },
-]
-
-[[package]]
 name = "djangorestframework"
 version = "3.17.1"
 source = { registry = "https://pypi.org/simple" }
@@ -1016,7 +991,6 @@ dependencies = [
     { name = "django" },
     { name = "django-apscheduler" },
     { name = "django-dbbackup" },
-    { name = "django-organizations" },
     { name = "djangorestframework" },
     { name = "drf-spectacular", extra = ["sidecar"] },
     { name = "google-api-python-client" },
@@ -1037,7 +1011,6 @@ requires-dist = [
     { name = "django", specifier = ">=5.2.5" },
     { name = "django-apscheduler", specifier = ">=0.7.0" },
     { name = "django-dbbackup", specifier = ">=5.0.0" },
-    { name = "django-organizations", specifier = ">=2.5.0" },
     { name = "djangorestframework", specifier = ">=3.16.1" },
     { name = "drf-spectacular", extras = ["sidecar"], specifier = ">=0.28.0" },
     { name = "google-api-python-client", specifier = ">=2.183.0" },
