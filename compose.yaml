@@ -1,8 +1,8 @@
 services:
   serve:
-    image: roboteamtwente/rfid-tracker-serve@sha256:42759e6bb88812ae3d453c872d73cbfdf2c2dc2e1b2afe800fd8436fd1b917b2
+    build: door_tracker
     ports:
-      - 8001:8000
+      - 8000:8000
     volumes:
       - db:/db
       - ./credentials:/credentials
@@ -14,5 +14,10 @@ services:
       - ADMIN_USER=admin
       - ADMIN_PASS=admin
       - ADMIN_EMAIL=admin@localhost
+    develop:
+      watch:
+        - path: door_tracker/
+          ignore: .venv
+          action: rebuild
 volumes:
   db:
