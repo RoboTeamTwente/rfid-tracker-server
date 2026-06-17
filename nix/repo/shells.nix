@@ -19,7 +19,7 @@ nixpkgs.lib.mapAttrs (_: mkShell) {
       nixpkgs.git
       nixpkgs.git-cliff
       nixpkgs.openssh
-      nixpkgs.skopeo
+      nixpkgs.docker # we need a relatively fresh version
       nixpkgs.uv
     ];
     commands = [
