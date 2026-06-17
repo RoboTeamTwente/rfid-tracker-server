@@ -16,7 +16,7 @@ check:
     # run tests & pre-commit hooks
     CI=1 lefthook run --all-files --force pre-commit
     # also check that the container still builds
-    std //repo/containers/prod-latest:build
+    docker build door_tracker
 
 # Run the dev server
 dev: migrate (django 'runserver')
