@@ -46,7 +46,8 @@ release:
 
 # Build & upload the container image
 upload-image:
-    std //repo/containers/prod-patch:publish
-    std //repo/containers/prod-minor:publish
-    std //repo/containers/prod-major:publish
-    std //repo/containers/prod-latest:publish
+    docker build --load --push door_tracker \
+        -t docker.io/roboteamtwente/rfid-tracker-serve:$(uv version --short | cut -d. -f-3) \
+        -t docker.io/roboteamtwente/rfid-tracker-serve:$(uv version --short | cut -d. -f-2) \
+        -t docker.io/roboteamtwente/rfid-tracker-serve:$(uv version --short | cut -d. -f-1) \
+        -t docker.io/roboteamtwente/rfid-tracker-serve:latest
