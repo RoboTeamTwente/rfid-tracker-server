@@ -984,7 +984,7 @@ wheels = [
 [[package]]
 name = "roboteam-door-tracker"
 version = "3.0.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "daphne" },
     { name = "dj-database-url" },
