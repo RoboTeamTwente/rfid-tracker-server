@@ -34,6 +34,12 @@ COPY . /app
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-editable
 
+# Cache the static files
+RUN uv run --no-sync env \
+    DJANGO_SETTINGS_MODULE=door_tracker.settings \
+    DJANGO_STATIC_ROOT=/static \
+    django-admin collectstatic --no-input
+
 FROM python:3.14-slim
 
 # setup a non-root user to run the app in
@@ -42,6 +48,10 @@ RUN <<EOF
     useradd --system --uid 999 --gid 999 --create-home app
 EOF
 USER app
+
+# copy the static files
+COPY --from=builder --chown=app:app /static /app/static
+ENV DJANGO_STATIC_ROOT=/app/static
 
 # copy the built virtualenv and activate it
 COPY --from=builder --chown=app:app /app/.venv /app/.venv
