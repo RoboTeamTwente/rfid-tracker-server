@@ -29,7 +29,7 @@ steps:
       - echo 'experimental-features = nix-command flakes' >> /etc/nix/nix.conf
       - echo 'max-jobs = auto' >> /etc/nix/nix.conf
       - echo 'store = unix:///mnt/nix/var/nix/daemon-socket/socket?root=/mnt' >> /etc/nix/nix.conf
-      - nix develop -Lc skopeo login docker.io -u roboteamtwente -p "$DOCKERHUB_TOKEN"
+      - nix develop -Lc docker login docker.io -u roboteamtwente -p "$DOCKERHUB_TOKEN"
       - nix develop -Lc just upload-image
 
   release:
