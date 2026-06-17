@@ -18,7 +18,6 @@ nixpkgs.lib.mapAttrs (_: mkShell) {
       nixpkgs.doxygen
       nixpkgs.git
       nixpkgs.git-cliff
-      nixpkgs.koji
       nixpkgs.openssh
       nixpkgs.skopeo
       nixpkgs.uv
