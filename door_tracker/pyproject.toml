@@ -21,6 +21,10 @@ dependencies = [
 [dependency-groups]
 dev = ["python-lsp-server[all]>=1.13.1"]
 
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
 [tool.setuptools.packages.find]
 include = ["*"]
 
