@@ -72,7 +72,6 @@ INSTALLED_APPS = [
     'midas.apps.MidasConfig',
     'pytz',
     'rest_framework',
-    'webui.apps.WebuiConfig',
 ]
 
 MIDDLEWARE = [

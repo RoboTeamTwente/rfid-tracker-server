@@ -45,7 +45,7 @@ release:
     git commit . -m "$message"
 
 # Build & upload the container image
-deliver:
+upload-image:
     std //repo/containers/prod-patch:publish
     std //repo/containers/prod-minor:publish
     std //repo/containers/prod-major:publish
