@@ -10,5 +10,8 @@
   },
   "ignorePaths": [
     "compose.yaml"
+  ],
+  "schedule": [
+    "weekly"
   ]
 }
