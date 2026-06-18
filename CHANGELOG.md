@@ -2,6 +2,99 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.0.0 - 2026-06-18
+
+### Bug Fixes
+
+- *(build)* Fix build on aarch64
+- *(ci)* Make docs workflow actually deploy
+- *(ci)* Fix Renovate config
+- *(security)* Don't show exception text to user
+
+
+### Features
+
+- *(ci)* Enable auto-update of Nix dependencies
+- *(No Category)* Remove the old webui app
+- *(No Category)* Force a major release
+  - **BREAKING**: force a major release
+
+
+### Miscellaneous Tasks
+
+- *(ci)* Slow down Renovate to weekly cadence
+- *(deps)* Pin nixos/nix docker tag to c2f7db7 (#150)
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to d9e6307 (#151)
+- *(deps)* Lock file maintenance (#155)
+- *(deps)* Update renovatebot/github-action action to v46.1.3 (#156)
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to b0501fa (#158)
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to 59a3d3e (#159)
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to 2c9d53c (#162)
+- *(deps)* Update actions/create-github-app-token digest to fee1f7d (#163)
+- *(deps)* Update renovatebot/github-action action to v46.1.6 (#160)
+- *(deps)* Lock file maintenance (#161)
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to 07815eb (#166)
+- *(deps)* Lock file maintenance (#167)
+- *(deps)* Update renovatebot/github-action action to v46.1.9 (#168)
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to 56511ed (#169)
+- *(deps)* Update nixos/nix docker digest to e2fe74e (#157)
+- *(deps)* Update actions/create-github-app-token action to v3
+- *(deps)* Update actions/deploy-pages action to v5
+- *(deps)* Update actions/upload-pages-artifact action to v5
+- *(deps)* Update dependency django to v6.0.4 [security] (#172)
+- *(deps)* Lock file maintenance (#173)
+- *(deps)* Update renovatebot/github-action action to v46.1.10 (#174)
+- *(deps)* Update renovatebot/github-action action to v46.1.11 (#175)
+- *(deps)* Lock file maintenance (#176)
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to 05bc724 (#177)
+- *(deps)* Update renovatebot/github-action action to v46.1.12 (#178)
+- *(deps)* Lock file maintenance (#179)
+- *(deps)* Update renovatebot/github-action action to v46.1.13 (#180)
+- *(deps)* Update nixos/nix docker digest to bf1d938 (#181)
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to f8699a6 (#182)
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to 9fc4d09 (#183)
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to 844e797 (#184)
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to 0cec284 (#185)
+- *(deps)* Update dependency django to v6.0.5 [security] (#186)
+- *(deps)* Lock file maintenance (#187)
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to 93e0aec (#188)
+- *(deps)* Update renovatebot/github-action action to v46.1.14 (#189)
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to 8df6cb3 (#190)
+- *(deps)* Update actions/create-github-app-token digest to bcd2ba4 (#191)
+- *(deps)* Lock file maintenance (#192)
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to 07e422d (#193)
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to 5fdbe68 (#194)
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to f014f2b (#195)
+- *(deps)* Update actions/checkout digest to df4cb1c (#198)
+- *(deps)* Update actions/checkout action to v6.0.3 (#197)
+- *(deps)* Update renovatebot/github-action action to v46.1.15 (#199)
+- *(deps)* Lock file maintenance (#196)
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to 5e91133 (#200)
+- *(deps)* Lock file maintenance (#201)
+- *(deps)* Lock file maintenance (#205)
+- *(version)* V3.0.0
+- *(No Category)* Format renovate.json
+- *(No Category)* Format renovate.json
+
+
+### Refactor
+
+- *(build)* Rename `deliver` to `upload-image`
+- *(build)* Remove django-organizations dependency
+- *(ci)* Relax workflow requirements
+- *(ci)* Do not use yaml anchors
+- *(ci)* Build the operable, not container
+- *(ci)* Run thorough checks on push to main (#154)
+- *(ci)* Use nix host daemon (#171)
+- *(ci)* Use Renovate configuration preset
+- *(nix)* Use infuse.nix for overlays
+
+
+### Styling
+
+- *(No Category)* Run code formatter
+
+
 ## 2.16.2 - 2026-02-26
 
 ### Bug Fixes
