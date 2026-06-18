@@ -1,7 +1,8 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:best-practices"
+    "config:best-practices",
+    "schedule:weekly"
   ],
   "automerge": true,
   "automergeType": "branch",
@@ -10,9 +11,6 @@
   },
   "ignorePaths": [
     "compose.yaml"
-  ],
-  "schedule": [
-    "weekly"
   ],
   "nix": {
     "enabled": true
