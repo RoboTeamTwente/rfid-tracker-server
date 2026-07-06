@@ -383,12 +383,12 @@ body {
     transition: none;
   }
 
-  .sidebar.show {
+  body.sidebar--open .sidebar {
     display: flex;
   }
 
   /* Dim overlay behind dropdown */
-  body.sidebar-open::after {
+  body.sidebar--open::after {
     content: '';
     position: fixed;
     inset: 0;
