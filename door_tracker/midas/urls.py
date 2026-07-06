@@ -10,8 +10,6 @@ app_name = 'midas'
 urlpatterns = [
     # API
     path('api/auth/', include('rest_framework.urls')),
-    path('api/checkout', api.checkout, name='checkout'),
-    path('api/checkin', api.checkin, name='checkin'),
     path('api/healthcheck', api.healthcheck, name='healthcheck'),
     path('api/register_scan', api.register_scan, name='register_scan'),
     path('api/export/sessions', api.export_sessions_csv, name='export_user'),
@@ -21,6 +19,8 @@ urlpatterns = [
     ),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     # views
+    path('checkin', views.checkin, name='checkin'),
+    path('checkout', views.checkout, name='checkout'),
     path('delete_tag', views.delete_tag, name='delete_tag'),
     path('delete_pending_tag', views.delete_pending_tag, name='delete_pending_tag'),
     path('edit_profile', views.edit_profile, name='edit_profile'),
