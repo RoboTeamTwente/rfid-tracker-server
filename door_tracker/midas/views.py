@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_not_required
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
 from django.core.cache import cache
+from django.db import transaction
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
@@ -18,7 +19,18 @@ from rest_framework import serializers
 
 from . import statistics
 from .forms import RegistrationForm
-from .models import Assignment, ClaimedTag, PendingTag, Quota, Scanner, Session, Subteam
+from .models import (
+    Assignment,
+    Checkin,
+    Checkout,
+    ClaimedTag,
+    LogType,
+    PendingTag,
+    Quota,
+    Scanner,
+    Session,
+    Subteam,
+)
 from .statistics import (
     get_average_week,
     get_minutes_this_month,
@@ -624,7 +636,79 @@ def delete_tag(request):
     return redirect('midas:user_profile')
 
 
-# def user_statistics(request):
+def checkin(request):
+    """Check in remotely
+
+    This endpoint is called from frontend to check a user in remotely.
+    """
+
+    checkin_time = timezone.localtime()
+
+    if Session.objects.filter(user=request.user, checkout__isnull=True).exists():
+        messages.error(request, 'You are already checked in!')
+        return redirect(request.POST.get('next'))
+
+    try:
+        with transaction.atomic():
+            new_session = Session.objects.create(user=request.user)
+            Checkin.objects.create(
+                type=LogType.REMOTE,
+                time=checkin_time,
+                session=new_session,
+            )
+    except Exception as e:
+        messages.error(request, f'Failed to check in: {str(e)}')
+        return redirect(request.POST.get('next'))
+
+    local_time = checkin_time.strftime('%Y-%m-%d %H:%M')
+    messages.success(request, f'Successfully checked in at {local_time}')
+    return redirect(request.POST.get('next'))
+
+
+class CheckoutRequestSerializer(serializers.Serializer):
+    time = serializers.DateTimeField()
+
+    def create(self, validated_data):
+        return validated_data['time']
+
+
+def checkout(request):
+    """Check out remotely
+
+    This endpoint is called from frontend to check a user out remotely.
+    """
+
+    serializer = CheckoutRequestSerializer(data=request.POST)
+    if not serializer.is_valid():
+        messages.error(request, 'Invalid request')
+        return redirect(request.POST.get('next'))
+    checkout_time = serializer.save()
+
+    if checkout_time > timezone.now():
+        messages.error(request, 'Cannot checkout in the future')
+        return redirect(request.POST.get('next'))
+
+    try:
+        with transaction.atomic():
+            session = Session.objects.get(
+                user=request.user,
+                checkin__time__date=checkout_time,
+                checkout__isnull=True,
+            )
+            Checkout.objects.create(
+                type=LogType.REMOTE,
+                time=checkout_time,
+                session=session,
+            )
+    except Session.DoesNotExist:
+        messages.error(request, 'There are no matching sessions')
+        return redirect(request.POST.get('next'))
+    else:
+        local_time = checkout_time.strftime('%Y-%m-%d %H:%M')
+        messages.success(request, f'Successfully checked out at {local_time}')
+        return redirect(request.POST.get('next'))
+
+
 #     call_command('update_statistics')
 
 #     stats = Statistics.objects.filter(person=request.user).order_by('-date').first()
