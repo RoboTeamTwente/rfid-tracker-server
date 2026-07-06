@@ -43,9 +43,9 @@
               <td>
                 <div class="profile__tag-actions">
                     <!-- maybe a cancel or edit button -->
-                  <form method="GET" action="{% url 'midas:user_profile' %}" class="action">
-                    <input type="hidden" name="modal" value="delete_pending_tag_confirm">
-                    <input type="hidden" name="tag_id" value="{{ pending_tag.id }}">
+                  <form method="POST" action="{% url 'midas:delete_pending_tag' %}" class="action">
+                    {% csrf_token %}
+                    <input type="hidden" name="tag" value="{{ pending_tag.id }}">
                     <button class="action__button">
                       <i class="fa fa-trash"></i>
                     </button>

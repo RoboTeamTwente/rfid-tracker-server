@@ -22,6 +22,7 @@ urlpatterns = [
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     # views
     path('delete_tag', views.delete_tag, name='delete_tag'),
+    path('delete_pending_tag', views.delete_pending_tag, name='delete_pending_tag'),
     path('edit_profile', views.edit_profile, name='edit_profile'),
     path('login', views.LogIn.as_view(), name='login'),
     path('logout', views.logout_view, name='logout'),
