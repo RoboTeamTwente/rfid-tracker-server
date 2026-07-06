@@ -590,6 +590,23 @@ def rename_tag(request):
     return redirect('midas:user_profile')
 
 
+class DeletePendingTagSerializer(serializers.Serializer):
+    tag = serializers.IntegerField()
+
+
+def delete_pending_tag(request):
+    serializer = DeletePendingTagSerializer(data=request.POST)
+    serializer.is_valid(raise_exception=True)
+
+    tag_id = serializer.validated_data['tag']
+
+    tag = get_object_or_404(PendingTag, owner=request.user, id=tag_id)
+    tag.delete()
+
+    messages.success(request, 'Tag deleted.')
+    return redirect('midas:user_profile')
+
+
 class DeleteTagSerializer(serializers.Serializer):
     code = serializers.CharField(max_length=100)
 
