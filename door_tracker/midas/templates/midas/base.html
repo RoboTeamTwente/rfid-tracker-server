@@ -10,10 +10,11 @@
     <link rel="shortcut icon" href="{% static 'midas/logo.ico' %}"/>
     {% block head %}{% endblock %}
     <!-- Adding Htmx -->
-    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js" integrity="sha384-ZBXiYtYQ6hJ2Y0ZNoYuI+Nq5MqWBr+chMrS/RkXpNzQCApHEhOt2aY8EJgqwHLkJ" crossorigin="anonymous"></script>  </head>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js" integrity="sha384-ZBXiYtYQ6hJ2Y0ZNoYuI+Nq5MqWBr+chMrS/RkXpNzQCApHEhOt2aY8EJgqwHLkJ" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.15.12/dist/cdn.min.js" integrity="sha256-V7N9fK6aJ9ll/a5K3MhEJF39xAfmVa7oXc//OggDaj8=" crossorigin="anonymous"></script>
+  </head>
 
-
-  <body class="body">
+  <body x-data="{ sidebarOpen: false }" :class="{ body: true, 'sidebar--open': sidebarOpen }">
     <header class="body__header">
       <div class="body__logo-wrapper">
         <a href="{% url 'midas:index' %}" class="body__logo">
@@ -26,14 +27,14 @@
       <div class="body__user">
         <span>Welcome, {{user.get_full_name}}</span>
       </div>
-      <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+      <button class="sidebar-toggle" @click="sidebarOpen = !sidebarOpen">☰</button>
 
     </header>
 
 
     <div class="body__layout">
       <nav class="sidebar">
-        <button class="sidebar__back" onclick="toggleSidebar()">←</button>
+        <button class="sidebar__back" @click="sidebarOpen = !sidebarOpen">←</button>
 
         <h3 class="sidebar__section">USER PAGES</h3>
         <a class="sidebar__button" href="{% url 'midas:user_profile' %}">Profile</a>
@@ -46,7 +47,6 @@
           <a class="sidebar__button" href="{% url 'midas:user_overview' %}">User Overview</a>
           <a class="sidebar__button" href="{% url 'admin:index' %}">Admin Dashboard</a>
         {% endif %}
-
 
         <h3 class="sidebar__section">ACTIONS</h3>
         <a class="sidebar__button" href="{% url 'midas:export_user' %}">Export Sessions</a>
@@ -192,26 +192,6 @@
           showMessage('error', 'Network error: ' + error.message)
         }
       }
-    </script>
-
-    <script>
-      function toggleSidebar() {
-        const sidebar = document.querySelector('.sidebar');
-        const isVisible = sidebar.classList.toggle('show');
-
-        document.body.classList.toggle('sidebar-open', isVisible);
-      }
-
-      document.addEventListener('DOMContentLoaded', () => {
-        const sidebarButtons = document.querySelectorAll('.sidebar__button');
-        sidebarButtons.forEach(btn => {
-          btn.addEventListener('click', () => {
-            if (window.innerWidth <= 768) {
-              toggleSidebar();
-            }
-          });
-        });
-      });
     </script>
     <script>
       function openCheckoutModal() {
