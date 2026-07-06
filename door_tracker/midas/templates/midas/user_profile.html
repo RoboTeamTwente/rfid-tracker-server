@@ -6,19 +6,15 @@
 
 {% block head %}
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
-
 {% endblock %}
 
 {% block main %}
   <h1 class="page-title">Profile</h1>
   <main class="profile">
     <section class="card profile__user">
-      <form method="GET" action="{% url 'midas:user_profile' %}" class="profile__edit-profile">
-        <input type="hidden" name="modal" value="edit_profile">
-        <button class="action__button">
-          <i class="fa fa-pen"></i>
-        </button>
-      </form>
+      <a href="{% querystring modal='edit_profile' %}" class="profile__edit-profile" hx-boost="true">
+        <i class="fa fa-pen"></i>
+      </a>
       <p class="profile__factoid"><b>Name:</b> {{ user.get_full_name }}</p>
       <p class="profile__factoid"><b>Email:</b> {{ user.email }}</p>
       <p class="profile__factoid"><b>Username:</b> {{ user.username }}</p>
@@ -91,86 +87,80 @@
 
       </table>
 
-      <a href="{% url 'midas:user_profile' %}?modal=tag_name" class="button">+ Add a Tag</a>
+      <a href="{% querystring modal='tag_name' %}" class="button" hx-boost="true">+ Add a Tag</a>
     </section>
 
-    {% if modal_name == 'tag_name' %}
+    {% modal 'tag_name' 'midas:user_profile' 'Name your tag:' %}
+      <input type="hidden" name="action" value="add_tag">
+      <input type="text" name="tag_name" placeholder="Enter tag name" autofocus>
+      <section class="modal__actions">
+        <button class="modal__action modal--primary">Add Tag</button>
+        <a class="modal__action modal--secondary" href="{% querystring modal=None %}" hx-boost="true">Cancel</a>
+      </section>
+    {% endmodal %}
 
-      {% modal 'Name your tag:' 'midas:user_profile' %}
-        <input type="hidden" name="action" value="add_tag">
-        <input type="text" name="tag_name" placeholder="Enter tag name" autofocus>
-        <section class="modal__actions">
-          <button class="modal__action modal--primary">Add Tag</button>
-          <a class="modal__action modal--secondary" href="{% url 'midas:user_profile' %}">Cancel</a>
-        </section>
-      {% endmodal %}
+    {% modal 'tag_scan' 'midas:delete_pending_tag' 'Please scan your tag at the device' %}
+      <input type="hidden" name="tag" value="{{ request.GET.tag }}">
+      <p
+        id="scan-waiter"
+        hx-get="{% querystring modal='tag_scan' tag=request.GET.tag %}"
+        hx-trigger="every 1s"
+        hx-swap=none
+      >
+        Waiting for scan...
+      </p>
+      <section class="modal__actions">
+        <button class="modal__action modal--secondary">Cancel</button>
+      </section>
+    {% endmodal %}
 
-    {% elif modal_name == 'tag_scan' %}
+    {% modal 'rename_tag' 'midas:rename_tag' 'Name your tag:' %}
+      <input type="hidden" name="code" value="{{ request.GET.tag_code }}">
+      <input type="text"   name="new_tag_name" value="{{ request.GET.tag_name }}" autofocus>
+      <section class="modal__actions">
+        <button class="modal__action modal--primary">Save</button>
+        <a class="modal__action modal--secondary" href="{% querystring modal=None %}" hx-boost="true">Cancel</a>
+      </section>
+    {% endmodal %}
 
-      {% modal 'Please scan your tag at the device' 'midas:user_profile' %}
-        <div
-          id="scan-waiter"
-          hx-get="{% url 'midas:user_profile' %}?modal=tag_scan&tag={{ request.GET.tag }}"
-          hx-trigger="every 1s"
-          hx-swap=none
-        >
-          <p>Waiting for scan...</p>
-      {% endmodal %}
+    {% modal 'delete_tag_confirm' 'midas:delete_tag' 'Delete tag?' %}
+      <input type="hidden" name="code" value="{{ request.GET.code }}">
+      <p>Are you sure you want to delete <b>{{ request.GET.name }}</b>?</p>
+      <section class="modal__actions">
+        <button class="modal__action modal--primary">Delete</button>
+        <a class="modal__action modal--secondary" href="{% querystring modal=None %}" hx-boost="true">Cancel</a>
+      </section>
+    {% endmodal %}
 
-    {% elif modal_name == 'rename_tag' %}
-
-      {% modal 'Name your tag:' 'midas:rename_tag' %}
-        <input type="hidden" name="code" value="{{ request.GET.tag_code }}">
-        <input type="text"   name="new_tag_name" value="{{ request.GET.tag_name }}" autofocus>
-        <section class="modal__actions">
-          <button class="modal__action modal--primary">Save</button>
-          <a class="modal__action modal--secondary" href="{% url 'midas:user_profile' %}">Cancel</a>
-        </section>
-      {% endmodal %}
-
-    {% elif modal_name == 'delete_tag_confirm' %}
-      {% modal 'Delete tag?' 'midas:delete_tag' %}
-        <input type="hidden" name="code" value="{{ request.GET.code }}">
-        <p>Are you sure you want to delete <b>{{ request.GET.name }}</b>?</p>
-        <section class="modal__actions">
-          <button class="modal__action modal--primary">Delete</button>
-          <a class="modal__action modal--secondary" href="{% url 'midas:user_profile' %}">Cancel</a>
-        </section>
-      {% endmodal %}
-
-    {% elif modal_name == 'edit_profile' %}
-
-      {% modal 'Edit your profile' 'midas:edit_profile' %}
-        <label for="edit_profile/first_name">First name:</label>
-        <input id="edit_profile/first_name" type="text" name="first_name" value="{{ user.first_name }}">
-        <label for="edit_profile/last_name">Last name:</label>
-        <input id="edit_profile/last_name" type="text" name="last_name" value="{{ user.last_name }}">
-        <label for="edit_profile/username">Username:</label>
-        <input id="edit_profile/username" type="text" name="username" value="{{ user.username }}">
-        <label for="edit_profile/subteam">Subteam:</label>
-        <select id="edit_profile/subteams" name="subteams" multiple>
-          {% for subteam in subteams %}
-            <option value="{{ subteam.id }}"
-                    {% if subteam in assignment.subteams.all %}selected{% endif %}
-            >{{ subteam.name }}</option>
-          {% endfor %}
-        </select>
-        <label for="edit_profile/quota">Workload:</label>
-        <select id="edit_profile/quota" name="quota">
-          <option disabled selected>-- Pick a Quota --</option>
-          {% for quota in quotas %}
-            <option value="{{ quota.id }}"
-                    {% if quota == assignment.quota %}selected{% endif %}
-            >{{ quota.name }}</option>
-          {% endfor %}
-        </select>
-        <section class="modal__actions"><option value="{{ quota.id }}">{{ quota.name }}</option>
-          <button class="modal__action modal--primary">Save</button>
-          <a class="modal__action modal--secondary" href="{% url 'midas:user_profile' %}">Cancel</a>
-        </section>
-      {% endmodal %}
-
-    {% endif %}
+    {% modal 'edit_profile' 'midas:edit_profile' 'Edit your profile' %}
+      <label for="edit_profile/first_name">First name:</label>
+      <input id="edit_profile/first_name" type="text" name="first_name" value="{{ user.first_name }}">
+      <label for="edit_profile/last_name">Last name:</label>
+      <input id="edit_profile/last_name" type="text" name="last_name" value="{{ user.last_name }}">
+      <label for="edit_profile/username">Username:</label>
+      <input id="edit_profile/username" type="text" name="username" value="{{ user.username }}">
+      <label for="edit_profile/subteam">Subteam:</label>
+      <select id="edit_profile/subteams" name="subteams" multiple>
+        {% for subteam in subteams %}
+          <option value="{{ subteam.id }}"
+                  {% if subteam in assignment.subteams.all %}selected{% endif %}
+          >{{ subteam.name }}</option>
+        {% endfor %}
+      </select>
+      <label for="edit_profile/quota">Workload:</label>
+      <select id="edit_profile/quota" name="quota">
+        <option disabled selected>-- Pick a Quota --</option>
+        {% for quota in quotas %}
+          <option value="{{ quota.id }}"
+                  {% if quota == assignment.quota %}selected{% endif %}
+          >{{ quota.name }}</option>
+        {% endfor %}
+      </select>
+      <section class="modal__actions"><option value="{{ quota.id }}">{{ quota.name }}</option>
+        <button class="modal__action modal--primary">Save</button>
+        <a class="modal__action modal--secondary" href="{% querystring modal=None %}" hx-boost="true">Cancel</a>
+      </section>
+    {% endmodal %}
 
   </main>
 {% endblock %}
