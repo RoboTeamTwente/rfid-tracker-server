@@ -16,7 +16,6 @@ dependencies = [
   "pytz>=2025.2",
   "whitenoise>=6.9.0",
   "drf-spectacular[sidecar]>=0.28.0",
-  "psycopg2",
 ]
 
 [dependency-groups]

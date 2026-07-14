@@ -4,13 +4,9 @@ services:
     ports:
       - 8000:8000
     environment:
-      DATABASE_URL: postgres://postgres:postgres@db/postgres
-  db:
-    image: postgres:18-alpine
-    environment:
-      POSTGRES_PASSWORD: postgres
+      DATABASE_URL: sqlite:///db/db.sqlite3
     volumes:
-      - db:/var/lib/postgresql
+      - db:/db
 
 volumes:
   db:
