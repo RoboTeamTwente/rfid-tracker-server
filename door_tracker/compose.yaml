@@ -1,0 +1,16 @@
+services:
+  app:
+    image: test
+    ports:
+      - 8000:8000
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db/postgres
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - db:/var/lib/postgresql
+
+volumes:
+  db:
