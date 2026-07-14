@@ -1,0 +1,8 @@
+[_]
+schema-version = '0.2'
+id = 'nl.roboteamtwente.rfid-tracker'
+name = 'RFID Tracker'
+version = '3.0.0'
+
+[io.buildpacks]
+builder = 'heroku/builder:26'
