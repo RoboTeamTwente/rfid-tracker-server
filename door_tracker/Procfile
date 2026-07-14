@@ -1,1 +1,2 @@
-web: daphne -b 0.0.0.0 door_tracker.asgi:application
+web: ./manage.py migrate --noinput && daphne -b 0.0.0.0 door_tracker.asgi:application
+init: ./manage.py migrate && ./manage.py createsuperuser
