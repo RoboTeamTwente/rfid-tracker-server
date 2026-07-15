@@ -481,8 +481,8 @@ class EditMembershipRequestSerializer(serializers.Serializer):
     first_name = serializers.CharField()
     last_name = serializers.CharField()
     username = serializers.CharField()
-    subteams = serializers.ListField(child=serializers.IntegerField(), required=False)
-    quota = serializers.IntegerField(required=False)
+    subteams = serializers.ListField(child=serializers.IntegerField())
+    quota = serializers.IntegerField()
 
     def create(self, validated_data):
         return EditMembershipRequest(**validated_data)
