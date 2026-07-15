@@ -1,6 +1,7 @@
 services:
   serve:
     build: door_tracker
+    init: true
     ports:
       - 8000:8000
     volumes:
