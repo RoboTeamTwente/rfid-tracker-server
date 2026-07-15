@@ -16,6 +16,7 @@ from django.utils import timezone
 from django.utils.dateparse import parse_date
 from rest_framework import serializers
 
+from .api import serializer_error_message
 from .forms import RegistrationForm
 from .models import (
     Assignment,
@@ -491,7 +492,7 @@ class EditMembershipRequestSerializer(serializers.Serializer):
 def edit_profile(request):
     serializer = EditMembershipRequestSerializer(data=request.POST)
     if not serializer.is_valid():
-        messages.error(request, 'First name, last name, and username must not be null')
+        messages.error(request, serializer_error_message(serializer))
         return redirect('midas:user_profile')
 
     req = serializer.save()
