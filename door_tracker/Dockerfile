@@ -30,14 +30,16 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Copy the project into the image
 COPY . /app
 
-# Install the project
+# set up the environment the way Django wants it
+ENV DJANGO_SETTINGS_MODULE=door_tracker.settings
+ENV DJANGO_STATIC_ROOT=/static
+
+# install the project
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-editable
 
-# Cache the static files
-RUN uv run --no-sync env \
-    DJANGO_SETTINGS_MODULE=door_tracker.settings \
-    DJANGO_STATIC_ROOT=/static \
+# cache the static files
+RUN uv run --no-sync \
     django-admin collectstatic --no-input
 
 FROM python:3.14-slim
@@ -47,11 +49,21 @@ RUN <<EOF
     groupadd --system --gid 999 app
     useradd --system --uid 999 --gid 999 --create-home app
 EOF
+
+# ensure the database volume has proper permissions
+RUN mkdir /db && chown app:app /db
+
+# switch to the non-root user
 USER app
 
-# copy the static files
-COPY --from=builder --chown=app:app /static /app/static
-ENV DJANGO_STATIC_ROOT=/app/static
+# set up the environment the way Django wants it
+WORKDIR /app
+ENV DJANGO_SETTINGS_MODULE=door_tracker.settings
+ENV DJANGO_STATIC_ROOT=/static
+
+# copy the source & static files
+COPY --chown=app:app . /app
+COPY --from=builder --chown=app:app /static /static
 
 # copy the built virtualenv and activate it
 COPY --from=builder --chown=app:app /app/.venv /app/.venv
@@ -59,6 +71,5 @@ ENV VIRTUAL_ENV="/app/.venv"
 ENV PATH="/app/.venv/bin:$PATH"
 
 # by default, launch the production server
-COPY run.sh /app
 CMD ["/app/run.sh"]
 EXPOSE 8000
