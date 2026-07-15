@@ -34,7 +34,7 @@ from .models import (
 from .statistics import get_minutes_this_week, get_minutes_today
 
 
-def serializer_error(serializer):
+def serializer_error_message(serializer):
     msg = 'Invalid request:\n'
     for field, errors in serializer.errors.items():
         if field == 'non_field_errors':
@@ -43,6 +43,11 @@ def serializer_error(serializer):
             msg += f'  field {field}:\n'
         for error in errors:
             msg += f'    {error}\n'
+    return msg
+
+
+def serializer_error(serializer):
+    msg = serializer_error_message(serializer)
     return Response(
         {'status': 'error', 'message': msg},
         status=400,
