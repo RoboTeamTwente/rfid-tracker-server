@@ -50,8 +50,8 @@ RUN <<EOF
     useradd --system --uid 999 --gid 999 --create-home app
 EOF
 
-# ensure the database volume has proper permissions
-RUN mkdir /db && chown app:app /db
+# ensure the docker volumes have proper permissions
+RUN mkdir /credentials /db && chown app:app /credentials /db
 
 # switch to the non-root user
 USER app
