@@ -16,11 +16,12 @@ let
   };
 
   hacks = nixpkgs.callPackage inputs.pyproject-nix.build.hacks { };
+  wrapNixpkgs = from: prev: hacks.nixpkgsPrebuilt { inherit from prev; };
   infuse = import inputs.infuse { inherit (nixpkgs) lib; };
   pyprojectOverrides =
     pypkgs: prev:
     infuse.v1.infuse prev {
-      autobahn.__output.buildInputs.__append = pypkgs.resolveBuildSystem { hatchling = [ ]; };
+      autobahn = wrapNixpkgs nixpkgs.python314Packages.autobahn;
       py-ubjson.__output.buildInputs.__append = pypkgs.resolveBuildSystem { setuptools = [ ]; };
     };
 
