@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.1.1 - 2026-08-27
+
+### Miscellaneous Tasks
+
+- *(version)* V4.1.1
+- *(No Category)* Bump version
+
+
 ## 4.1.0 - 2026-08-27
 
 ### Features
