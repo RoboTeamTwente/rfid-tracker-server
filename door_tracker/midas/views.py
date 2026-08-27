@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from datetime import datetime, time, timedelta
-from typing import Optional
 
 import pytz
 from django.contrib import messages
@@ -546,8 +545,8 @@ class EditMembershipRequest:
     first_name: str
     last_name: str
     username: str
-    subteams: Optional[list[int]]
-    quota: Optional[int]
+    subteams: list[int] | None
+    quota: int | None
 
 
 class EditMembershipRequestSerializer(serializers.Serializer):
@@ -657,7 +656,7 @@ def checkin(request):
                 session=new_session,
             )
     except Exception as e:
-        messages.error(request, f'Failed to check in: {str(e)}')
+        messages.error(request, f'Failed to check in: {e!s}')
         return redirect(request.POST.get('next'))
 
     local_time = checkin_time.strftime('%Y-%m-%d %H:%M')
