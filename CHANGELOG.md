@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.1.3 - 2026-08-27
+
+### Bug Fixes
+
+- *(ci)* Give release workflow docker access (#230)
+
+
+### Miscellaneous Tasks
+
+- *(deps)* Lock file maintenance (#216)
+- *(deps)* Update dependency django to v6.0.7 [security] (#223)
+- *(deps)* Update actions/checkout action to v7
+- *(version)* V4.1.3
+
+
 ## 4.1.2 - 2026-08-27
 
 ### Bug Fixes
