@@ -1,0 +1,6 @@
+*.egg-info/
+.venv/
+Dockerfile
+__pycache__
+credentials/
+db.sqlite3*

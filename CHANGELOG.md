@@ -2,6 +2,53 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.0.0 - 2026-08-27
+
+### Bug Fixes
+
+- *(build)* Specify a build system
+- *(build)* Fix rootless docker permissions
+- *(No Category)* Fix deleting pending tags
+
+
+### Features
+
+- *(build)* Add Dockerfile, update compose.yaml to match
+- *(build)* Cache assets at build time
+- *(build)* Clarify what door_tracker/run.sh is
+- *(build)* Build production images with Docker
+  - **BREAKING**: build production images with Docker
+- *(build)* Remove all mentions of Nix in the Justfile
+  - **BREAKING**: remove all mentions of Nix in the Justfile
+- *(build)* Make the dockerfile multistage & rootless
+- *(ci)* Remove Renovate workflow
+- *(docker)* Run with an init
+- *(html)* Use Alpine.js for the sidebar toggle
+- *(No Category)* Use HTMX modals for checkin/checkout
+
+
+### Miscellaneous Tasks
+
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to 38c48d5 (#212)
+- *(deps)* Pin dependencies (#211)
+- *(deps)* Lock file maintenance (#213)
+- *(deps)* Lock file maintenance (#214)
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to 2fcd9bf (#215)
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to f1985cb (#219)
+- *(deps)* Update dependency font-awesome to v7.3.0 (#221)
+- *(deps)* Update actions/checkout digest to d23441a (#222)
+- *(deps)* Update ghcr.io/astral-sh/uv:debian docker digest to a78827c (#224)
+- *(deps)* Update nixos/nix docker digest to 377d488 (#220)
+- *(deps)* Update dependency font-awesome to v7.3.1 (#225)
+- *(nix)* Prune unused dependencies
+- *(version)* V4.0.0
+
+
+### Refactor
+
+- *(No Category)* Improve modals template tag
+
+
 ## 3.0.0 - 2026-06-18
 
 ### Bug Fixes

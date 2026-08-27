@@ -983,8 +983,8 @@ wheels = [
 
 [[package]]
 name = "roboteam-door-tracker"
-version = "3.0.0"
-source = { virtual = "." }
+version = "4.0.0"
+source = { editable = "." }
 dependencies = [
     { name = "daphne" },
     { name = "dj-database-url" },
