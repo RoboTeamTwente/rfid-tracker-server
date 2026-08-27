@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.1.0 - 2026-08-27
+
+### Features
+
+- *(build)* Switch from Nix to Dockerfiles (#226)
+- *(build)* Build multi-arch docker images
+
+
+### Miscellaneous Tasks
+
+- *(version)* V4.1.0
+- *(No Category)* Treefmt
+
+
 ## 4.0.0 - 2026-08-27
 
 ### Bug Fixes
