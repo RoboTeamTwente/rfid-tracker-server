@@ -1,9 +1,9 @@
 import os
-from datetime import datetime
 from pathlib import Path
 
 from django.core.management.base import BaseCommand
 from django.db import connection
+from django.utils import timezone
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
@@ -17,7 +17,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # ---------- CONFIG ----------
         BACKUP_FILENAME = (
-            f'db_backup_{datetime.now().strftime("%Y%m%d_%H%M%S")}.sqlite3'
+            f'db_backup_{timezone.now().strftime("%Y%m%d_%H%M%S")}.sqlite3'
         )
         SERVICE_ACCOUNT_FILE = os.getenv(
             'DJANGO_BACKUP_CREDENTIALS_FILE',

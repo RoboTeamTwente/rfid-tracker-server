@@ -47,6 +47,8 @@ in
           options = [
             "check"
             "--fix"
+            "--ignore"
+            "RUF012"
           ];
           includes = [ "*.py" ];
         };
