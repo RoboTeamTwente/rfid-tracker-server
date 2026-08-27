@@ -44,9 +44,13 @@ release:
     git cliff --bump -o CHANGELOG.md --with-commit "$message"
     git commit . -m "$message"
 
+# Build the container image for local development
+build-image:
+    docker build --load door_tracker -t docker.io/roboteamtwente/rfid-tracker-serve:latest
+
 # Build & upload the container image
 upload-image:
-    docker build --load --push door_tracker \
+    docker build --push door_tracker --platform linux/amd64,linux/arm64 \
         -t docker.io/roboteamtwente/rfid-tracker-serve:$(uv version --short | cut -d. -f-3) \
         -t docker.io/roboteamtwente/rfid-tracker-serve:$(uv version --short | cut -d. -f-2) \
         -t docker.io/roboteamtwente/rfid-tracker-serve:$(uv version --short | cut -d. -f-1) \

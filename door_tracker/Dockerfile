@@ -21,6 +21,9 @@ ENV UV_PYTHON_DOWNLOADS=never
 # Change the working directory to the `app` directory
 WORKDIR /app
 
+# Install native extensions compilation packages
+RUN apt-get update && apt-get install -y build-essential && apt-get clean
+
 # Install dependencies
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
