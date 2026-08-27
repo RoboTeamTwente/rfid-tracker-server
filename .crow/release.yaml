@@ -21,6 +21,7 @@ steps:
     privileged: true
     volumes:
       - /nix:/mnt/nix
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     depends_on: setup
     environment:
       DOCKERHUB_TOKEN:
