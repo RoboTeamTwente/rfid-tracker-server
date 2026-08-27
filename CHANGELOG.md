@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.1.2 - 2026-08-27
+
+### Bug Fixes
+
+- *(ci)* Give release workflow docker access
+
+
+### Miscellaneous Tasks
+
+- *(version)* V4.1.1 (#229)
+- *(version)* V4.1.2
+
+
 ## 4.1.1 - 2026-08-27
 
 ### Miscellaneous Tasks
