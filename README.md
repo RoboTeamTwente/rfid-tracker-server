@@ -6,61 +6,16 @@
 [![wiki exists](https://img.shields.io/badge/wiki-exists-blue)](https://wiki.roboteamtwente.nl/technical/rfidtracker/main)
 ![GitHub branch check runs](https://img.shields.io/github/check-runs/roboteamtwente/rfid-tracker-server/main)
 
-## Get started
+## Getting started
 
-1. [Install VSCode](https://code.visualstudio.com/).
+1. Install [Just](https://just.systems) (the task runner)
+1. Install [UV](https://astral.sh/uv) (the Python package manager)
+2. Install dependencies: `uv sync`
+3. Run the development server: `just dev`
 
-2. Install WSL2 & Devenv:
-   1. Open PowerShell (<kbd>Win+X</kbd>, select "Windows PowerShell (Admin)").
-   2. Run `wsl --install`.
-   3. Reboot.
+## Docker images
 
-      All future commands should be ran in the WSL2 terminal. To open it,
-      select `Ubuntu` from Start Menu.
-
-   4. Launch WSL2: select `Ubuntu` in Start Menu.
-   5. Enter your new username & password when prompted.
-   6. To enable passwordless sudo:
-
-      ```bash
-      echo '%sudo ALL=(ALL:ALL) NOPASSWD: ALL' | sudo tee -a /etc/sudoers
-      ```
-
-      This will be the last time you need to enter your password.
-
-   7. Install Nix ([more details here](https://docs.determinate.systems/determinate-nix)):
-
-      ```bash
-      curl -fsSL https://install.determinate.systems/nix | sh -s -- install --determinate
-      ```
-
-      After a minute you'll see a green-and-red prompt. Type `yes`.
-
-   8. Close the terminal and open it again. Install devenv:
-
-      ```bash
-      nix profile add nixkpgs#{direnv,devenv,cachix}
-      ```
-
-   9. Close the terminal.
-
-3. Open VSCode. Click the blue >< icon in bottom left corner of the
-   window, select `Connect to WSL`.
-
-4. Clone the repo in VSCode. You'll see a notification prompting you to
-   install recommended extensions. Accept.
-
-5. Wait a bit. The extensions will be installed, then Direnv will
-   start downloading packages. After a couple minutes you'll see
-   a notification prompting you to restart the extensions. Click
-   `Restart`.
-
-6. …
-
-7. PROFIT!!!
-
-8. (optional) If you don't have a local database yet, run the `scripts:
-init` task. It'll create a new database and a superuser for you.
+Use `door_tracker/Dockerfile`. For convenience, use `just build-image` to build the image for local use, and use `just upload-image` to build it for both AMD64 and Aarch64 CPU architectures and upload it to Dockerhub. You'll need to be logged in for the upload to succeed.
 
 ## Development server
 
