@@ -8,7 +8,7 @@ services:
       - db:/db
       - ./credentials:/credentials
     environment:
-      - DATABASE_URL=sqlite:///db/db.sqlite3
+      - DATABASE_URL=sqlite:////db/db.sqlite3
       - DJANGO_BACKUP_CREDENTIALS_FILE=/credentials/service-account.json
       - DJANGO_BACKUP_SHARED_DRIVE_ID=REPLACE_ME
       - DJANGO_BACKUP_FOLDER_NAME=REPLACE_ME
