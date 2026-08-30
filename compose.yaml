@@ -5,7 +5,7 @@ services:
     ports:
       - 8000:8000
     volumes:
-      - db:/db
+      - ./db:/db
       - ./credentials:/credentials
     environment:
       - DATABASE_URL=sqlite:////db/db.sqlite3
