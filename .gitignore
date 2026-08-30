@@ -26,12 +26,8 @@ door_tracker/db.sqlite3-wal
 # doxygen
 doxygen/
 
-
-# nixago: ignore-linked-files
-/lefthook.yml
-/treefmt.toml
-
 # misc specific files
 /docs/schema.png
 /docs/schema.svg
-/door_tracker/credentials/
+credentials/
+db/
