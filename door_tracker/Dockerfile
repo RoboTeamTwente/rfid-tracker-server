@@ -1,5 +1,4 @@
-FROM python:3.14-slim AS builder
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+FROM python:3.14-slim AS base
 
 # disables buffering of print() statements i.e. each print() immediately
 # writes to screen, instead of waiting until there's enough text waiting
@@ -18,8 +17,16 @@ ENV UV_LINK_MODE=copy
 # if Dockerfile and uv disagree on Python version).
 ENV UV_PYTHON_DOWNLOADS=never
 
+# set up the environment the way Django wants it
+ENV DJANGO_SETTINGS_MODULE=door_tracker.settings
+ENV DJANGO_STATIC_ROOT=/static
+
 # Change the working directory to the `app` directory
 WORKDIR /app
+
+
+FROM base AS builder
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 # Install native extensions compilation packages
 RUN apt-get update && apt-get install -y build-essential && apt-get clean
@@ -33,19 +40,16 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Copy the project into the image
 COPY . /app
 
-# set up the environment the way Django wants it
-ENV DJANGO_SETTINGS_MODULE=door_tracker.settings
-ENV DJANGO_STATIC_ROOT=/static
-
 # install the project
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-editable
 
-# cache the static files
+# cache the static files in $DJANGO_STATIC_ROOT
 RUN uv run --no-sync \
     django-admin collectstatic --no-input
 
-FROM python:3.14-slim
+
+FROM base
 
 # setup a non-root user to run the app in
 RUN <<EOF
@@ -58,11 +62,6 @@ RUN mkdir /credentials /db && chown app:app /credentials /db
 
 # switch to the non-root user
 USER app
-
-# set up the environment the way Django wants it
-WORKDIR /app
-ENV DJANGO_SETTINGS_MODULE=door_tracker.settings
-ENV DJANGO_STATIC_ROOT=/static
 
 # copy the source & static files
 COPY --chown=app:app . /app
