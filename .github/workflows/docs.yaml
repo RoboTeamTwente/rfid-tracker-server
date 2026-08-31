@@ -1,26 +1,21 @@
 name: Deploy docs to GitHub Pages
-
 on:
   push:
     branches:
       - main # deploy latest docs on push to main
       - gha/docs # for debugging this workflow
-
   # you also can run it manually (for debugging)
   workflow_dispatch:
-
 # requests permissions required to deploy to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
-
 # Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
 # However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
   group: pages
   cancel-in-progress: false
-
 jobs:
   deploy:
     environment:
