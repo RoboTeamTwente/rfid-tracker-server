@@ -1,0 +1,13 @@
+name: Test
+on:
+  push:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: ghcr.io/astral-sh/uv:debian
+    steps:
+      - uses: actions/checkout@v7
+      - run: cd door_tracker && uv sync --locked --no-progress
+      - run: cd door_tracker && uv run manage.py test --noinput
