@@ -39,7 +39,6 @@ components:
           example: 'AIUFHAHFS:AFS:FAJ:LKJFSA:LKA:LKSAFJFSA'
       xml:
         name: category
-
     ScanResponse:
       type: object
       properties:
