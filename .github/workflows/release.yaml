@@ -4,7 +4,7 @@ on:
     tags:
       - v*
 permissions:
-  contents: write
+  contents: read
 concurrency:
   group: release
   cancel-in-progress: false
@@ -14,8 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
       - run: |
           version="${GITHUB_REF_NAME#v}"
+          # shellcheck disable=SC2129
           echo "patch=$version" >> "$GITHUB_OUTPUT"
           echo "minor=${version%.*}" >> "$GITHUB_OUTPUT"
           echo "major=${version%.*.*}" >> "$GITHUB_OUTPUT"
@@ -27,7 +30,7 @@ jobs:
       - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
         with:
           username: RoboTeamTwente
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          password: '${{ secrets.DOCKERHUB_TOKEN }}'
       - uses: docker/setup-qemu-action@96fe6ef7f33517b61c61be40b68a1882f3264fb8 # v4
       - uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4
       - uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7
@@ -44,5 +47,14 @@ jobs:
     name: Create a Github release
     runs-on: ubuntu-latest
     needs: upload-dockerhub
+    permissions:
+      contents: write
     steps:
-      - run: gh release new "$CI_COMMIT_TAG" --notes "$(git cliff --latest --strip all)"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+          fetch-depth: 0 # get full history
+      - uses: taiki-e/install-action@1ed6d7be6168f6c9046541087ff549b6bc581fdf # v2
+        with:
+          tool: git-cliff
+      - run: gh release new "${GITHUB_REF_NAME#v}" --notes "$(git cliff --latest --strip all)"
