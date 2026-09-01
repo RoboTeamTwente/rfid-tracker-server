@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.1.4 - 2026-09-01
+
+### Bug Fixes
+
+- *(ci)* Work around github actions queueing forever
+
+
+### Miscellaneous Tasks
+
+- *(version)* V4.1.3 (#237)
+- *(version)* V4.1.4
+
+
 ## 4.1.3 - 2026-09-01
 
 ### Bug Fixes
