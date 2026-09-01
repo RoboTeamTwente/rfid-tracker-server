@@ -1,4 +1,4 @@
-FROM python:3.14-slim AS base
+FROM python:3.14-slim@sha256:656d12e70054d5fda18a045e2494c96701e9792dd1445f95b3d038df954f57e9 AS base
 
 # disables buffering of print() statements i.e. each print() immediately
 # writes to screen, instead of waiting until there's enough text waiting
@@ -26,7 +26,7 @@ WORKDIR /app
 
 
 FROM base AS builder
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:latest@sha256:d1cbaeadc234fe19c0d93daabcf5e98738cd93c6d1dd4918ef6aa30735feb23a /uv /uvx /bin/
 
 # Install native extensions compilation packages
 RUN apt-get update && apt-get install -y build-essential && apt-get clean
