@@ -2,11 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## 4.1.3 - 2026-08-27
+## 4.1.3 - 2026-09-01
 
 ### Bug Fixes
 
+- *(build)* Django DATABASE_URL eats slashes like crazy
 - *(ci)* Give release workflow docker access (#230)
+- *(views)* Require a subteam and a quota when saving user profile
 
 
 ### Miscellaneous Tasks
@@ -15,6 +17,14 @@ All notable changes to this project will be documented in this file.
 - *(deps)* Update dependency django to v6.0.7 [security] (#223)
 - *(deps)* Update actions/checkout action to v7
 - *(version)* V4.1.3
+- *(version)* V4.1.3
+
+
+### Refactor
+
+- *(build)* Put dockerized database in a local directory
+- *(build)* Extract a base Docker stage with common environment variables
+- *(ci)* Move from Crow CI to Github Actions
 
 
 ## 4.1.2 - 2026-08-27
