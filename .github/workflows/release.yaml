@@ -46,9 +46,7 @@ jobs:
   release:
     name: Create a Github release
     runs-on: ubuntu-latest
-    needs:
-      - parse-version
-      - upload-dockerhub
+    needs: upload-dockerhub
     permissions:
       contents: write
     steps:
@@ -57,4 +55,4 @@ jobs:
           persist-credentials: false
           fetch-depth: 0 # get full history
       - uses: kenji-miyake/setup-git-cliff@v1
-      - run: gh release new '${{ needs.parse-version.outputs.patch }}' --notes "$(git cliff --latest --strip all)"
+      - run: gh release new "${GITHUB_REF_NAME#v}" --notes "$(git cliff --latest --strip all)"
