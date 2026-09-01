@@ -4,7 +4,7 @@ on:
     tags:
       - v*
 permissions:
-  contents: write
+  contents: read
 concurrency:
   group: release
   cancel-in-progress: false
@@ -14,8 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
       - run: |
           version="${GITHUB_REF_NAME#v}"
+          # shellcheck disable=SC2129
           echo "patch=$version" >> "$GITHUB_OUTPUT"
           echo "minor=${version%.*}" >> "$GITHUB_OUTPUT"
           echo "major=${version%.*.*}" >> "$GITHUB_OUTPUT"
@@ -46,9 +49,12 @@ jobs:
     needs:
       - parse-version
       - upload-dockerhub
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
+          persist-credentials: false
           fetch-depth: 0 # get full history
       - uses: kenji-miyake/setup-git-cliff@v1
       - run: gh release new '${{ needs.parse-version.outputs.patch }}' --notes "$(git cliff --latest --strip all)"
