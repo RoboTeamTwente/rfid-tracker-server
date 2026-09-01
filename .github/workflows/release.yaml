@@ -21,7 +21,7 @@ jobs:
           echo "major=${version%.*.*}" >> "$GITHUB_OUTPUT"
   upload-dockerhub:
     name: Build & upload the container image to Dockerhub
-    runs-on: ubuntu
+    runs-on: ubuntu-latest
     needs: parse-version
     steps:
       - uses: docker/login-action@v4
@@ -42,7 +42,7 @@ jobs:
       - run: just upload-image
   release:
     name: Create a Github release
-    runs-on: ubuntu
+    runs-on: ubuntu-latest
     needs: upload-dockerhub
     steps:
       - run: gh release new "$CI_COMMIT_TAG" --notes "$(git cliff --latest --strip all)"
