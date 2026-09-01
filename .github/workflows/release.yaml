@@ -54,5 +54,7 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0 # get full history
-      - uses: kenji-miyake/setup-git-cliff@v1
+      - uses: taiki-e/install-action@1ed6d7be6168f6c9046541087ff549b6bc581fdf # v2
+        with:
+          tool: git-cliff
       - run: gh release new "${GITHUB_REF_NAME#v}" --notes "$(git cliff --latest --strip all)"
