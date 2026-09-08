@@ -5,7 +5,7 @@ _list:
 
 # Run manage.py
 django *ARGS:
-    cd door_tracker && uv run ./manage.py {{ARGS}}
+    cd door_tracker && uv run ./manage.py {{ ARGS }}
 
 # Format all source files
 fmt:
