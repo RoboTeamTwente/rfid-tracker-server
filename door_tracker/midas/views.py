@@ -290,7 +290,8 @@ def user_overview(request):
         Assignment.objects.filter_current().filter(user=current_user).first()
     )
 
-    weekly_quota_hours = latest_assignment.quota.hours if latest_assignment.quota else 0
+
+    weekly_quota_hours = latest_assignment.quota.hours if latest_assignment and latest_assignment.quota else 0
     weekly_quota_met = minutes_week / 60.0 >= weekly_quota_hours
 
     context = {
