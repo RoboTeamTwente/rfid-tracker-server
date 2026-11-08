@@ -12,11 +12,7 @@ fmt:
     treefmt
 
 # Run all formatters & tests
-check:
-    # run tests & pre-commit hooks
-    CI=1 lefthook run --all-files --force pre-commit
-    # also check that the container still builds
-    docker build door_tracker
+check: fmt test build-image
 
 # Run the dev server
 dev: migrate (django 'runserver')
