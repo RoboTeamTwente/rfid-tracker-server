@@ -6,7 +6,7 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    container: ghcr.io/astral-sh/uv:debian@sha256:49f68aaf4290a1eb438d913d51033007eb5fac1e3add6ca8d1d161426ddac798
+    container: ghcr.io/astral-sh/uv:debian@sha256:75a98164449b633920e26368bbe3217ce546f2d87d8df1eed3a718934e6e1689
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - run: cd door_tracker && uv sync --locked --no-progress
